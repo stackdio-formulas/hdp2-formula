@@ -1,55 +1,54 @@
 {% if grains['os_family'] == 'Debian' %}
 
-# Add the appropriate CDH5 repository. See http://archive.cloudera.com/cdh5
-# for which distributions and versions are supported.
-/etc/apt/sources.list.d/cloudera.list:
-  file:
+# Set up the HDP2 apt repositories
+HDP-{{ pillar.hdp2.version }}:
+  pkgrepo:
     - managed
-    - name: /etc/apt/sources.list.d/cloudera.list
-    - source: salt://cdh5/etc/apt/sources.list.d/cloudera.list.template
-    - user: root
-    - group: root
-    - mode: 644
-    - template: jinja
-    - require:
-      - file: add_policy_file
+    - name: deb http://public-repo-1.hortonworks.com/HDP/ubuntu12/{{ pillar.hdp2.version }} HDP main
 
-cdh5_gpg:
+HDP-UTILS-{{ pillar.hdp2.utils_version }}:
+  pkgrepo:
+    - managed
+    - name: deb http://public-repo-1.hortonworks.com/HDP-UTILS-{{ pillar.hdp2.utils_version }}/repos/ubuntu12 HDP-UTILS main
+
+hdp2_gpg:
   cmd:
     - run
-    - name: 'curl -s http://archive.cloudera.com/cdh5/ubuntu/{{ grains["lsb_distrib_codename"] }}/amd64/cdh/archive.key | apt-key add -'
+    - name: 'gpg --keyserver pgp.mit.edu --recv-keys B9733A7A07513CAD; gpg -a --export 07513CAD | apt-key add -'
     - unless: 'apt-key list | grep "Cloudera Apt Repository"'
+    - user: root
     - require:
-      - file: /etc/apt/sources.list.d/cloudera.list
+      - pkgrepo: HDP-{{ pillar.hdp2.version }}
+      - pkgrepo: HDP-UTILS-{{ pillar.hdp2.utils_version }}
 
-cdh5_refresh_db:
+hdp2_refresh_db:
   module:
     - run
     - name: pkg.refresh_db
     - require:
-      - cmd: cdh5_gpg
+      - cmd: hdp2_gpg
 
 # This is used on ubuntu so that services don't start 
-add_policy_file:
-  file:
-    - managed
-    - name: /usr/sbin/policy-rc.d
-    - contents: exit 101
-    - user: root
-    - group: root
-    - mode: 755
-    - makedirs: True
+#add_policy_file:
+#  file:
+#    - managed
+#    - name: /usr/sbin/policy-rc.d
+#    - contents: exit 101
+#    - user: root
+#    - group: root
+#    - mode: 755
+#    - makedirs: True
 
 remove_policy_file:
   file:
     - absent
     - name: /usr/sbin/policy-rc.d
-    - require:
-      - file: add_policy_file
+#    - require:
+#      - file: add_policy_file
 
 {% elif grains['os_family'] == 'RedHat' %}
 
-# Set up the CDH5 yum repository
+# Set up the HDP2 yum repositories
 HDP-{{ pillar.hdp2.version }}:
   pkgrepo:
     - managed
@@ -69,14 +68,6 @@ HDP-UTILS-{{ pillar.hdp2.utils_version }}:
     - gpgcheck: 1
     - enabled: 1
     - priority: 1
-
-#cdh5_gpg:
-#  cmd:
-#    - run
-#    - name: 'rpm --import http://archive.cloudera.com/cdh5/redhat/6/x86_64/cdh/RPM-GPG-KEY-cloudera'
-#    - unless: 'rpm -qi gpg-pubkey-e8f86acd'
-#    - require:
-#      - pkgrepo: cloudera_cdh5
 
 cdh5_refresh_db:
   module:
