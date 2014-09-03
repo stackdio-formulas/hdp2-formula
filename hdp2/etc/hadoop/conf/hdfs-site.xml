@@ -1,0 +1,163 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+    <property>
+        <name>dfs.name.dir</name>
+        <value>{{ pillar.cdh5.dfs.name_dir}}</value>
+    </property>
+    <property>
+        <name>dfs.datanode.data.dir</name>
+        <value>{{ pillar.cdh5.dfs.data_dir }}</value>
+    </property>
+    <property>
+       <name>dfs.permissions.superusergroup</name>
+       <value>hadoop</value>
+    </property>
+    <property>
+      <name>dfs.datanode.max.xcievers</name>
+      <value>8192</value>
+    </property>
+
+    <property>
+      <name>dfs.permissions</name>
+      <value>{{ pillar.cdh5.dfs.permissions }}</value>
+      <final>true</final>
+    </property>
+    <property>
+      <name>dfs.replication</name>
+      <value>3</value>
+    </property>
+    <property>
+      <name>dfs.block.size</name>
+      <value>134217728</value>
+      <final>true</final>
+    </property>
+    <property>
+      <name>dfs.webhdfs.enabled</name>
+      <value>true</value>
+    </property>
+
+    <!-- Hive configuration -->
+    <property>
+        <name>dfs.client.read.shortcircuit</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>dfs.domain.socket.path</name>
+        <value>/var/run/hadoop-hdfs/dn._PORT</value>
+    </property>
+    <property>
+        <name>dfs.client.file-block-storage-locations.timeout.millis</name>
+        <value>10000</value>
+    </property>
+    <property>
+      <name>dfs.datanode.hdfs-blocks-metadata.enabled</name>
+      <value>true</value>
+    </property>
+
+    <property>
+       <name>dfs.client.use.legacy.blockreader.local</name>
+       <value>false</value>
+    </property>
+    
+    <property>
+       <name>dfs.datanode.data.dir.perm</name>
+       <value>750</value>
+    </property>
+    
+    <property>
+       <name>dfs.block.local-path-access.user</name>
+       <value>impala</value>
+    </property>
+    
+    <property>
+        <name>dfs.client.file-block-storage-locations.timeout</name>
+        <value>10000</value>
+    </property>
+    <property>
+      <name>dfs.datanode.hdfs-blocks-metadata.enabled</name>
+      <value>true</value>
+    </property> 
+
+{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% from 'krb5/settings.sls' import krb5 with context %}
+    <!-- General HDFS security config -->
+    <property>
+      <name>dfs.block.access.token.enable</name>
+      <value>true</value>
+    </property>
+ 
+    <!-- NameNode security config -->
+    <property>
+      <name>dfs.namenode.keytab.file</name>
+      <value>/etc/hadoop/conf/hdfs.keytab</value> <!-- path to the HDFS keytab -->
+    </property>
+    <property>
+      <name>dfs.namenode.kerberos.principal</name>
+      <value>hdfs/_HOST@{{ krb5.realm }}</value>
+    </property>
+    <property>
+      <name>dfs.namenode.kerberos.internal.spnego.principal</name>
+      <value>HTTP/_HOST@{{ krb5.realm }}</value>
+    </property>
+
+    <!-- Secondary NameNode security config -->
+    <property>
+      <name>dfs.secondary.namenode.keytab.file</name>
+      <value>/etc/hadoop/conf/hdfs.keytab</value> <!-- path to the HDFS keytab -->
+    </property>
+    <property>
+      <name>dfs.secondary.namenode.kerberos.principal</name>
+      <value>hdfs/_HOST@{{ krb5.realm }}</value>
+    </property>
+    <property>
+      <name>dfs.secondary.namenode.kerberos.internal.spnego.principal</name>
+      <value>HTTP/_HOST@{{ krb5.realm }}</value>
+    </property>
+
+    <!-- DataNode security config -->
+    <property>
+        <name>dfs.datanode.address</name>
+        <value>0.0.0.0:1004</value>
+    </property>
+    <property>
+        <name>dfs.datanode.http.address</name>
+        <value>0.0.0.0:1006</value>
+    </property>
+    <property>
+      <name>dfs.datanode.keytab.file</name>
+      <value>/etc/hadoop/conf/hdfs.keytab</value> <!-- path to the HDFS keytab -->
+    </property>
+    <property>
+      <name>dfs.datanode.kerberos.principal</name>
+      <value>hdfs/_HOST@{{ krb5.realm }}</value>
+    </property>
+
+    <!-- Web Authentication config -->
+    <property>
+      <name>dfs.web.authentication.kerberos.principal</name>
+      <value>HTTP/_HOST@{{ krb5.realm }}</value>
+     </property>
+    <!--
+    <property>
+    <name>dfs.http.policy</name>
+    <value>HTTPS_ONLY</value>
+    </property>
+    -->
+    
+    <!-- High-availability security config -->
+    <property>
+      <name>dfs.journalnode.keytab.file</name>
+      <value>/etc/hadoop/conf/hdfs.keytab</value>
+    </property>
+    <property>
+      <name>dfs.journalnode.kerberos.principal</name>
+      <value>hdfs/_HOST@{{ krb5.realm }}</value>
+    </property>
+    <property>
+      <name>dfs.journalnode.kerberos.internal.spnego.principal</name>
+      <value>HTTP/_HOST@{{ krb5.realm }}</value>
+    </property>
+{% endif %}
+</configuration>
