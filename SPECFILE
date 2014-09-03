@@ -20,9 +20,6 @@ components:
   - title: Oozie 
     description: Oozie
     sls_path: hdp2.oozie
-  - title: Hue
-    description: Hue
-    sls_path: hdp2.hue
   - title: Pig
     description: Pig
     sls_path: hdp2.pig
