@@ -23,7 +23,8 @@ oozie:
       - oozie
       - oozie-client
       - extjs
-      # oozie scripts depend on unzip, but don't list it as a dep :/
+      # oozie scripts depend on zip AND unzip, but don't list them as deps :/
+      - zip
       - unzip
     - require:
       - cmd: repo_placeholder
