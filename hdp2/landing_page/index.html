@@ -61,9 +61,6 @@ a:hover {
                     {% if 'hdp2.hue' in grains['roles'] %}
                     <li><a href='http://{{ fqdn }}:8888/home'>Hue</a></li>
                     {% endif %}
-                    {% if 'hdp2.manager.server' in grains['roles'] %}
-                    <li><a href='http://{{ fqdn }}:7180/'>Cloudera Manager</a></li>
-                    {% endif %}
                     {% if 'hdp2.hadoop.namenode' in grains['roles'] %}
                     <li><a href='http://{{ fqdn }}:50070/'>Hadoop HDFS NameNode</a></li>
                     {% endif %}

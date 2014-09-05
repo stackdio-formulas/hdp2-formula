@@ -52,9 +52,12 @@ extjs:
     - directory
     - user: oozie
     - group: oozie
+    - mode: 777
     - recurse:
       - user
       - group
+    - require:
+      - pkg: oozie
 
 /var/lib/oozie:
   file:
@@ -64,4 +67,6 @@ extjs:
     - recurse:
       - user
       - group
+    - require:
+      - pkg: oozie
 

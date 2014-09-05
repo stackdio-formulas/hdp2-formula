@@ -33,7 +33,7 @@ oozie-svc:
 prepare_server:
   cmd:
     - run
-    - name: 'cd /usr/lib/oozie/ && ./bin/oozie-setup.sh prepare-war && chmod 777 -R /var/log/oozie && ln -s /etc/oozie/conf/action-conf /etc/oozie/conf.dist/action-conf'
+    - name: 'cd /usr/lib/oozie/ && ./bin/oozie-setup.sh prepare-war && ln -s /etc/oozie/conf/action-conf /etc/oozie/conf.dist/action-conf'
     - user: root
     - require:
       - pkg: oozie
