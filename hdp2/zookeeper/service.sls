@@ -109,6 +109,9 @@ zk_data_dir:
     - makedirs: true
     - require:
       - pkg: zookeeper-server
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if grains['os_family'] == 'RedHat' %}
+      - group: zookeeper
+      {% endif %}
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_zookeeper_keytabs
-{% endif %}
+      {% endif %}
