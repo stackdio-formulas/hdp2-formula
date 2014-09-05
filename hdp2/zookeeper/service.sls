@@ -66,11 +66,18 @@ myid:
     - name: '{{pillar.hdp2.zookeeper.data_dir}}/myid'
     - template: jinja
     - user: zookeeper
-    - group: hadoop
+    - group: zookeeper
     - mode: 755
     - source: salt://hdp2/etc/zookeeper/conf/myid
     - require:
       - file: zk_data_dir
+
+{% if grains['os_family'] == 'RedHat' %}
+zookeeper_group:
+  group:
+    - present
+    - name: zookeeper
+{% endif %}
 
 zookeeper-init:
   cmd:
@@ -79,13 +86,16 @@ zookeeper-init:
     - unless: 'ls {{pillar.hdp2.zookeeper.data_dir}}/version-*'
     - require:
       - file: myid
+      {% if grains['os_family'] == 'RedHat' %}
+      - group: zookeeper
+      {% endif %}
 
 zk_data_dir:
   file:
     - directory
     - name: {{pillar.hdp2.zookeeper.data_dir}}
     - user: zookeeper
-    - group: hadoop
+    - group: zookeeper
     - dir_mode: 755
     - makedirs: true
     - require:
