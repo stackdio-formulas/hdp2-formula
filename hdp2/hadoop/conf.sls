@@ -30,7 +30,7 @@ bigtop_java_home:
   file:
     - managed
     - name: /usr/lib/bigtop-utils/bigtop-detect-javahome
-    - text: 'export JAVA_HOME=/usr/java/latest'
+    - contents: 'export JAVA_HOME=/usr/java/latest'
     - user: root
     - group: root
     - require:
