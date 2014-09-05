@@ -17,10 +17,12 @@ oozie-svc:
     - running
     - name: oozie
 {% elif grains['os_family'] == 'RedHat' %}
+  # Centos doesn't have an init.d script, wtf
   cmd:
     - run
     - name: 'cd /usr/lib/oozie && ./bin/oozied.sh start'
     - user: oozie
+    - unless: 'test -f /var/run/oozie/oozie.pid'
 {% endif %}
     - require:
       - pkg: oozie
