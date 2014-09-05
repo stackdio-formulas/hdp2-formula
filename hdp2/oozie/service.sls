@@ -27,6 +27,7 @@ prepare_server:
   cmd:
     - run
     - name: '/usr/lib/oozie/bin/oozie-setup.sh prepare-war'
+    - unless: 'service oozie status'
     - user: root
     - require:
       - pkg: oozie
