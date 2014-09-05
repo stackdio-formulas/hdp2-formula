@@ -66,7 +66,7 @@ myid:
     - name: '{{pillar.hdp2.zookeeper.data_dir}}/myid'
     - template: jinja
     - user: zookeeper
-    - group: zookeeper
+    - group: hadoop
     - mode: 755
     - source: salt://hdp2/etc/zookeeper/conf/myid
     - require:
@@ -85,7 +85,7 @@ zk_data_dir:
     - directory
     - name: {{pillar.hdp2.zookeeper.data_dir}}
     - user: zookeeper
-    - group: zookeeper
+    - group: hadoop
     - dir_mode: 755
     - makedirs: true
     - require:
