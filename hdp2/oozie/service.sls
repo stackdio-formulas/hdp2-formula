@@ -34,6 +34,7 @@ prepare_server:
   cmd:
     - run
     - name: 'cd /usr/lib/oozie/ && ./bin/oozie-setup.sh prepare-war && ln -s /etc/oozie/conf/action-conf /etc/oozie/conf.dist/action-conf'
+    - unless: 'test -f /usr/lib/oozie/oozie.war'
     - user: root
     - require:
       - pkg: oozie
