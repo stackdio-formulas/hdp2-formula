@@ -15,18 +15,18 @@ hdp2_gpg:
   cmd:
     - run
     - name: 'gpg --keyserver pgp.mit.edu --recv-keys B9733A7A07513CAD; gpg -a --export 07513CAD | apt-key add -'
-    - unless: 'apt-key list | grep "Cloudera Apt Repository"'
+    - unless: 'apt-key list | grep "HDP Builds"'
     - user: root
     - require:
       - pkgrepo: HDP-{{ pillar.hdp2.version }}
       - pkgrepo: HDP-UTILS-{{ pillar.hdp2.utils_version }}
 
-hdp2_refresh_db:
-  module:
-    - run
-    - name: pkg.refresh_db
-    - require:
-      - cmd: hdp2_gpg
+#hdp2_refresh_db:
+#  module:
+#    - run
+#    - name: pkg.refresh_db
+#    - require:
+#      - cmd: hdp2_gpg
 
 # This is used on ubuntu so that services don't start 
 #add_policy_file:
@@ -69,13 +69,13 @@ HDP-UTILS-{{ pillar.hdp2.utils_version }}:
     - enabled: 1
     - priority: 1
 
-cdh5_refresh_db:
-  module:
-    - run
-    - name: pkg.refresh_db
-    - require:
-      - pkgrepo: HDP-{{ pillar.hdp2.version }}
-      - pkgrepo: HDP-UTILS-{{ pillar.hdp2.utils_version }}
+#cdh5_refresh_db:
+#  module:
+#    - run
+#    - name: pkg.refresh_db
+#    - require:
+#      - pkgrepo: HDP-{{ pillar.hdp2.version }}
+#      - pkgrepo: HDP-UTILS-{{ pillar.hdp2.utils_version }}
 
 {% endif %}
 
