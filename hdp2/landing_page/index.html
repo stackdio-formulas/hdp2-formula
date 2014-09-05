@@ -85,7 +85,7 @@ a:hover {
                     <li><a href='http://{{ fqdn }}:50075/'>Hadoop HDFS DataNode</a></li>
                     {% endif %}
                     {% if 'hdp2.oozie' in grains['roles'] %}
-                    <li><a href='http://{{ fqdn }}:11000/'>Oozie Dashboard</a></li>
+                    <li><a href='http://{{ fqdn }}:11000/oozie/'>Oozie Dashboard</a></li>
                     {% endif %}
                 </ul>
                 {% if 'hdp2.hadoop.namenode' in grains['roles'] %}

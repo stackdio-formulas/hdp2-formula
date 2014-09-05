@@ -12,9 +12,16 @@ extend:
 {% endif %}
 
 oozie-svc:
+{% if grains['os_family'] == 'Debian' %}
   service:
     - running
     - name: oozie
+{% elif grains['os_family'] == 'RedHat' %}
+  cmd:
+    - run
+    - name: 'cd /usr/lib/oozie && ./bin/oozied.sh start'
+    - user: oozie
+{% endif %}
     - require:
       - pkg: oozie
       - cmd: extjs
@@ -23,12 +30,11 @@ oozie-svc:
       - file: /var/log/oozie
       - file: /var/lib/oozie
 
-ooziedb:
+prepare_server:
   cmd:
     - run
-    - name: '/usr/lib/oozie/bin/ooziedb.sh create -run'
-    - unless: 'test -d {{ oozie_data_dir }}/oozie-db'
-    - user: oozie
+    - name: 'cd /usr/lib/oozie/ && ./bin/oozie-setup.sh prepare-war && chmod 777 -R /var/log/oozie && ln -s /etc/oozie/conf/action-conf /etc/oozie/conf.dist/action-conf'
+    - user: root
     - require:
       - pkg: oozie
       - cmd: extjs
@@ -36,6 +42,17 @@ ooziedb:
       - file: /etc/oozie/conf/oozie-site.xml
       - cmd: generate_oozie_keytabs
 {% endif %}
+
+
+ooziedb:
+  cmd:
+    - run
+    - name: '/usr/lib/oozie/bin/ooziedb.sh create -sqlfile oozie.sql -run Validate DB Connection'
+    - unless: 'test -d {{ oozie_data_dir }}/oozie-db'
+    - user: oozie
+    - require:
+      - cmd: prepare_server
+
 
 #create-oozie-sharelibs:
 #  cmd:
