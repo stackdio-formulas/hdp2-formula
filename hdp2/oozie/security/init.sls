@@ -1,8 +1,8 @@
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
 generate_oozie_keytabs:
   cmd:
     - script 
-    - source: salt://cdh5/oozie/security/generate_keytabs.sh
+    - source: salt://hdp2/oozie/security/generate_keytabs.sh
     - template: jinja
     - user: root
     - group: root

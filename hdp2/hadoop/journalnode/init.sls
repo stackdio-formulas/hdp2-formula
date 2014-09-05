@@ -1,17 +1,17 @@
-# From cloudera, cdh5 requires JDK7, so include it along with the 
-# cdh5 repository to install their packages.
+# From cloudera, hdp2 requires JDK7, so include it along with the 
+# hdp2 repository to install their packages.
 
 include:
-  - cdh5.repo
-  - cdh5.hadoop.conf
-  - cdh5.landing_page
-  {% if salt['pillar.get']('cdh5:journalnode:start_service', True) %}
-  - cdh5.hadoop.journalnode.service
+  - hdp2.repo
+  - hdp2.hadoop.conf
+  - hdp2.landing_page
+  {% if salt['pillar.get']('hdp2:journalnode:start_service', True) %}
+  - hdp2.hadoop.journalnode.service
   {% endif %}
-  {% if salt['pillar.get']('cdh5:security:enable', False) %}
+  {% if salt['pillar.get']('hdp2:security:enable', False) %}
   - krb5
-  - cdh5.security
-  - cdh5.hadoop.security
+  - hdp2.security
+  - hdp2.hadoop.security
   {% endif %}
 
 extend:
@@ -19,7 +19,7 @@ extend:
     file:
       - require:
         - pkg: hadoop-hdfs-journalnode
-  {% if salt['pillar.get']('cdh5:security:enable', False) %}
+  {% if salt['pillar.get']('hdp2:security:enable', False) %}
   load_admin_keytab:
     module:
       - require:
@@ -41,7 +41,7 @@ hadoop-hdfs-journalnode:
   pkg:
     - installed
     - require:
-      - module: cdh5_refresh_db
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: repo_placeholder
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/krb5.conf
       {% endif %}

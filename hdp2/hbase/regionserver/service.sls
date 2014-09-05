@@ -17,9 +17,9 @@ hbase-regionserver-svc:
       - pkg: hbase-regionserver
       - file: /etc/hbase/conf/hbase-site.xml
       - file: /etc/hbase/conf/hbase-env.sh
-      - file: {{ pillar.cdh5.hbase.tmp_dir }}
-      - file: {{ pillar.cdh5.hbase.log_dir }}
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - file: {{ pillar.hdp2.hbase.tmp_dir }}
+      - file: {{ pillar.hdp2.hbase.log_dir }}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hbase_keytabs
 {% endif %}
     - watch:

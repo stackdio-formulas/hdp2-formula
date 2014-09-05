@@ -1,4 +1,4 @@
-{% if salt['pillar.get']('cdh5:landing_page', True) %}
+{% if salt['pillar.get']('hdp2:landing_page', True) %}
 
 {% set settings = salt['grains.filter_by']({
       'Debian': {
@@ -30,7 +30,7 @@ landing_html:
   file:
     - managed
     - name: {{ settings.html_file }}
-    - source: salt://cdh5/landing_page/index.html
+    - source: salt://hdp2/landing_page/index.html
     - user: root
     - group: root
     - mode: 644

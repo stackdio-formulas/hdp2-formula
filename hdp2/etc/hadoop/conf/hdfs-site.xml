@@ -4,11 +4,11 @@
 <configuration>
     <property>
         <name>dfs.name.dir</name>
-        <value>{{ pillar.cdh5.dfs.name_dir}}</value>
+        <value>{{ pillar.hdp2.dfs.name_dir}}</value>
     </property>
     <property>
         <name>dfs.datanode.data.dir</name>
-        <value>{{ pillar.cdh5.dfs.data_dir }}</value>
+        <value>{{ pillar.hdp2.dfs.data_dir }}</value>
     </property>
     <property>
        <name>dfs.permissions.superusergroup</name>
@@ -21,7 +21,7 @@
 
     <property>
       <name>dfs.permissions</name>
-      <value>{{ pillar.cdh5.dfs.permissions }}</value>
+      <value>{{ pillar.hdp2.dfs.permissions }}</value>
       <final>true</final>
     </property>
     <property>
@@ -80,7 +80,7 @@
       <value>true</value>
     </property> 
 
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
 {% from 'krb5/settings.sls' import krb5 with context %}
     <!-- General HDFS security config -->
     <property>

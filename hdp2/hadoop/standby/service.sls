@@ -1,4 +1,4 @@
-{% set dfs_name_dir = salt['pillar.get']('cdh5:dfs:name_dir', '/mnt/hadoop/hdfs/nn') %}
+{% set dfs_name_dir = salt['pillar.get']('hdp2:dfs:name_dir', '/mnt/hadoop/hdfs/nn') %}
 
 {% if grains['os_family'] == 'Debian' %}
 extend:
@@ -39,7 +39,7 @@ hadoop-hdfs-namenode-svc:
 
 # Make sure the namenode metadata directory exists
 # and is owned by the hdfs user
-cdh5_dfs_dirs:
+hdp2_dfs_dirs:
   cmd:
     - run
     - name: 'mkdir -p {{ dfs_name_dir }} && chown -R hdfs:hdfs `dirname {{ dfs_name_dir }}`'
@@ -58,7 +58,7 @@ init_standby_namenode:
     - name: 'hdfs namenode -bootstrapStandby -force -nonInteractive'
     - unless: 'test -d {{ dfs_name_dir }}/current'
     - require:
-      - cmd: cdh5_dfs_dirs
-    {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: hdp2_dfs_dirs
+    {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hadoop_keytabs
     {% endif %}

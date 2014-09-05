@@ -1,4 +1,4 @@
-{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode and not G@roles:cdh5.hadoop.standby', 'grains.items', 'compound').values()[0]['fqdn'] -%}
+{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.namenode and not G@roles:hdp2.hadoop.standby', 'grains.items', 'compound').values()[0]['fqdn'] -%}
 <?xml version="1.0"?>
 <configuration>
     <property>
@@ -23,7 +23,7 @@
   </property>
   <property>
     <name>mapred.reduce.tasks</name>
-    <value>{{ pillar.cdh5.mapred.reduce_tasks }}</value>
+    <value>{{ pillar.hdp2.mapred.reduce_tasks }}</value>
   </property>
   <property>
      <name>mapreduce.output.fileoutputformat.compress</name>
@@ -75,7 +75,7 @@
       <name>mapreduce.reduce.memory.mb</name>
       <value>3000</value>
   </property>
-{%- if salt['pillar.get']('cdh5:security:enable', False) %}
+{%- if salt['pillar.get']('hdp2:security:enable', False) %}
 {%- from 'krb5/settings.sls' import krb5 with context %}
   <property>
     <name>mapreduce.jobhistory.keytab</name>

@@ -11,7 +11,7 @@ hue-plugin-jar:
 
 # the jobtracker needs to be restarted to pickup this jar - but only if
 # we're actually starting things up
-#{% if salt['pillar.get']('cdh5:hue:start_service', True) and salt['pillar.get']('cdh5:hadoop:namenode:start_service', True) %}
+#{% if salt['pillar.get']('hdp2:hue:start_service', True) and salt['pillar.get']('hdp2:hadoop:namenode:start_service', True) %}
 #restart-jobtracker:
 #  cmd:
 #    - wait

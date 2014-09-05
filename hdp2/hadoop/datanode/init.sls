@@ -2,18 +2,18 @@
 # From cloudera, CDH5 requires JDK7, so include it along with the 
 # CDH5 repository to install their packages.
 include:
-  - cdh5.repo
-  - cdh5.hadoop.conf
-  - cdh5.landing_page
-  - cdh5.hadoop.client
-{% if salt['pillar.get']('cdh5:datanode:start_service', True) %}
-  - cdh5.hadoop.datanode.service
+  - hdp2.repo
+  - hdp2.hadoop.conf
+  - hdp2.landing_page
+  - hdp2.hadoop.client
+{% if salt['pillar.get']('hdp2:datanode:start_service', True) %}
+  - hdp2.hadoop.datanode.service
 {% endif %}
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
   - krb5
-  - cdh5.security
-  - cdh5.security.stackdio_user
-  - cdh5.hadoop.security
+  - hdp2.security
+  - hdp2.security.stackdio_user
+  - hdp2.hadoop.security
 {% endif %}
 
 extend:
@@ -23,7 +23,7 @@ extend:
         - pkg: hadoop-hdfs-datanode
         - pkg: hadoop-yarn-nodemanager
         - pkg: hadoop-mapreduce
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
   load_admin_keytab:
     module:
       - require:
@@ -48,16 +48,16 @@ hadoop-hdfs-datanode:
   pkg:
     - installed 
     - require:
-      - module: cdh5_refresh_db
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: repo_placeholder
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/krb5.conf
 {% endif %}
 
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
 /etc/default/hadoop-hdfs-datanode:
   file:
     - managed
-    - source: salt://cdh5/etc/default/hadoop-hdfs-datanode
+    - source: salt://hdp2/etc/default/hadoop-hdfs-datanode
     - template: jinja
     - makedirs: true
     - user: root
@@ -76,8 +76,8 @@ hadoop-yarn-nodemanager:
   pkg:
     - installed 
     - require:
-      - module: cdh5_refresh_db
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: repo_placeholder
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/krb5.conf
 {% endif %}
 
@@ -90,8 +90,8 @@ hadoop-mapreduce:
   pkg:
     - installed
     - require:
-      - module: cdh5_refresh_db
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: repo_placeholder
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/krb5.conf
 {% endif %}
 

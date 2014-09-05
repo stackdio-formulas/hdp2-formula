@@ -2,15 +2,15 @@
 # Install the Hive package
 #
 include:
-  - cdh5.repo
-  - cdh5.hive.conf
-{% if salt['pillar.get']('cdh5:hive:start_service', True) %}
-  - cdh5.hive.service
+  - hdp2.repo
+  - hdp2.hive.conf
+{% if salt['pillar.get']('hdp2:hive:start_service', True) %}
+  - hdp2.hive.service
 {% endif %}
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
   - krb5
-  - cdh5.security
-  - cdh5.hive.security
+  - hdp2.security
+  - hdp2.hive.security
 {% endif %}
 
 extend:
@@ -28,7 +28,7 @@ hive:
       - hive-server2
     - require:
       - pkg: mysql
-      - module: cdh5_refresh_db
+      - cmd: repo_placeholder
 
 # @todo move this out to its own formula
 mysql:
@@ -49,7 +49,7 @@ mysql:
     - require: 
       - pkg: mysql
 
-{% if 'cdh5.sentry' in grains.roles %}
+{% if 'hdp2.sentry' in grains.roles %}
 add_sentry_jars:
   cmd:
     - run

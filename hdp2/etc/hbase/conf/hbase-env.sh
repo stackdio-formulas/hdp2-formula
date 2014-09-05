@@ -93,17 +93,17 @@ export HBASE_OPTS="-XX:+UseConcMarkSweepGC"
 # DRFA doesn't put any cap on the log size. Please refer to HBase-5655 for more context.
 
 # The above is all standard, adding the below for stackd.io deployment
-export HBASE_MASTER_OPTS="-Xms{{ pillar.cdh5.hbase.master_initial_heap }} -Xmx{{ pillar.cdh5.hbase.master_max_heap }} -Xmn{{ pillar.cdh5.hbase.master_young_gen }} -XX:+UseConcMarkSweepGC -XX:+AggressiveOpts -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:{{ pillar.cdh5.hbase.log_dir }}/hbase-master-gc.log -Djute.maxbuffer={{ pillar.cdh5.hbase.jute_maxbuffer }}" 
+export HBASE_MASTER_OPTS="-Xms{{ pillar.hdp2.hbase.master_initial_heap }} -Xmx{{ pillar.hdp2.hbase.master_max_heap }} -Xmn{{ pillar.hdp2.hbase.master_young_gen }} -XX:+UseConcMarkSweepGC -XX:+AggressiveOpts -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:{{ pillar.hdp2.hbase.log_dir }}/hbase-master-gc.log -Djute.maxbuffer={{ pillar.hdp2.hbase.jute_maxbuffer }}" 
 
-export HBASE_REGIONSERVER_OPTS="-Xms{{ pillar.cdh5.hbase.region_initial_heap }} -Xmx{{ pillar.cdh5.hbase.region_max_heap }} -Xmn{{ pillar.cdh5.hbase.region_young_gen}} -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:ParallelGCThreads=8 -XX:+AggressiveOpts -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:{{ pillar.cdh5.hbase.log_dir }}/hbase-regionserver-gc.log"
+export HBASE_REGIONSERVER_OPTS="-Xms{{ pillar.hdp2.hbase.region_initial_heap }} -Xmx{{ pillar.hdp2.hbase.region_max_heap }} -Xmn{{ pillar.hdp2.hbase.region_young_gen}} -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:ParallelGCThreads=8 -XX:+AggressiveOpts -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:{{ pillar.hdp2.hbase.log_dir }}/hbase-regionserver-gc.log"
 
-HBASE_LOG_DIR={{ pillar.cdh5.hbase.log_dir }}
+HBASE_LOG_DIR={{ pillar.hdp2.hbase.log_dir }}
 
-{% if not pillar.cdh5.hbase.manage_zk %}
+{% if not pillar.hdp2.hbase.manage_zk %}
 export HBASE_MANAGES_ZK=false
 {% endif %}
 
-{%- if salt['pillar.get']('cdh5:security:enable', False) %}
+{%- if salt['pillar.get']('hdp2:security:enable', False) %}
 {%- from 'krb5/settings.sls' import krb5 with context %}
 export HBASE_OPTS="$HBASE_OPTS -Djava.security.auth.login.config=/etc/hbase/conf/zk-jaas.conf"
 export HBASE_MANAGES_ZK=false

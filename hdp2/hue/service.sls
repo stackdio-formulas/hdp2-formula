@@ -17,7 +17,7 @@ hue-svc:
       - pkg: hue
       - file: /mnt/tmp/hadoop
       - file: /etc/hue/conf/hue.ini
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hue_keytabs 
 {% endif %}
 
@@ -25,5 +25,5 @@ hue-svc:
   file:
     - managed
     - template: jinja
-    - source: salt://cdh5/etc/hue/hue.ini
+    - source: salt://hdp2/etc/hue/hue.ini
     - mode: 755

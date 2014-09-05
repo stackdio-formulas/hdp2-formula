@@ -1,6 +1,6 @@
-{% set dfs_name_dir = salt['pillar.get']('cdh5:dfs:name_dir', '/mnt/hadoop/hdfs/nn') %}
-{% set mapred_local_dir = salt['pillar.get']('cdh5:mapred:local_dir', '/mnt/hadoop/mapred/local') %}
-{% set mapred_system_dir = salt['pillar.get']('cdh5:mapred:system_dir', '/hadoop/system/mapred') %}
+{% set dfs_name_dir = salt['pillar.get']('hdp2:dfs:name_dir', '/mnt/hadoop/hdfs/nn') %}
+{% set mapred_local_dir = salt['pillar.get']('hdp2:mapred:local_dir', '/mnt/hadoop/mapred/local') %}
+{% set mapred_system_dir = salt['pillar.get']('hdp2:mapred:system_dir', '/hadoop/system/mapred') %}
 {% set mapred_staging_dir = '/user/history' %}
 {% set mapred_log_dir = '/var/log/hadoop-yarn' %}
 
@@ -17,19 +17,19 @@
 # This is a HA NN, reduce the normal NN state down to all we need
 # for the standby NameNode
 ##
-{% if 'cdh5.hadoop.standby' in grains.roles %}
+{% if 'hdp2.hadoop.standby' in grains.roles %}
 include:
-  - cdh5.repo
-  - cdh5.hadoop.conf
-  - cdh5.landing_page
-  {% if salt['pillar.get']('cdh5:namenode:start_service', True) %}
-  - cdh5.hadoop.standby.service
+  - hdp2.repo
+  - hdp2.hadoop.conf
+  - hdp2.landing_page
+  {% if salt['pillar.get']('hdp2:namenode:start_service', True) %}
+  - hdp2.hadoop.standby.service
   {% endif %}
-  {% if salt['pillar.get']('cdh5:security:enable', False) %}
+  {% if salt['pillar.get']('hdp2:security:enable', False) %}
   - krb5
-  - cdh5.security
-  - cdh5.security.stackdio_user
-  - cdh5.hadoop.security
+  - hdp2.security
+  - hdp2.security.stackdio_user
+  - hdp2.hadoop.security
   {% endif %}
 
 extend:
@@ -42,7 +42,7 @@ hadoop-hdfs-namenode:
   pkg:
     - installed 
     - require:
-      - module: cdh5_refresh_db
+      - cmd: repo_placeholder
 
 # we need a mapred user on the standby namenode for job history to work; if the
 # namenode state is not included we want to add it manually
@@ -77,17 +77,17 @@ mapred_user:
 # NOT a HA NN...continue like normal with the rest of the state
 {% else %}
 include:
-  - cdh5.repo
-  - cdh5.hadoop.conf
-  - cdh5.landing_page
-  {% if salt['pillar.get']('cdh5:namenode:start_service', True) %}
-  - cdh5.hadoop.namenode.service
+  - hdp2.repo
+  - hdp2.hadoop.conf
+  - hdp2.landing_page
+  {% if salt['pillar.get']('hdp2:namenode:start_service', True) %}
+  - hdp2.hadoop.namenode.service
   {% endif %}
-  {% if salt['pillar.get']('cdh5:security:enable', False) %}
+  {% if salt['pillar.get']('hdp2:security:enable', False) %}
   - krb5
-  - cdh5.security
-  - cdh5.security.stackdio_user
-  - cdh5.hadoop.security
+  - hdp2.security
+  - hdp2.security.stackdio_user
+  - hdp2.hadoop.security
   {% endif %}
 
 extend:
@@ -97,7 +97,7 @@ extend:
         - pkg: hadoop-hdfs-namenode
         - pkg: hadoop-yarn-resourcemanager 
         - pkg: hadoop-mapreduce-historyserver
-  {% if salt['pillar.get']('cdh5:security:enable', False) %}
+  {% if salt['pillar.get']('hdp2:security:enable', False) %}
   load_admin_keytab:
     module:
       - require:
@@ -121,8 +121,8 @@ hadoop-hdfs-namenode:
   pkg:
     - installed 
     - require:
-      - module: cdh5_refresh_db
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: repo_placeholder
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/krb5.conf
       {% endif %}
 
@@ -135,8 +135,8 @@ hadoop-yarn-resourcemanager:
   pkg:
     - installed
     - require:
-      - module: cdh5_refresh_db
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: repo_placeholder
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/krb5.conf
       {% endif %}
 
@@ -149,8 +149,8 @@ hadoop-mapreduce-historyserver:
   pkg:
     - installed
     - require:
-      - module: cdh5_refresh_db
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: repo_placeholder
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/krb5.conf
       {% endif %}
 

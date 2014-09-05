@@ -1,12 +1,12 @@
 include:
-  - cdh5.repo
-  - cdh5.sentry.conf
+  - hdp2.repo
+  - hdp2.sentry.conf
   - krb5
-  - cdh5.security
-  - cdh5.security.stackdio_user
-  - cdh5.sentry.security
-  {% if salt['pillar.get']('cdh5:sentry:start_service', True) %}
-  - cdh5.sentry.service
+  - hdp2.security
+  - hdp2.security.stackdio_user
+  - hdp2.sentry.security
+  {% if salt['pillar.get']('hdp2:sentry:start_service', True) %}
+  - hdp2.sentry.service
   {% endif %}
 
 extend:
@@ -22,4 +22,4 @@ sentry:
       - sentry
       - cyrus-sasl-gssapi
     - require:
-      - module: cdh5_refresh_db
+      - cmd: repo_placeholder

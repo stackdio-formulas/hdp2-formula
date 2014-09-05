@@ -1,5 +1,5 @@
-{% set mapred_local_dir = salt['pillar.get']('cdh5:mapred:local_dir', '/mnt/yarn') %}
-{% set dfs_data_dir = salt['pillar.get']('cdh5:dfs:data_dir', '/mnt/hadoop/hdfs/data') %}
+{% set mapred_local_dir = salt['pillar.get']('hdp2:mapred:local_dir', '/mnt/yarn') %}
+{% set dfs_data_dir = salt['pillar.get']('hdp2:dfs:data_dir', '/mnt/hadoop/hdfs/data') %}
 
 {% if grains['os_family'] == 'Debian' %}
 extend:
@@ -25,7 +25,7 @@ hadoop-hdfs-datanode-svc:
       - pkg: hadoop-hdfs-datanode
       - cmd: dfs_data_dir
       - file: /etc/hadoop/conf
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/default/hadoop-hdfs-datanode
       - cmd: generate_hadoop_keytabs
 {% endif %}
@@ -45,7 +45,7 @@ hadoop-yarn-nodemanager-svc:
       - pkg: hadoop-yarn-nodemanager
       - cmd: datanode_mapred_local_dirs
       - file: /etc/hadoop/conf
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/default/hadoop-hdfs-datanode
       - cmd: generate_hadoop_keytabs
 {% endif %}

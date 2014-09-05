@@ -1,4 +1,4 @@
-{% set journal_dir = salt['pillar.get']('cdh5:dfs:journal_dir', '/mnt/hadoop/hdfs/jn') %}
+{% set journal_dir = salt['pillar.get']('hdp2:dfs:journal_dir', '/mnt/hadoop/hdfs/jn') %}
 
 {% if grains['os_family'] == 'Debian' %}
 extend:
@@ -20,12 +20,12 @@ hadoop-hdfs-journalnode-svc:
     - require:
       - pkg: hadoop-hdfs-journalnode
       - file: /etc/hadoop/conf
-      - cmd: cdh5_journal_dir
+      - cmd: hdp2_journal_dir
     - watch:
       - file: /etc/hadoop/conf
 
 # Make sure the journal data directory exists if necessary
-cdh5_journal_dir:
+hdp2_journal_dir:
   cmd:
     - run
     - name: 'mkdir -p {{ journal_dir }} && chown -R hdfs:hdfs `dirname {{ journal_dir }}`'
@@ -33,6 +33,6 @@ cdh5_journal_dir:
     - require:
       - pkg: hadoop-hdfs-journalnode
       - file: /etc/hadoop/conf
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hadoop_keytabs
       {% endif %}

@@ -1,9 +1,9 @@
-{%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby', 'grains.items', 'compound') -%}
-{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode and not G@roles:cdh5.hadoop.standby', 'grains.items', 'compound').values()[0]['fqdn'] -%}
+{%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.standby', 'grains.items', 'compound') -%}
+{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.namenode and not G@roles:hdp2.hadoop.standby', 'grains.items', 'compound').values()[0]['fqdn'] -%}
 {%- if standby -%}
   {%- set standby_items = standby.values()[0] if standby else None -%}
   {%- set standby_fqdn = standby_items['fqdn'] if standby else None -%}
-  {%- set journal_nodes = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.journalnode', 'grains.items', 'compound').values() -%}
+  {%- set journal_nodes = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.journalnode', 'grains.items', 'compound').values() -%}
 {%- endif -%}
 <?xml version="1.0"?>
 <configuration>
@@ -55,7 +55,7 @@
     </property>
     <property>
       <name>dfs.journalnode.edits.dir</name>
-      <value>{{ pillar.cdh5.dfs.journal_dir }}</value>
+      <value>{{ pillar.hdp2.dfs.journal_dir }}</value>
     </property>
     <property>
       <name>dfs.client.failover.proxy.provider.default</name>
@@ -127,7 +127,7 @@
        <name>dfs.client.read.shortcircuit</name>
        <value>true</value>
     </property>
-{%- if salt['pillar.get']('cdh5:security:enable', False) %}
+{%- if salt['pillar.get']('hdp2:security:enable', False) %}
 {%- from 'krb5/settings.sls' import krb5 with context %}
     <property>
       <name>hadoop.security.authentication</name>

@@ -4,7 +4,7 @@
 #
 
 include:
-  - cdh5.repo
+  - hdp2.repo
 
 {% if grains['os_family'] == 'Debian' %}
 extend:
@@ -32,7 +32,7 @@ configure_metastore:
   cmd:
     - script
     - template: jinja
-    - source: salt://cdh5/hive/configure_metastore.sh
+    - source: salt://hdp2/hive/configure_metastore.sh
     - unless: echo "show databases" | mysql -u root | grep metastore
     - require: 
       - pkg: hive
@@ -41,19 +41,19 @@ configure_metastore:
 create_warehouse_dir:
   cmd:
     - run
-    - name: 'hdfs dfs -mkdir -p /user/{{pillar.cdh5.hive.user}}/warehouse'
+    - name: 'hdfs dfs -mkdir -p /user/{{pillar.hdp2.hive.user}}/warehouse'
     - user: hdfs
     - group: hdfs
     - require:
       - pkg: hive
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hive_keytabs 
 {% endif %}
 
 warehouse_dir_owner:
   cmd:
     - run
-    - name: 'hdfs dfs -chown -R {{pillar.cdh5.hive.user}}:{{pillar.cdh5.hive.user}} /user/{{pillar.cdh5.hive.user}}'
+    - name: 'hdfs dfs -chown -R {{pillar.hdp2.hive.user}}:{{pillar.hdp2.hive.user}} /user/{{pillar.hdp2.hive.user}}'
     - user: hdfs
     - group: hdfs
     - require:
@@ -62,10 +62,10 @@ warehouse_dir_owner:
 warehouse_dir_permissions:
   cmd:
     - run
-    {% if salt['pillar.get']('cdh5:security:enable', False) %}
-    - name: 'hdfs dfs -chmod 771 /user/{{pillar.cdh5.hive.user}}/warehouse'
+    {% if salt['pillar.get']('hdp2:security:enable', False) %}
+    - name: 'hdfs dfs -chmod 771 /user/{{pillar.hdp2.hive.user}}/warehouse'
     {% else %}
-    - name: 'hdfs dfs -chmod 1777 /user/{{pillar.cdh5.hive.user}}/warehouse'
+    - name: 'hdfs dfs -chmod 1777 /user/{{pillar.hdp2.hive.user}}/warehouse'
     {% endif %}
     - user: hdfs
     - group: hdfs
@@ -91,7 +91,7 @@ hive-server2:
     - running
     - require: 
       - service: hive-metastore
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hive_keytabs 
 {% endif %}
     - watch:

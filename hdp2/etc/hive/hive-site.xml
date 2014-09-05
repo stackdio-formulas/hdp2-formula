@@ -1,4 +1,4 @@
-{% set hive_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hive', 'grains.items', 'compound').values()[0]['fqdn'] %}
+{% set hive_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hive', 'grains.items', 'compound').values()[0]['fqdn'] %}
 <configuration>
     <property>
         <name>javax.jdo.option.ConnectionURL</name>
@@ -14,7 +14,7 @@
 
     <property>
         <name>javax.jdo.option.ConnectionUserName</name>
-        <value>{{pillar.cdh5.hive.user}}</value>
+        <value>{{pillar.hdp2.hive.user}}</value>
     </property>
 
     <property>
@@ -24,12 +24,12 @@
 
     <property>
         <name>javax.jdo.option.ConnectionPassword</name>
-        <value>{{pillar.cdh5.hive.metastore_password}}</value>
+        <value>{{pillar.hdp2.hive.metastore_password}}</value>
     </property>
 
     <property>
         <name>hive.metastore.warehouse.dir</name>
-        <value>/user/{{pillar.cdh5.hive.user}}/warehouse</value>
+        <value>/user/{{pillar.hdp2.hive.user}}/warehouse</value>
     </property>
 
     <property>
@@ -48,14 +48,14 @@
         <value>false</value>
     </property>
 
-    {% if salt['pillar.get']('cdh5:hive:auxjars', None) %}
+    {% if salt['pillar.get']('hdp2:hive:auxjars', None) %}
     <property>
         <name>hive.aux.jars.path</name>
-        <value>{{pillar.cdh5.hive.auxjars}}</value>
+        <value>{{pillar.hdp2.hive.auxjars}}</value>
     </property>
     {% endif %}
 
-    {% if salt['pillar.get']('cdh5:security:enable', False) %}
+    {% if salt['pillar.get']('hdp2:security:enable', False) %}
     {% from 'krb5/settings.sls' import krb5 with context %}
 
     <!-- HiveServer2 security -->
@@ -87,7 +87,7 @@
     </property>
     {% endif %}
 
-    {% if 'cdh5.sentry' in grains.roles %}
+    {% if 'hdp2.sentry' in grains.roles %}
     <property>
         <name>hive.server2.enable.impersonation</name>
         <value>false</value>

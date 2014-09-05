@@ -1,5 +1,5 @@
 include:
-  - cdh5.repo
+  - hdp2.repo
 
 pig:
   pkg:
@@ -7,5 +7,5 @@ pig:
     - pkgs:
       - pig
     - require:
-      - module: cdh5_refresh_db
+      - cmd: repo_placeholder
 

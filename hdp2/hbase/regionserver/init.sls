@@ -2,16 +2,16 @@
 # Install the HBase regionserver package
 #
 include:
-  - cdh5.repo
-  - cdh5.landing_page
-  - cdh5.hbase.conf
-{% if salt['pillar.get']('cdh5:hbase:start_service', True) %}
-  - cdh5.hbase.regionserver.service
+  - hdp2.repo
+  - hdp2.landing_page
+  - hdp2.hbase.conf
+{% if salt['pillar.get']('hdp2:hbase:start_service', True) %}
+  - hdp2.hbase.regionserver.service
 {% endif %}
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
   - krb5
-  - cdh5.security
-  - cdh5.hbase.security
+  - hdp2.security
+  - hdp2.hbase.security
 {% endif %}
 
 extend:
@@ -23,15 +23,15 @@ extend:
     file:
       - require:
         - pkg: hbase-regionserver
-  {{ pillar.cdh5.hbase.tmp_dir }}:
+  {{ pillar.hdp2.hbase.tmp_dir }}:
     file:
       - require:
         - pkg: hbase-regionserver
-  {{ pillar.cdh5.hbase.log_dir }}:
+  {{ pillar.hdp2.hbase.log_dir }}:
     file:
       - require:
         - pkg: hbase-regionserver
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
   load_admin_keytab:
     module:
       - require:
@@ -45,7 +45,7 @@ hbase-regionserver:
   pkg:
     - installed 
     - require:
-      - module: cdh5_refresh_db
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - cmd: repo_placeholder
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/krb5.conf
 {% endif %}

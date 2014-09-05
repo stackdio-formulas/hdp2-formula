@@ -2,21 +2,21 @@
 # Install the ZooKeeper service
 #
 include:
-  - cdh5.repo
-{% if salt['pillar.get']('cdh5:zookeeper:start_service', True) %}
-  - cdh5.zookeeper.service
+  - hdp2.repo
+{% if salt['pillar.get']('hdp2:zookeeper:start_service', True) %}
+  - hdp2.zookeeper.service
 {% endif %}
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
   - krb5
-  - cdh5.security
-  - cdh5.zookeeper.security
+  - hdp2.security
+  - hdp2.zookeeper.security
 {% endif %}
 
 zookeeper:
   pkg:
     - installed
     - require:
-      - module: cdh5_refresh_db
+      - cmd: repo_placeholder
 
 zookeeper-server:
   pkg:
@@ -28,7 +28,7 @@ zookeeper-server:
   file:
     - replace
     - pattern: 'maxbackupindex=20'
-    - repl: 'maxbackupindex={{ pillar.cdh5.max_log_index }}'
+    - repl: 'maxbackupindex={{ pillar.hdp2.max_log_index }}'
     - require:
       - pkg: zookeeper-server
 

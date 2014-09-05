@@ -1,7 +1,7 @@
 /etc/hadoop/conf:
   file:
     - recurse
-    - source: salt://cdh5/etc/hadoop/conf
+    - source: salt://hdp2/etc/hadoop/conf
     - template: jinja
     - user: root
     - group: root
@@ -22,6 +22,6 @@
   file:
     - replace
     - pattern: 'maxbackupindex=20'
-    - repl: 'maxbackupindex={{ pillar.cdh5.max_log_index }}'
+    - repl: 'maxbackupindex={{ pillar.hdp2.max_log_index }}'
     - require:
       - file: /etc/hadoop/conf

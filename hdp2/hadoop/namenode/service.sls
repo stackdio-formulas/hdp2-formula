@@ -1,16 +1,16 @@
-{%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby', 'grains.items', 'compound') -%}
-{% set dfs_name_dir = salt['pillar.get']('cdh5:dfs:name_dir', '/mnt/hadoop/hdfs/nn') %}
-{% set mapred_local_dir = salt['pillar.get']('cdh5:mapred:local_dir', '/mnt/hadoop/mapred/local') %}
-{% set mapred_system_dir = salt['pillar.get']('cdh5:mapred:system_dir', '/hadoop/system/mapred') %}
+{%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.standby', 'grains.items', 'compound') -%}
+{% set dfs_name_dir = salt['pillar.get']('hdp2:dfs:name_dir', '/mnt/hadoop/hdfs/nn') %}
+{% set mapred_local_dir = salt['pillar.get']('hdp2:mapred:local_dir', '/mnt/hadoop/mapred/local') %}
+{% set mapred_system_dir = salt['pillar.get']('hdp2:mapred:system_dir', '/hadoop/system/mapred') %}
 {% set mapred_staging_dir = '/user/history' %}
 {% set mapred_log_dir = '/var/log/hadoop-yarn' %}
 
 ##
 # Standby NN specific SLS
 ##
-{% if 'cdh5.hadoop.standby' in grains.roles %}
+{% if 'hdp2.hadoop.standby' in grains.roles %}
 include:
-  - cdh5.hadoop.standby.service
+  - hdp2.hadoop.standby.service
 ##
 # END STANDBY NN
 ##
@@ -60,7 +60,7 @@ activate_namenode:
     - group: hdfs
     - require:
       - service: hadoop-hdfs-namenode-svc
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: hdfs_kinit
       {% endif %}
 {% endif %}
@@ -103,7 +103,7 @@ hadoop-mapreduce-historyserver-svc:
 # Make sure the namenode metadata directory exists
 # and is owned by the hdfs user
 ##
-cdh5_dfs_dirs:
+hdp2_dfs_dirs:
   cmd:
     - run
     - name: 'mkdir -p {{ dfs_name_dir }} && chown -R hdfs:hdfs `dirname {{ dfs_name_dir }}`'
@@ -111,7 +111,7 @@ cdh5_dfs_dirs:
     - require:
       - pkg: hadoop-hdfs-namenode
       - file: /etc/hadoop/conf
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hadoop_keytabs
 {% endif %}
 
@@ -125,14 +125,14 @@ init_hdfs:
     - name: 'hdfs namenode -format -force'
     - unless: 'test -d {{ dfs_name_dir }}/current'
     - require:
-      - cmd: cdh5_dfs_dirs
+      - cmd: hdp2_dfs_dirs
 
 # When security is enabled, we need to get a kerberos ticket
 # for the hdfs principal so that any interaction with HDFS
 # through the hadoop client may authorize successfully.
 # NOTE this means that any 'hadoop fs' commands will need
 # to require this state to be sure we have a krb ticket
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
 hdfs_kinit:
   cmd:
     - run
@@ -154,7 +154,7 @@ hdfs_tmp_dir:
     - unless: 'hadoop fs -test -d /tmp'
     - require:
       - service: hadoop-hdfs-namenode-svc
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: hdfs_kinit
       {% endif %}
       {% if standby %}
@@ -171,7 +171,7 @@ hdfs_mapreduce_log_dir:
     - unless: 'hadoop fs -test -d {{ mapred_log_dir }}'
     - require:
       - service: hadoop-hdfs-namenode-svc
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: hdfs_kinit
       {% endif %}
       {% if standby %}
@@ -188,7 +188,7 @@ hdfs_mapreduce_var_dir:
     - unless: 'hadoop fs -test -d {{ mapred_staging_dir }}'
     - require:
       - service: hadoop-hdfs-namenode-svc
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: hdfs_kinit
       {% endif %}
       {% if standby %}
@@ -204,7 +204,7 @@ hdfs_permissions:
     - name: 'hadoop fs -chmod 777 /'
     - require:
       - service: hadoop-yarn-resourcemanager-svc
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: hdfs_kinit
       {% endif %}
       {% if standby %}
@@ -222,7 +222,7 @@ hdfs_user_dir:
     - unless: 'hadoop fs -test -d /user/{{ user }}'
     - require:
       - service: hadoop-yarn-resourcemanager-svc
-      {% if salt['pillar.get']('cdh5:security:enable', False) %}
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: hdfs_kinit
       {% endif %}
       {% if standby %}

@@ -1,7 +1,7 @@
 /etc/sentry/conf:
   file:
     - recurse
-    - source: salt://cdh5/etc/sentry/conf
+    - source: salt://hdp2/etc/sentry/conf
     - template: jinja
     - user: root
     - group: root

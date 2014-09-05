@@ -1,5 +1,5 @@
 {% set oozie_data_dir = '/var/lib/oozie' %}
-{% set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.namenode and not G@roles:cdh5.hadoop.standby', 'grains.items', 'compound').values()[0]['fqdn_ip4'][0] %}
+{% set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.namenode and not G@roles:hdp2.hadoop.standby', 'grains.items', 'compound').values()[0]['fqdn_ip4'][0] %}
 # 
 # Start the Oozie service
 #
@@ -32,7 +32,7 @@ ooziedb:
     - require:
       - pkg: oozie
       - cmd: extjs
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/oozie/conf/oozie-site.xml
       - cmd: generate_oozie_keytabs
 {% endif %}

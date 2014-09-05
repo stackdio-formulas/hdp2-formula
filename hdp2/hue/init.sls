@@ -2,16 +2,16 @@
 # Install the Hue package
 #
 include:
-  - cdh5.repo
-  - cdh5.landing_page
-  - cdh5.hue.plugins
-{% if salt['pillar.get']('cdh5:hue:start_service', True) %}
-  - cdh5.hue.service
+  - hdp2.repo
+  - hdp2.landing_page
+  - hdp2.hue.plugins
+{% if salt['pillar.get']('hdp2:hue:start_service', True) %}
+  - hdp2.hue.service
 {% endif %}
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
   - krb5
-  - cdh5.security
-  - cdh5.hue.security
+  - hdp2.security
+  - hdp2.hue.security
 {% endif %}
 
 hue:
@@ -22,7 +22,7 @@ hue:
       - hue-server
       - hue-plugins
     - require:
-      - module: cdh5_refresh_db
+      - cmd: repo_placeholder
 
 /mnt/tmp/hadoop:
   file:

@@ -1,7 +1,7 @@
 {% set fqdn = grains.get('fqdn', 'localhost') %}<!DOCTYPE html>
 <html lang="en">
 <head>
-<title>CDH5 Landing Page</title>
+<title>HDP2 Landing Page</title>
 <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
 <style>
 html,
@@ -52,44 +52,44 @@ a:hover {
 <body>
 <div id="wrap">
     <div class="container">
-        <h1>CDH5 Landing Page</h1>
-        <p class="lead">Below is a list of useful links customized for your CDH5 stack:</p>
+        <h1>HDP2 Landing Page</h1>
+        <p class="lead">Below is a list of useful links customized for your HDP2 stack:</p>
         <div class="row">
             <div class="col-md-6">
                 <h4>Hadoop</h4>
                 <ul>
-                    {% if 'cdh5.hue' in grains['roles'] %}
+                    {% if 'hdp2.hue' in grains['roles'] %}
                     <li><a href='http://{{ fqdn }}:8888/home'>Hue</a></li>
                     {% endif %}
-                    {% if 'cdh5.manager.server' in grains['roles'] %}
+                    {% if 'hdp2.manager.server' in grains['roles'] %}
                     <li><a href='http://{{ fqdn }}:7180/'>Cloudera Manager</a></li>
                     {% endif %}
-                    {% if 'cdh5.hadoop.namenode' in grains['roles'] %}
+                    {% if 'hdp2.hadoop.namenode' in grains['roles'] %}
                     <li><a href='http://{{ fqdn }}:50070/'>Hadoop HDFS NameNode</a></li>
                     {% endif %}
-                    {% if 'cdh5.hadoop.standby' in grains['roles'] %}
+                    {% if 'hdp2.hadoop.standby' in grains['roles'] %}
                     <li><a href='http://{{ fqdn }}:50070/'>Hadoop HDFS Standby NameNode</a></li>
                     {% endif %}
-                    {% if 'cdh5.hadoop.namenode' in grains['roles'] %}
-                    {% set snn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.standby', 'grains.items', 'compound').values() %}
+                    {% if 'hdp2.hadoop.namenode' in grains['roles'] %}
+                    {% set snn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.standby', 'grains.items', 'compound').values() %}
                     {% if snn %}
                     <li><a href='http://{{ snn[0]["fqdn"] }}:50070/'>Hadoop HDFS Standby NameNode</a></li>
                     {% endif %}
                     {% endif %}
-                    {% if 'cdh5.hadoop.namenode' in grains['roles'] and 'cdh5.hadoop.standby' not in grains['roles'] %}
+                    {% if 'hdp2.hadoop.namenode' in grains['roles'] and 'hdp2.hadoop.standby' not in grains['roles'] %}
                     <li><a href='http://{{ fqdn }}:8088/'>Hadoop Yarn ResourceManager</a></li>
                     <li><a href='http://{{ fqdn }}:19888/'>Hadoop Mapreduce HistoryServer</a></li>
                     {% endif %}
-                    {% if 'cdh5.hadoop.datanode' in grains['roles'] %}
+                    {% if 'hdp2.hadoop.datanode' in grains['roles'] %}
                     <li><a href='http://{{ fqdn }}:8042/'>Hadoop NodeManager</a></li>
                     <li><a href='http://{{ fqdn }}:50075/'>Hadoop HDFS DataNode</a></li>
                     {% endif %}
-                    {% if 'cdh5.oozie' in grains['roles'] %}
+                    {% if 'hdp2.oozie' in grains['roles'] %}
                     <li><a href='http://{{ fqdn }}:11000/'>Oozie Dashboard</a></li>
                     {% endif %}
                 </ul>
-                {% if 'cdh5.hadoop.namenode' in grains['roles'] %}
-                {% set datanodes = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:cdh5.hadoop.datanode', 'grains.items', 'compound').values() %}
+                {% if 'hdp2.hadoop.namenode' in grains['roles'] %}
+                {% set datanodes = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.datanode', 'grains.items', 'compound').values() %}
                 <h4>Datanodes</h4>
                 <ul>
                     {% for datanode in datanodes %}
@@ -100,31 +100,17 @@ a:hover {
             </div> <!-- col-md-6 -->
 
             <div class="col-md-6">
-                {% if 'cdh5.hbase.master' in grains['roles'] or 'cdh5.hbase.regionserver' in grains['roles'] %}
+                {% if 'hdp2.hbase.master' in grains['roles'] or 'hdp2.hbase.regionserver' in grains['roles'] %}
                 <h4>HBase</h4>
                 {% endif %}
-                {% if 'cdh5.hbase.master' in grains['roles'] %}
+                {% if 'hdp2.hbase.master' in grains['roles'] %}
                 <ul>
                     <li><a href='http://{{ fqdn }}:60010/'>HBase Master</a></li>
                 </ul>
                 {% endif %}
-                {% if 'cdh5.hbase.regionserver' in grains['roles'] %}
+                {% if 'hdp2.hbase.regionserver' in grains['roles'] %}
                 <ul>
                     <li><a href='http://{{ fqdn }}:60030/'>HBase RegionServer</a></li>
-                </ul>
-                {% endif %}
-                {% if 'cdh5.impala.state-store' in grains['roles'] or 'cdh5.impala.server' in grains['roles'] %}
-                <h4>Impala</h4>
-                {% endif %}
-                {% if 'cdh5.impala.state-store' in grains['roles'] %}
-                <ul>
-                    <li><a href="http://{{ fqdn }}:25010">Impala State Store</a></li>
-                    <li><a href="http://{{ fqdn }}:25020">Impala Catalog</a></li>
-                  </ul>    
-                {% endif %}
-                {% if 'cdh5.impala.server' in grains['roles'] %}
-                <ul>
-                    <li><a href="http://{{ fqdn }}:25000">Impala Server</a></li>
                 </ul>
                 {% endif %}
             </div> <!-- col-md-6 -->

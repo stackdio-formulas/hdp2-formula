@@ -2,10 +2,10 @@
 # Start the HBase master service
 #
 include:
-  - cdh5.repo
-  - cdh5.hadoop.client
-  - cdh5.zookeeper
-  - cdh5.hbase.conf
+  - hdp2.repo
+  - hdp2.hadoop.client
+  - hdp2.zookeeper
+  - hdp2.hbase.conf
 
 {% if grains['os_family'] == 'Debian' %}
 extend:
@@ -21,7 +21,7 @@ extend:
 # through the hadoop client may authorize successfully.
 # NOTE this means that any 'hadoop fs' commands will need
 # to require this state to be sure we have a krb ticket
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
 hdfs_kinit:
   cmd:
     - run
@@ -41,7 +41,7 @@ hbase-init:
     - unless: 'hadoop fs -test -d /hbase'
     - require:
       - pkg: hadoop-client
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: hdfs_kinit
 {% endif %}
 
@@ -55,9 +55,9 @@ hbase-master-svc:
       - service: zookeeper-server
       - file: /etc/hbase/conf/hbase-site.xml
       - file: /etc/hbase/conf/hbase-env.sh
-      - file: {{ pillar.cdh5.hbase.tmp_dir }}
-      - file: {{ pillar.cdh5.hbase.log_dir }}
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+      - file: {{ pillar.hdp2.hbase.tmp_dir }}
+      - file: {{ pillar.hdp2.hbase.log_dir }}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hbase_keytabs
 {% endif %}
     - watch:

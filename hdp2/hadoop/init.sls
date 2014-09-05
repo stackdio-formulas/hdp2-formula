@@ -1,3 +1,3 @@
 include:
-  - cdh5.hadoop.namenode
-  - cdh5.hadoop.datanode
+  - hdp2.hadoop.namenode
+  - hdp2.hadoop.datanode

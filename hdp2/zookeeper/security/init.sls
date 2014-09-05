@@ -1,8 +1,8 @@
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
 generate_zookeeper_keytabs:
   cmd:
     - script 
-    - source: salt://cdh5/zookeeper/security/generate_keytabs.sh
+    - source: salt://hdp2/zookeeper/security/generate_keytabs.sh
     - template: jinja
     - user: root
     - group: root

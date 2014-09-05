@@ -2,4 +2,4 @@
   file:
     - managed
     - template: jinja
-    - source: salt://cdh5/etc/hive/hive-site.xml
+    - source: salt://hdp2/etc/hive/hive-site.xml

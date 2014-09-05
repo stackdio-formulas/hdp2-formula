@@ -5,15 +5,15 @@
 #
 
 include:
-  - cdh5.repo
-  - cdh5.landing_page
-{% if salt['pillar.get']('cdh5:oozie:start_service', True) %}
-  - cdh5.oozie.service
+  - hdp2.repo
+  - hdp2.landing_page
+{% if salt['pillar.get']('hdp2:oozie:start_service', True) %}
+  - hdp2.oozie.service
 {% endif %}
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
   - krb5
-  - cdh5.security
-  - cdh5.oozie.security
+  - hdp2.security
+  - hdp2.oozie.security
 {% endif %}
 
 unzip:
@@ -27,13 +27,13 @@ oozie:
       - oozie
       - oozie-client
     - require:
-      - module: cdh5_refresh_db
+      - cmd: repo_placeholder
 
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
 /etc/oozie/conf/oozie-site.xml:
   file:
     - managed
-    - source: salt://cdh5/etc/oozie/conf/oozie-site.xml
+    - source: salt://hdp2/etc/oozie/conf/oozie-site.xml
     - user: root
     - group: root
     - mode: 644
@@ -45,7 +45,7 @@ oozie:
 extjs:
   file:
     - managed
-    - name: /srv/sync/cdh5/ext-2.2.zip
+    - name: /srv/sync/hdp2/ext-2.2.zip
     - source: http://extjs.com/deploy/ext-2.2.zip
     - source_hash: md5=12c624674b3af9d2ce218b1245a3388f
     - user: root
@@ -56,10 +56,10 @@ extjs:
       - pkg: oozie
   cmd:
     - run
-    - name: 'unzip -d {{ oozie_data_dir }} /srv/sync/cdh5/ext-2.2.zip &> /dev/null'
+    - name: 'unzip -d {{ oozie_data_dir }} /srv/sync/hdp2/ext-2.2.zip &> /dev/null'
     - unless: 'test -d {{ oozie_data_dir }}/ext-*'
     - require:
-      - file: /srv/sync/cdh5/ext-2.2.zip
+      - file: /srv/sync/hdp2/ext-2.2.zip
       - pkg: unzip
       - pkg: oozie
 
