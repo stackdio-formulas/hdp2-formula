@@ -20,7 +20,9 @@ hue:
     - pkgs:
       - hue
       - hue-server
+      {% if grains['os_family'] == 'RedHat' %}
       - hue-plugins
+      {% endif %}
     - require:
       - cmd: repo_placeholder
 
