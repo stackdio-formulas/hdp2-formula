@@ -22,7 +22,7 @@ oozie:
     - pkgs:
       - oozie
       - oozie-client
-      - extjs-2.2-1
+      - extjs
     - require:
       - cmd: repo_placeholder
 
