@@ -24,7 +24,7 @@ hadoop-hdfs-datanode-svc:
     - require: 
       - pkg: hadoop-hdfs-datanode
       - cmd: dfs_data_dir
-      - file: /etc/hadoop/conf
+      - file: bigtop_java_home
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/default/hadoop-hdfs-datanode
       - cmd: generate_hadoop_keytabs
@@ -44,7 +44,7 @@ hadoop-yarn-nodemanager-svc:
     - require: 
       - pkg: hadoop-yarn-nodemanager
       - cmd: datanode_mapred_local_dirs
-      - file: /etc/hadoop/conf
+      - file: bigtop_java_home
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/default/hadoop-hdfs-datanode
       - cmd: generate_hadoop_keytabs

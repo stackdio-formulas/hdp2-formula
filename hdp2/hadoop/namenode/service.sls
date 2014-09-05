@@ -44,7 +44,7 @@ hadoop-hdfs-namenode-svc:
       # Make sure HDFS is initialized before the namenode
       # is started
       - cmd: init_hdfs
-      - file: /etc/hadoop/conf
+      - file: bigtop_java_home
     - watch:
       - file: /etc/hadoop/conf
 
@@ -79,7 +79,7 @@ hadoop-yarn-resourcemanager-svc:
       - service: hadoop-hdfs-namenode-svc
       - cmd: hdfs_mapreduce_var_dir
       - cmd: hdfs_mapreduce_log_dir
-      - file: /etc/hadoop/conf
+      - file: bigtop_java_home
     - watch:
       - file: /etc/hadoop/conf
 
@@ -95,7 +95,7 @@ hadoop-mapreduce-historyserver-svc:
     - require:
       - pkg: hadoop-mapreduce-historyserver
       - service: hadoop-hdfs-namenode-svc
-      - file: /etc/hadoop/conf
+      - file: bigtop_java_home
     - watch:
       - file: /etc/hadoop/conf
 
@@ -110,7 +110,7 @@ hdp2_dfs_dirs:
     - unless: 'test -d {{ dfs_name_dir }}'
     - require:
       - pkg: hadoop-hdfs-namenode
-      - file: /etc/hadoop/conf
+      - file: bigtop_java_home
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hadoop_keytabs
 {% endif %}

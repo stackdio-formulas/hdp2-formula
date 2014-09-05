@@ -19,7 +19,7 @@ hadoop-hdfs-journalnode-svc:
     - name: hadoop-hdfs-journalnode
     - require:
       - pkg: hadoop-hdfs-journalnode
-      - file: /etc/hadoop/conf
+      - file: bigtop_java_home
       - cmd: hdp2_journal_dir
     - watch:
       - file: /etc/hadoop/conf
@@ -32,7 +32,7 @@ hdp2_journal_dir:
     - unless: 'test -d {{ journal_dir }}'
     - require:
       - pkg: hadoop-hdfs-journalnode
-      - file: /etc/hadoop/conf
+      - file: bigtop_java_home
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hadoop_keytabs
       {% endif %}

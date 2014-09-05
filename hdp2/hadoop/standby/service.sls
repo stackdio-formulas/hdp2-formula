@@ -20,7 +20,7 @@ hadoop-hdfs-namenode-svc:
     - require: 
       - pkg: hadoop-hdfs-namenode
       - cmd: init_standby_namenode
-      - file: /etc/hadoop/conf
+      - file: bigtop_java_home
       - user: mapred_user
     - watch:
       - file: /etc/hadoop/conf
@@ -46,7 +46,7 @@ hdp2_dfs_dirs:
     - unless: 'test -d {{ dfs_name_dir }}'
     - require:
       - pkg: hadoop-hdfs-namenode
-      - file: /etc/hadoop/conf
+      - file: bigtop_java_home
 
 # Initialize the standby namenode, which will sync the configuration
 # and metadata from the active namenode
