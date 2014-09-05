@@ -12,18 +12,9 @@ extend:
 {% endif %}
 
 oozie-svc:
-{% if grains['os_family'] == 'Debian' %}
   service:
     - running
     - name: oozie
-{% elif grains['os_family'] == 'RedHat' %}
-  # Centos doesn't have an init.d script, wtf
-  cmd:
-    - run
-    - name: 'cd /usr/lib/oozie && ./bin/oozied.sh start'
-    - user: oozie
-    - unless: 'test -f /var/run/oozie/oozie.pid'
-{% endif %}
     - require:
       - pkg: oozie
       - cmd: extjs
@@ -35,7 +26,7 @@ oozie-svc:
 prepare_server:
   cmd:
     - run
-    - name: '/usr/lib/oozie/bin/oozie-setup.sh prepare-war && ln -s /etc/oozie/conf/action-conf /etc/oozie/conf.dist/action-conf'
+    - name: '/usr/lib/oozie/bin/oozie-setup.sh prepare-war'
     - unless: 'test -f /usr/lib/oozie/oozie.war'
     - user: root
     - require:

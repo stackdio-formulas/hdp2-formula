@@ -27,6 +27,20 @@ oozie:
       - unzip
     - require:
       - cmd: repo_placeholder
+      {% if grains['os_family'] == 'RedHat' %}
+      - file: oozie_init_script
+      {% endif %}
+
+{% if grains['os_family'] == 'RedHat' %}
+oozie_init_script:
+  file:
+    - managed
+    - name: /etc/init.d/oozie
+    - source: salt://hdp2/etc/oozie/oozie
+    - user: root
+    - group: root
+    - mode: 755
+{% endif %}
 
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
 /etc/oozie/conf/oozie-site.xml:

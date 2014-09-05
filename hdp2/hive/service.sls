@@ -34,7 +34,7 @@ configure_metastore:
     - template: jinja
     - source: salt://hdp2/hive/configure_metastore.sh
     - unless: echo "show databases" | mysql -u root | grep metastore
-    - require: 
+    - require:
       - pkg: hive
       - service: mysql-svc
 
@@ -75,7 +75,7 @@ warehouse_dir_permissions:
 hive-metastore:
   service:
     - running
-    - require: 
+    - require:
       - pkg: hive
       - cmd: configure_metastore
       - cmd: warehouse_dir_permissions
