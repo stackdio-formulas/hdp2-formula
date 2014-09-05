@@ -21,6 +21,15 @@ extend:
     - require: 
       - pkg: zookeeper
 
+/etc/zookeeper/conf/zookeeper-env.sh:
+  file:
+    - managed
+    - template: jinja
+    - source: salt://hdp2/etc/zookeeper/conf/zookeeper-env.sh
+    - mode: 644
+    - require:
+      - file: /etc/zookeeper/conf/zoo.cfg
+
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
 /etc/zookeeper/conf/jaas.conf:
   file:
@@ -32,7 +41,7 @@ extend:
     - mode: 644
     - require: 
       - pkg: zookeeper
-      - file: /etc/zookeeper/conf/zoo.cfg
+      - file: /etc/zookeeper/conf/zookeeper-env.sh
 
 /etc/zookeeper/conf/java.env:
   file:
@@ -44,7 +53,7 @@ extend:
     - mode: 644
     - require: 
       - pkg: zookeeper
-      - file: /etc/zookeeper/conf/zoo.cfg
+      - file: /etc/zookeeper/conf/zookeeper-env.sh
 {% endif %}
     
 zookeeper-server-svc:
@@ -54,7 +63,7 @@ zookeeper-server-svc:
     - unless: service zookeeper-server status
     - require:
         - cmd: zookeeper-init
-        - file: /etc/zookeeper/conf/zoo.cfg
+        - file: /etc/zookeeper/conf/zookeeper-env.sh
         - file: /etc/zookeeper/conf/log4j.properties
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
         - cmd: generate_zookeeper_keytabs
