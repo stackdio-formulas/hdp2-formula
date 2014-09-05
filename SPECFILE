@@ -81,3 +81,6 @@ pillar_defaults:
       user: hive
       home: /usr/lib/hive
       metastore_password: CHANGE_THIS
+    hue:
+      start_service: true
+      secret_key: CHANGE_THIS
