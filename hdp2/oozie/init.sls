@@ -1,0 +1,89 @@
+{% set oozie_data_dir = '/var/lib/oozie' %}
+
+# 
+# Install the Oozie package
+#
+
+include:
+  - hdp2.repo
+  - hdp2.landing_page
+{% if salt['pillar.get']('hdp2:oozie:start_service', True) %}
+  - hdp2.oozie.service
+{% endif %}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
+  - krb5
+  - hdp2.security
+  - hdp2.oozie.security
+{% endif %}
+
+oozie:
+  pkg:
+    - installed
+    - pkgs:
+      - oozie
+      - oozie-client
+      - extjs
+      # oozie scripts depend on zip AND unzip, but don't list them as deps :/
+      - zip
+      - unzip
+    - require:
+      - cmd: repo_placeholder
+      {% if grains['os_family'] == 'RedHat' %}
+      - file: oozie_init_script
+      {% endif %}
+
+{% if grains['os_family'] == 'RedHat' %}
+oozie_init_script:
+  file:
+    - managed
+    - name: /etc/init.d/oozie
+    - source: salt://hdp2/etc/oozie/oozie
+    - user: root
+    - group: root
+    - mode: 755
+{% endif %}
+
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
+/etc/oozie/conf/oozie-site.xml:
+  file:
+    - managed
+    - source: salt://hdp2/etc/oozie/conf/oozie-site.xml
+    - user: root
+    - group: root
+    - mode: 644
+    - template: jinja
+    - require:
+      - pkg: oozie
+{% endif %}
+
+extjs:
+  cmd:
+    - run
+    - name: 'cp /usr/share/HDP-oozie/ext-2.2.zip /usr/lib/oozie/libext/'
+    - user: root
+    - require:
+      - pkg: oozie
+
+/var/log/oozie:
+  file:
+    - directory
+    - user: oozie
+    - group: oozie
+    - mode: 777
+    - recurse:
+      - user
+      - group
+    - require:
+      - pkg: oozie
+
+/var/lib/oozie:
+  file:
+    - directory
+    - user: oozie
+    - group: oozie
+    - recurse:
+      - user
+      - group
+    - require:
+      - pkg: oozie
+

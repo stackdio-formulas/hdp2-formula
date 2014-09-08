@@ -1,0 +1,128 @@
+{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.namenode and not G@roles:hdp2.hadoop.standby', 'grains.items', 'compound').values()[0]['fqdn'] -%}
+<?xml version="1.0"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+  <property>
+    <name>yarn.resourcemanager.hostname</name>
+    <value>{{ namenode_fqdn }}</value>
+  </property>
+
+  <property>
+    <name>yarn.nodemanager.aux-services</name>
+    <value>mapreduce_shuffle</value>
+  </property>
+
+  <property>
+    <name>yarn.nodemanager.aux-services.mapreduce_shuffle.class</name>
+    <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+  </property>
+
+  <property>
+    <name>yarn.log-aggregation-enable</name>
+    <value>true</value>
+  </property>
+
+  <property>
+    <description>List of directories to store localized files in.</description>
+    <name>yarn.nodemanager.local-dirs</name>
+    <value>/mnt/yarn/${user.name}/nm-local-dir</value>
+  </property>
+
+  <property>
+    <description>Where to store container logs.</description>
+    <name>yarn.nodemanager.log-dirs</name>
+    <value>/mnt/yarn/logs/containers</value>
+  </property>
+
+  <property>
+    <description>Where to aggregate logs to.</description>
+    <name>yarn.nodemanager.remote-app-log-dir</name>
+    <value>/var/log/hadoop-yarn/apps</value>
+  </property>
+
+  <property>
+    <description>Classpath for typical applications.</description>
+     <name>yarn.application.classpath</name>
+     <value>
+        $HADOOP_CONF_DIR,
+        $HADOOP_COMMON_HOME/*,$HADOOP_COMMON_HOME/lib/*,
+        $HADOOP_HDFS_HOME/*,$HADOOP_HDFS_HOME/lib/*,
+        $HADOOP_MAPRED_HOME/*,$HADOOP_MAPRED_HOME/lib/*,
+        $HADOOP_YARN_HOME/*,$HADOOP_YARN_HOME/lib/*
+     </value>
+  </property>
+  <property>
+     <name>yarn.app.mapreduce.am.staging-dir</name>
+     <value>/user</value>
+  </property>
+  <property>
+     <name>yarn.nodemanager.vmem-pmem-ratio</name>
+     <value>1.0</value>
+  </property>
+  <property>
+     <name>yarn.scheduler.minimum-allocation-mb</name>
+     <value>512</value>
+  </property>
+  <property>
+     <name>yarn.scheduler.maximum-allocation-mb</name>
+     <value>{{ pillar.hdp2.yarn.max_container_size_mb }}</value>
+  </property>
+  <property>
+     <name>yarn.nodemanager.resource.memory-mb</name>
+     <value>{{ pillar.hdp2.yarn.max_container_size_mb }}</value>
+  </property>
+
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
+{% from 'krb5/settings.sls' import krb5 with context %}
+  <!-- ResourceManager security configs -->
+  <property>
+    <name>yarn.resourcemanager.keytab</name>
+    <value>/etc/hadoop/conf/yarn.keytab</value>    <!-- path to the YARN keytab -->
+  </property>
+  <property>
+    <name>yarn.resourcemanager.principal</name>   
+    <value>yarn/_HOST@{{ krb5.realm }}</value>
+  </property>
+
+  <!-- NodeManager security configs -->
+  <property>
+    <name>yarn.nodemanager.keytab</name>
+    <value>/etc/hadoop/conf/yarn.keytab</value>    <!-- path to the YARN keytab -->
+  </property>
+  <property>
+    <name>yarn.nodemanager.principal</name>   
+    <value>yarn/_HOST@{{ krb5.realm }}</value>
+  </property>
+  <property>
+    <name>yarn.nodemanager.container-executor.class</name>    
+    <value>org.apache.hadoop.yarn.server.nodemanager.LinuxContainerExecutor</value>
+  </property> 
+  <property>
+    <name>yarn.nodemanager.linux-container-executor.group</name>
+    <value>yarn</value>
+  </property>
+  <!-- To enable SSL
+  <property>
+    <name>yarn.http.policy</name>
+    <value>HTTPS_ONLY</value>
+  </property>
+  -->
+{% endif %}
+</configuration>

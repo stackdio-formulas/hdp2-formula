@@ -1,0 +1,130 @@
+{% set fqdn = grains.get('fqdn', 'localhost') %}<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>HDP2 Landing Page</title>
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+<style>
+html,
+body {
+  height: 100%;
+  /* The html and body elements cannot have any padding or margin. */
+  background-color: #333;
+}
+body {
+  color: #fff;
+}
+
+a,
+a:focus,
+a:hover {
+  color: #999;
+}
+
+/* Wrapper for page content to push down footer */
+#wrap {
+  min-height: 100%;
+  height: auto;
+  /* Negative indent footer by its height */
+  margin: 0 auto -60px;
+  /* Pad bottom by footer height */
+  padding: 0 0 60px; 
+  -webkit-box-shadow: inset 0 0 100px rgba(0,0,0,.5);
+          box-shadow: inset 0 0 100px rgba(0,0,0,.5);
+}
+
+/* Set the fixed height of the footer here */ 
+#footer {
+  height: 60px;
+  background-color: #555;
+  color: #ddd;
+}
+
+.container {
+  width: auto;
+  max-width: 680px;
+  padding: 0 15px; 
+}
+.container .credit {
+  margin: 20px 0; 
+}
+</style>
+</head>
+<body>
+<div id="wrap">
+    <div class="container">
+        <h1>HDP2 Landing Page</h1>
+        <p class="lead">Below is a list of useful links customized for your HDP2 stack:</p>
+        <div class="row">
+            <div class="col-md-6">
+                <h4>Hadoop</h4>
+                <ul>
+                    {% if 'hdp2.hue' in grains['roles'] %}
+                    <li><a href='http://{{ fqdn }}:8888/home'>Hue</a></li>
+                    {% endif %}
+                    {% if 'hdp2.hadoop.namenode' in grains['roles'] %}
+                    <li><a href='http://{{ fqdn }}:50070/'>Hadoop HDFS NameNode</a></li>
+                    {% endif %}
+                    {% if 'hdp2.hadoop.standby' in grains['roles'] %}
+                    <li><a href='http://{{ fqdn }}:50070/'>Hadoop HDFS Standby NameNode</a></li>
+                    {% endif %}
+                    {% if 'hdp2.hadoop.namenode' in grains['roles'] %}
+                    {% set snn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.standby', 'grains.items', 'compound').values() %}
+                    {% if snn %}
+                    <li><a href='http://{{ snn[0]["fqdn"] }}:50070/'>Hadoop HDFS Standby NameNode</a></li>
+                    {% endif %}
+                    {% endif %}
+                    {% if 'hdp2.hadoop.namenode' in grains['roles'] and 'hdp2.hadoop.standby' not in grains['roles'] %}
+                    <li><a href='http://{{ fqdn }}:8088/'>Hadoop Yarn ResourceManager</a></li>
+                    <li><a href='http://{{ fqdn }}:19888/'>Hadoop Mapreduce HistoryServer</a></li>
+                    {% endif %}
+                    {% if 'hdp2.hadoop.datanode' in grains['roles'] %}
+                    <li><a href='http://{{ fqdn }}:8042/'>Hadoop NodeManager</a></li>
+                    <li><a href='http://{{ fqdn }}:50075/'>Hadoop HDFS DataNode</a></li>
+                    {% endif %}
+                    {% if 'hdp2.oozie' in grains['roles'] %}
+                    <li><a href='http://{{ fqdn }}:11000/oozie/'>Oozie Dashboard</a></li>
+                    {% endif %}
+                </ul>
+                {% if 'hdp2.hadoop.namenode' in grains['roles'] %}
+                {% set datanodes = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.datanode', 'grains.items', 'compound').values() %}
+                <h4>Datanodes</h4>
+                <ul>
+                    {% for datanode in datanodes %}
+                    <li><a href='http://{{ datanode["fqdn"] }}/'>{{ datanode['id'] }}</a></li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div> <!-- col-md-6 -->
+
+            <div class="col-md-6">
+                {% if 'hdp2.hbase.master' in grains['roles'] or 'hdp2.hbase.regionserver' in grains['roles'] %}
+                <h4>HBase</h4>
+                {% endif %}
+                {% if 'hdp2.hbase.master' in grains['roles'] %}
+                <ul>
+                    <li><a href='http://{{ fqdn }}:60010/'>HBase Master</a></li>
+                </ul>
+                {% endif %}
+                {% if 'hdp2.hbase.regionserver' in grains['roles'] %}
+                <ul>
+                    <li><a href='http://{{ fqdn }}:60030/'>HBase RegionServer</a></li>
+                </ul>
+                {% endif %}
+            </div> <!-- col-md-6 -->
+        </div> <!-- row -->
+    </div> <!-- container -->
+</div> <!-- wrap -->
+
+<div id="footer">
+    <div class="container">
+        <p class="credit"><small>
+            This stack provisioned with 
+            <a href="http://stackd.io">stackd.io</a> from 
+            <a href="http://www.digitalreasoning.com">Digital Reasoning</a> // 
+            <a href="http://www.digitalreasoning.com">www.digitalreasoning.com</a>
+        </small></p>
+    </div>
+</div>
+
+</body>
+</html>
