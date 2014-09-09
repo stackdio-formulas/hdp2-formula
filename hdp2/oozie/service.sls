@@ -19,7 +19,7 @@ oozie-svc:
       - pkg: oozie
       - cmd: extjs
       - cmd: ooziedb
-#      - cmd: populate-oozie-sharelibs
+      - cmd: populate-oozie-sharelibs
       - file: /var/log/oozie
       - file: /var/lib/oozie
 
@@ -48,21 +48,21 @@ ooziedb:
       - cmd: prepare_server
 
 
-#create-oozie-sharelibs:
-#  cmd:
-#    - run
-#    - name: 'hdfs dfs -mkdir /user/oozie && hdfs dfs -chown -R oozie:oozie /user/oozie'
-#    - unless: 'hdfs dfs -test -d /user/oozie'
-#    - user: hdfs
-#    - require:
-#      - cmd: ooziedb
+create-oozie-sharelibs:
+  cmd:
+    - run
+    - name: 'hdfs dfs -mkdir /user/oozie && hdfs dfs -chown -R oozie:oozie /user/oozie'
+    - unless: 'hdfs dfs -test -d /user/oozie'
+    - user: hdfs
+    - require:
+      - cmd: ooziedb
 
-#populate-oozie-sharelibs:
-#  cmd:
-#    - run
-#    - name: 'oozie-setup sharelib create -fs hdfs://{{nn_host}}:8020 -locallib /usr/lib/oozie/oozie-sharelib-yarn.tar.gz'
-#    - unless: 'hdfs dfs -test -d /user/oozie/share'
-#    - user: root
-#    - require:
-#      - cmd: create-oozie-sharelibs
+populate-oozie-sharelibs:
+  cmd:
+    - run
+    - name: '/usr/lib/oozie/bin/oozie-setup.sh sharelib create -fs hdfs://{{nn_host}}:8020 -locallib /usr/lib/oozie/oozie-sharelib.tar.gz'
+    - unless: 'hdfs dfs -test -d /user/oozie/share'
+    - user: oozie 
+    - require:
+      - cmd: create-oozie-sharelibs
 
