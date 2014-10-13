@@ -4,6 +4,17 @@
 include:
   - hdp2.repo
 
+bigtop_java_home_zoo:
+  file:
+    - managed
+    - name: /usr/lib/bigtop-utils/bigtop-detect-javahome
+    - makedirs: true
+    - contents: 'export JAVA_HOME=/usr/java/latest'
+    - user: root
+    - group: root
+    - require:
+      - pkg: zookeeper
+
 {% if grains['os_family'] == 'Debian' %}
 extend:
   remove_policy_file:
