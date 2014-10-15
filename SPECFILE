@@ -60,6 +60,7 @@ pillar_defaults:
       tmp_dir: /mnt/hbase/tmp
       log_dir: /mnt/hbase/logs
       replication: 3
+      java_stack_size: 8096k
       master_initial_heap: 1024m
       master_max_heap: 1024m
       master_young_gen: 256m

@@ -93,7 +93,7 @@ export HBASE_OPTS="-XX:+UseConcMarkSweepGC"
 # DRFA doesn't put any cap on the log size. Please refer to HBase-5655 for more context.
 
 # The above is all standard, adding the below for stackd.io deployment
-export HBASE_MASTER_OPTS="-Xms{{ pillar.hdp2.hbase.master_initial_heap }} -Xmx{{ pillar.hdp2.hbase.master_max_heap }} -Xmn{{ pillar.hdp2.hbase.master_young_gen }} -XX:+UseConcMarkSweepGC -XX:+AggressiveOpts -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:{{ pillar.hdp2.hbase.log_dir }}/hbase-master-gc.log -Djute.maxbuffer={{ pillar.hdp2.hbase.jute_maxbuffer }}" 
+export HBASE_MASTER_OPTS="-Xss{{ pillar.hdp2.hbase.java_stack_size }} -Xms{{ pillar.hdp2.hbase.master_initial_heap }} -Xmx{{ pillar.hdp2.hbase.master_max_heap }} -Xmn{{ pillar.hdp2.hbase.master_young_gen }} -XX:+UseConcMarkSweepGC -XX:+AggressiveOpts -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:{{ pillar.hdp2.hbase.log_dir }}/hbase-master-gc.log -Djute.maxbuffer={{ pillar.hdp2.hbase.jute_maxbuffer }}" 
 
 export HBASE_REGIONSERVER_OPTS="-Xms{{ pillar.hdp2.hbase.region_initial_heap }} -Xmx{{ pillar.hdp2.hbase.region_max_heap }} -Xmn{{ pillar.hdp2.hbase.region_young_gen}} -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:ParallelGCThreads=8 -XX:+AggressiveOpts -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:{{ pillar.hdp2.hbase.log_dir }}/hbase-regionserver-gc.log"
 
