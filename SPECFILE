@@ -5,6 +5,12 @@ components:
   - title: NameNode
     description: Hadoop NameNode component of HDP2
     sls_path: hdp2.hadoop.namenode
+  - title: Standby NameNode
+    description: Standby NameNode for high-availability
+    sls_path: hdp2.hadoop.standby
+  - title: JournalNode
+    description: Hadoop JournalNode for high-availability
+    sls_path: hdp2.hadoop.journalnode
   - title: DataNode
     description: Hadoop DataNode component of HDP2
     sls_path: hdp2.hadoop.datanode
