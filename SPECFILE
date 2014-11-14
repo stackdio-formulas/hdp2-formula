@@ -60,7 +60,11 @@ pillar_defaults:
     mapred:
       local_dir: /mnt/yarn
       system_dir: /hadoop/system/mapred
-      reduce_tasks: 6
+      child_java_opts: '-Xmx2000m'
+      memory_mb: 3000
+      map_tasks: 5
+      reduce_tasks: 3
+      reduces: 3
     hbase:
       start_service: true
       tmp_dir: /mnt/hbase/tmp
