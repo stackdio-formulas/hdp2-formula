@@ -56,7 +56,9 @@ pillar_defaults:
     dfs:
       name_dir: /mnt/hadoop/hdfs/nn
       data_dir: /mnt/hadoop/hdfs/data
+      journal_dir: /mnt/hadoop/hdfs/jn
       permissions: true
+      block_size: 268435456
     mapred:
       local_dir: /mnt/yarn
       system_dir: /hadoop/system/mapred
