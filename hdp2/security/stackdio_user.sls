@@ -1,4 +1,4 @@
-{% if salt['pillar.get']('cdh5:security:enable', False) %}
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
 include:
   - krb5
   - cdh5.security
