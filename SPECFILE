@@ -5,6 +5,12 @@ components:
   - title: NameNode
     description: Hadoop NameNode component of HDP2
     sls_path: hdp2.hadoop.namenode
+  - title: Standby NameNode
+    description: Standby NameNode for high-availability
+    sls_path: hdp2.hadoop.standby
+  - title: JournalNode
+    description: Hadoop JournalNode for high-availability
+    sls_path: hdp2.hadoop.journalnode
   - title: DataNode
     description: Hadoop DataNode component of HDP2
     sls_path: hdp2.hadoop.datanode
@@ -17,6 +23,9 @@ components:
   - title: HBase RegionServer
     description: HBase RegionServer component of HDP2
     sls_path: hdp2.hbase.regionserver
+  - title: HBase Secure Permissions
+    description: Separate state because it needs to run on the master AFTER the regionservers are started.  Used only when security is enabled.
+    sls_path: hdp2.hbase.security.permissions
   - title: Oozie 
     description: Oozie
     sls_path: hdp2.oozie
@@ -50,11 +59,17 @@ pillar_defaults:
     dfs:
       name_dir: /mnt/hadoop/hdfs/nn
       data_dir: /mnt/hadoop/hdfs/data
+      journal_dir: /mnt/hadoop/hdfs/jn
       permissions: true
+      block_size: 268435456
     mapred:
       local_dir: /mnt/yarn
       system_dir: /hadoop/system/mapred
-      reduce_tasks: 6
+      child_java_opts: '-Xmx2000m'
+      memory_mb: 3000
+      map_tasks: 5
+      reduce_tasks: 3
+      reduces: 3
     hbase:
       start_service: true
       tmp_dir: /mnt/hbase/tmp
