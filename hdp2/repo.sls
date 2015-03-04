@@ -48,13 +48,13 @@ remove_policy_file:
 hortonworks_repo_try1:
   cmd:
     - run
-    - name: curl -o /etc/yum/repos.d/hdp.repo http://public-repo-1.hortonworks.com/HDP/centos6/2.x/GA/{{ pillar.hdp2.version }}/hdp.repo
+    - name: curl -o /etc/yum.repos.d/hdp.repo http://public-repo-1.hortonworks.com/HDP/centos6/2.x/GA/{{ pillar.hdp2.version }}/hdp.repo
     - user: root
 
 hortonworks_repo:
   cmd:
     - run
-    - name: curl -o /etc/yum/repos.d/hdp.repo http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/{{ pillar.hdp2.version }}/hdp.repo
+    - name: curl -o /etc/yum.repos.d/hdp.repo http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/{{ pillar.hdp2.version }}/hdp.repo
     - user: root
     - unless: 'yum list | grep HDP'
     - require:
