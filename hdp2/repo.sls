@@ -6,7 +6,9 @@ repo_placeholder:
 
 {% if grains['os_family'] == 'Debian' %}
 
-# Set up the HDP2 apt repositories
+# THIS MAY NOT WORK ON UBUNTU
+
+# Hortonworks has 2 different apt repos that they put their distros in - we'll try both of them here to see which one works
 hortonworks_repo_try1:
   cmd:
     - run
@@ -14,7 +16,7 @@ hortonworks_repo_try1:
     - require:
       - file: add_policy_file
 
-# This may not work
+
 hortonworks_repo:
   cmd:
     - run
@@ -44,7 +46,7 @@ remove_policy_file:
 
 {% elif grains['os_family'] == 'RedHat' %}
 
-# Set up the HDP2 yum repositories
+# Hortonworks has 2 different yum repos that they put their distros in - we'll try both of them here to see which one works
 hortonworks_repo_try1:
   cmd:
     - run
