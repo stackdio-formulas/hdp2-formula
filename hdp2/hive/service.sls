@@ -6,15 +6,6 @@
 include:
   - hdp2.repo
 
-{% if grains['os_family'] == 'Debian' %}
-extend:
-  remove_policy_file:
-    file:
-      - require:
-        - service: hive-metastore
-        - service: hive-server2
-        - service: mysql-svc
-{% endif %}
 
 # @todo move this out to its own formula
 mysql-svc:

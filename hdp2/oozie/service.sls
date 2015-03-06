@@ -3,13 +3,6 @@
 # 
 # Start the Oozie service
 #
-{% if grains['os_family'] == 'Debian' %}
-extend:
-  remove_policy_file:
-    file:
-      - require:
-        - service: oozie-svc
-{% endif %}
 
 oozie-svc:
   service:

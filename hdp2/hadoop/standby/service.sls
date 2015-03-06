@@ -1,13 +1,5 @@
 {% set dfs_name_dir = salt['pillar.get']('hdp2:dfs:name_dir', '/mnt/hadoop/hdfs/nn') %}
 
-{% if grains['os_family'] == 'Debian' %}
-extend:
-  remove_policy_file:
-    file:
-      - require:
-        - service: hadoop-hdfs-namenode-svc
-{% endif %}
-
 ##
 # Starts the namenode service.
 #

@@ -1,13 +1,5 @@
 {% set journal_dir = salt['pillar.get']('hdp2:dfs:journal_dir', '/mnt/hadoop/hdfs/jn') %}
 
-{% if grains['os_family'] == 'Debian' %}
-extend:
-  remove_policy_file:
-    file:
-      - require:
-        - service: hadoop-hdfs-journalnode-svc
-{% endif %}
-
 ##
 # Starts the journalnode service.
 #

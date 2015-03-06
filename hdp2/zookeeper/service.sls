@@ -15,14 +15,6 @@ bigtop_java_home_zoo:
     - require:
       - pkg: zookeeper
 
-{% if grains['os_family'] == 'Debian' %}
-extend:
-  remove_policy_file:
-    file:
-      - require:
-        - service: zookeeper-server-svc
-{% endif %}
-
 /etc/zookeeper/conf/zoo.cfg:
   file:
     - managed
