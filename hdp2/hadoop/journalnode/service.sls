@@ -16,7 +16,7 @@ hadoop-hdfs-journalnode-svc:
   cmd:
     - run
     - user: hdfs
-    - name: {{ hadoop_script_dir }}/hadoop-daemon.sh start namenode
+    - name: {{ hadoop_script_dir }}/hadoop-daemon.sh --config /etc/hadoop/conf start journalnode
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-journalnode.pid'
     - require:
       - pkg: hadoop-hdfs-journalnode

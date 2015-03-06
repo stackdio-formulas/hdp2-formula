@@ -1,10 +1,8 @@
 # The scripts for starting services are in different places depending on the hdp version, so set them here
 {% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
 {% set hbase_script_dir = '/usr/hdp/current/hbase-master/bin' %}
-{% set hbase_thrift_script_dir = '/usr/hdp/current/hbase-thrift/bin' %}
 {% else %}
 {% set hbase_script_dir = '/usr/lib/hbase/bin' %}
-{% set hbase_thrift_script_dir = hbase_script_dir %}
 {% endif %}
 
 #
@@ -71,7 +69,7 @@ hbase-thrift-svc:
   cmd:
     - run
     - user: hbase
-    - name: {{ hbase_thrift_script_dir }}/hbase-daemon.sh start thrift
+    - name: {{ hbase_script_dir }}/hbase-daemon.sh start thrift
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hbase/hbase-hbase-thrift.pid'
     - require:
       - cmd: hbase-master-svc
