@@ -6,10 +6,11 @@
 # Depends on: JDK7
 ##
 hadoop-hdfs-namenode-svc:
-  service:
-    - running
-    - name: hadoop-hdfs-namenode
-    - require: 
+  cmd:
+    - run
+    - user: hdfs
+    - name: /usr/hdp/current/hadoop-hdfs-namenode/../hadoop/sbin/hadoop-daemon.sh start namenode
+    - require:
       - pkg: hadoop-hdfs-namenode
       - cmd: init_standby_namenode
       - file: bigtop_java_home
@@ -27,7 +28,7 @@ hadoop-hdfs-namenode-svc:
 #    - user: hdfs
 #    - group: hdfs
 #    - require:
-#      - service: hadoop-hdfs-namenode-svc
+#      - cmd: hadoop-hdfs-namenode-svc
 
 # Make sure the namenode metadata directory exists
 # and is owned by the hdfs user
