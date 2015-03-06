@@ -103,7 +103,7 @@ myid:
     - name: '{{pillar.hdp2.zookeeper.data_dir}}/myid'
     - template: jinja
     - user: zookeeper
-    - group: zookeeper
+    - group: hadoop
     - mode: 755
     - source: salt://hdp2/etc/zookeeper/conf/myid
     - require:
@@ -133,9 +133,6 @@ zk_data_dir:
     - makedirs: true
     - require:
       - pkg: zookeeper-server
-      {% if grains['os_family'] == 'RedHat' %}
-      - group: zookeeper
-      {% endif %}
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_zookeeper_keytabs
       {% endif %}
