@@ -11,6 +11,7 @@
 hadoop-hdfs-datanode-svc:
   cmd:
     - run
+    - user: hdfs
     - name: /usr/hdp/current/hadoop-hdfs-datanode/../hadoop/sbin/hadoop-daemon.sh start datanode
     - require: 
       - pkg: hadoop-hdfs-datanode
@@ -31,6 +32,7 @@ hadoop-hdfs-datanode-svc:
 hadoop-yarn-nodemanager-svc:
   cmd:
     - run
+    - user: yarn
     - name: /usr/hdp/current/hadoop-yarn-nodemanager/sbin/yarn-daemon.sh start nodemanager
     - require: 
       - pkg: hadoop-yarn-nodemanager
