@@ -2,7 +2,7 @@
 
 
 # The scripts for starting services are in different places depending on the hdp version, so set them here
-{% if int(pillar.hdp2.version.split('.')[1]) >= 2 %}
+{% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
 {% set hadoop_script_dir = '/usr/hdp/current/hadoop-client/sbin' %}
 {% set zk_script_dir = '/usr/hdp/current/zookeeper-client/bin' %}
 {% else %}

@@ -1,4 +1,4 @@
-{% if int(pillar.hdp2.version.split('.')[1]) >= 2 %}
+{% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
 {% set hbase_script_dir = '/usr/hdp/current/hbase-regionserver/bin' %}
 {% else %}
 {% set hbase_script_dir = '/usr/lib/hbase/bin' %}

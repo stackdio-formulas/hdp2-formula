@@ -2,7 +2,7 @@
 {% set dfs_data_dir = salt['pillar.get']('hdp2:dfs:data_dir', '/mnt/hadoop/hdfs/data') %}
 
 # The scripts for starting services are in different places depending on the hdp version, so set them here
-{% if int(pillar.hdp2.version.split('.')[1]) >= 2 %}
+{% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
 {% set hadoop_script_dir = '/usr/hdp/current/hadoop-hdfs-datanode/../hadoop/sbin' %}
 {% set yarn_script_dir = '/usr/hdp/current/hadoop-yarn-nodemanager/../hadoop/sbin' %}
 {% else %}
