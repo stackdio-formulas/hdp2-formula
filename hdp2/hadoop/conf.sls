@@ -1,13 +1,13 @@
 hdfs_log_dir:
   cmd:
     - run
-    - name: 'mkdir -p /var/log/hadoop/hdfs && chown hdfs:hadoop /var/log/hadoop/hdfs'
+    - name: 'mkdir -p /var/{log,run}/hadoop/hdfs && chown hdfs:hadoop /var/{log,run}/hadoop/hdfs'
 
 {% if 'hdp2.hadoop.standby' not in grains.roles %}
 mapred_log_dir:
   cmd:
     - run
-    - name: 'mkdir -p /var/log/hadoop/mapreduce && chown mapred:hadoop /var/log/hadoop/mapreduce'
+    - name: 'mkdir -p /var/{log,run}/hadoop/mapreduce && chown mapred:hadoop /var/{log,run}/hadoop/mapreduce'
     - require:
       - cmd: hdfs_log_dir
     - require_in:
@@ -16,7 +16,7 @@ mapred_log_dir:
 yarn_log_dir:
   cmd:
     - run
-    - name: 'mkdir -p /var/log/hadoop/yarn && chown yarn:hadoop /var/log/hadoop/yarn'
+    - name: 'mkdir -p /var/{log,run}/hadoop/yarn && chown yarn:hadoop /var/{log,run}/hadoop/yarn'
     - require:
       - cmd: mapred_log_dir
     - require_in:
