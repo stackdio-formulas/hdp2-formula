@@ -30,6 +30,7 @@ hadoop-hdfs-namenode-svc:
     - run
     - name: /usr/hdp/current/hadoop-hdfs-namenode/../hadoop/sbin/hadoop-daemon.sh start namenode
     - user: hdfs
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-namenode.pid'
     - require: 
       - pkg: hadoop-hdfs-namenode
       # Make sure HDFS is initialized before the namenode
@@ -66,6 +67,7 @@ hadoop-yarn-resourcemanager-svc:
     - run
     - user: yarn
     - name: /usr/hdp/current/hadoop-yarn-resourcemanager/sbin/yarn-daemon.sh start resourcemanager
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/yarn/yarn-yarn-resourcemanager.pid'
     - require: 
       - pkg: hadoop-yarn-resourcemanager
       - cmd: hadoop-hdfs-namenode-svc
@@ -85,6 +87,7 @@ hadoop-mapreduce-historyserver-svc:
     - run
     - user: mapred
     - name: /usr/hdp/current/hadoop-mapreduce-historyserver/sbin/mr-jobhistory-daemon.sh start historyserver
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/yarn/mapred-mapred-historyserver.pid'
     - require:
       - pkg: hadoop-mapreduce-historyserver
       - cmd: hadoop-hdfs-namenode-svc

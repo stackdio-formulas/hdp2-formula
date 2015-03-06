@@ -10,6 +10,7 @@ hadoop-hdfs-namenode-svc:
     - run
     - user: hdfs
     - name: /usr/hdp/current/hadoop-hdfs-namenode/../hadoop/sbin/hadoop-daemon.sh start namenode
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-namenode.pid'
     - require:
       - pkg: hadoop-hdfs-namenode
       - cmd: init_standby_namenode

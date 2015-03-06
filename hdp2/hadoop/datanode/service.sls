@@ -13,6 +13,7 @@ hadoop-hdfs-datanode-svc:
     - run
     - user: hdfs
     - name: /usr/hdp/current/hadoop-hdfs-datanode/../hadoop/sbin/hadoop-daemon.sh start datanode
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-datanode.pid'
     - require: 
       - pkg: hadoop-hdfs-datanode
       - cmd: dfs_data_dir
@@ -34,6 +35,7 @@ hadoop-yarn-nodemanager-svc:
     - run
     - user: yarn
     - name: /usr/hdp/current/hadoop-yarn-nodemanager/sbin/yarn-daemon.sh start nodemanager
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/yarn/yarn-yarn-nodemanager.pid'
     - require: 
       - pkg: hadoop-yarn-nodemanager
       - cmd: datanode_mapred_local_dirs

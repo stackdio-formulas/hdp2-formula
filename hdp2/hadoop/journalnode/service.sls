@@ -6,9 +6,11 @@
 # Depends on: JDK7
 ##
 hadoop-hdfs-journalnode-svc:
-  service:
-    - running
-    - name: hadoop-hdfs-journalnode
+  cmd:
+    - run
+    - user: hdfs
+    - name: /usr/hdp/current/hadoop-hdfs-journalnode/../hadoop/sbin/hadoop-daemon.sh start namenode
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-journalnode.pid'
     - require:
       - pkg: hadoop-hdfs-journalnode
       - file: bigtop_java_home

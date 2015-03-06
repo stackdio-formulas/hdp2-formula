@@ -14,6 +14,7 @@
 # limitations under the License.
 
 export YARN_LOG_DIR=/var/log/hadoop/$USER
+export YARN_PID_DIR=/var/run/hadoop/$USER
 
 # Set JAVA_HOME
 export JAVA_HOME="/usr/java/latest"

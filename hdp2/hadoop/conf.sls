@@ -29,14 +29,14 @@
 /etc/hadoop/conf/hadoop-env.sh:
   file:
     - append
-    - text: 'export HADOOP_LOG_DIR=/var/log/hadoop/$USER'
+    - text: 'export HADOOP_LOG_DIR=/var/log/hadoop/$USER; export HADOOP_PID_DIR=/var/run/hadoop/$USER'
     - require:
       - file: /etc/hadoop/conf
 
 /etc/hadoop/conf/mapred-env.sh:
   file:
     - append
-    - text: 'export HADOOP_MAPRED_LOG_DIR=/var/log/hadoop/mapreduce'
+    - text: 'export HADOOP_MAPRED_LOG_DIR=/var/log/hadoop/mapreduce; export HADOOP_MAPRED_PID_DIR=/var/run/hadoop/mapreduce'
     - require:
       - file: /etc/hadoop/conf
 

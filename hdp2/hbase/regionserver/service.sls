@@ -3,9 +3,10 @@
 #
 
 hbase-regionserver-svc:
-  service:
-    - running
-    - name: hbase-regionserver
+  cmd:
+    - run
+    - name: /usr/hdp/current/hbase-regionserver/bin/hbase-daemon.sh start regionserver
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hbase/hbase-hbase-regionserver.pid'
     - require: 
       - pkg: hbase-regionserver
       - file: /etc/hbase/conf/hbase-site.xml

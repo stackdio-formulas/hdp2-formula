@@ -38,9 +38,11 @@ hbase-init:
 {% endif %}
 
 hbase-master-svc:
-  service:
-    - running
-    - name: hbase-master
+  cmd:
+    - run
+    - user: hbase
+    - name: /usr/hdp/current/hbase-master/bin/hbase-daemon.sh start master && sleep 25
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hbase/hbase-hbase-master.pid'
     - require: 
       - pkg: hbase-master
       - cmd: hbase-init
@@ -57,9 +59,11 @@ hbase-master-svc:
       - file: /etc/hbase/conf/hbase-env.sh
 
 hbase-thrift-svc:
-  service:
-    - running
-    - name: hbase-thrift
+  cmd:
+    - run
+    - user: hbase
+    - name: /usr/hdp/current/hbase-thrift/bin/hbase-daemon.sh start master && sleep 25
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hbase/hbase-hbase-thrift.pid'
     - require:
-      - service: hbase-master
+      - cmd: hbase-master-svc
 
