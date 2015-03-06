@@ -1,4 +1,15 @@
 {%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.standby', 'grains.items', 'compound') -%}
+
+
+# The scripts for starting services are in different places depending on the hdp version, so set them here
+{% if int(pillar.hdp2.version.split('.')[1]) >= 2 %}
+{% set hadoop_script_dir = '/usr/hdp/current/hadoop-client/sbin' %}
+{% set zk_script_dir = '/usr/hdp/current/zookeeper-client/bin' %}
+{% else %}
+{% set hadoop_script_dir = '/usr/lib/hadoop/sbin' %}
+{% set zk_script_dir = '/usr/lib/zookeeper/bin' %}
+{% endif %}
+
 #
 # Start the ZooKeeper service
 #
@@ -64,7 +75,7 @@ zookeeper-server-svc:
   cmd:
     - run
     - user: zookeeper
-    - name: export ZOOCFGDIR=/etc/zookeeper/conf; source /etc/zookeeper/conf/zookeeper-env.sh; /usr/hdp/current/zookeeper-client/bin/zkServer.sh start
+    - name: export ZOOCFGDIR=/etc/zookeeper/conf; source /etc/zookeeper/conf/zookeeper-env.sh; {{ zk_script_dir }}/zkServer.sh start
     - unless: '. /etc/init.d/functions && pidofproc -p {{pillar.hdp2.zookeeper.data_dir}}/zookeeper_server.pid'
     - require:
         - file: /etc/zookeeper/conf/zookeeper-env.sh
@@ -78,7 +89,7 @@ zkfc-svc:
   cmd:
     - run
     - user: zookeeper
-    - name: /usr/hdp/current/hadoop-client/sbin/hadoop-daemon.sh start zkfc
+    - name: {{ hadoop_script_dir }}/hadoop-daemon.sh start zkfc
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/zookeeper/hadoop-zookeeper-zkfc.pid'
     - require:
         - cmd: zookeeper-server-svc

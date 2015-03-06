@@ -1,4 +1,13 @@
-# 
+# The scripts for starting services are in different places depending on the hdp version, so set them here
+{% if int(pillar.hdp2.version.split('.')[1]) >= 2 %}
+{% set hbase_script_dir = '/usr/hdp/current/hbase-master/bin' %}
+{% set hbase_thrift_script_dir = '/usr/hdp/current/hbase-thrift/bin' %}
+{% else %}
+{% set hbase_script_dir = '/usr/lib/hbase/bin' %}
+{% set hbase_thrift_script_dir = hbase_script_dir %}
+{% endif %}
+
+#
 # Start the HBase master service
 #
 include:
@@ -41,7 +50,7 @@ hbase-master-svc:
   cmd:
     - run
     - user: hbase
-    - name: /usr/hdp/current/hbase-master/bin/hbase-daemon.sh start master && sleep 25
+    - name: {{ hbase_script_dir }}/hbase-daemon.sh start master && sleep 25
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hbase/hbase-hbase-master.pid'
     - require: 
       - pkg: hbase-master
@@ -62,7 +71,7 @@ hbase-thrift-svc:
   cmd:
     - run
     - user: hbase
-    - name: /usr/hdp/current/hbase-thrift/bin/hbase-daemon.sh start master && sleep 25
+    - name: {{ hbase_thrift_script_dir }}/hbase-daemon.sh start thrift
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hbase/hbase-hbase-thrift.pid'
     - require:
       - cmd: hbase-master-svc

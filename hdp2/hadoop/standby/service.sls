@@ -1,5 +1,12 @@
 {% set dfs_name_dir = salt['pillar.get']('hdp2:dfs:name_dir', '/mnt/hadoop/hdfs/nn') %}
 
+# The scripts for starting services are in different places depending on the hdp version, so set them here
+{% if int(pillar.hdp2.version.split('.')[1]) >= 2 %}
+{% set hadoop_script_dir = '/usr/hdp/current/hadoop-hdfs-namenode/../hadoop/sbin' %}
+{% else %}
+{% set hadoop_script_dir = '/usr/lib/hadoop/sbin' %}
+{% endif %}
+
 ##
 # Starts the namenode service.
 #

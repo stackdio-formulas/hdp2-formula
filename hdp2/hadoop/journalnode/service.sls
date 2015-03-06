@@ -1,5 +1,12 @@
 {% set journal_dir = salt['pillar.get']('hdp2:dfs:journal_dir', '/mnt/hadoop/hdfs/jn') %}
 
+# The scripts for starting services are in different places depending on the hdp version, so set them here
+{% if int(pillar.hdp2.version.split('.')[1]) >= 2 %}
+{% set hadoop_script_dir = '/usr/hdp/current/hadoop-hdfs-journalnode/../hadoop/sbin' %}
+{% else %}
+{% set hadoop_script_dir = '/usr/lib/hadoop/sbin' %}
+{% endif %}
+
 ##
 # Starts the journalnode service.
 #
@@ -9,7 +16,7 @@ hadoop-hdfs-journalnode-svc:
   cmd:
     - run
     - user: hdfs
-    - name: /usr/hdp/current/hadoop-hdfs-journalnode/../hadoop/sbin/hadoop-daemon.sh start namenode
+    - name: {{ hadoop_script_dir }}/hadoop-daemon.sh start namenode
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-journalnode.pid'
     - require:
       - pkg: hadoop-hdfs-journalnode

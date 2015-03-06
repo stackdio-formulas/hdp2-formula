@@ -5,6 +5,17 @@
 {% set mapred_staging_dir = '/user/history' %}
 {% set mapred_log_dir = '/var/log/hadoop-yarn' %}
 
+# The scripts for starting services are in different places depending on the hdp version, so set them here
+{% if int(pillar.hdp2.version.split('.')[1]) >= 2 %}
+{% set hadoop_script_dir = '/usr/hdp/current/hadoop-hdfs-namenode/../hadoop/sbin' %}
+{% set yarn_script_dir = '/usr/hdp/current/hadoop-yarn-resourcemanager/../hadoop/sbin' %}
+{% set mapred_script_dir = '/usr/hdp/current/hadoop-mapreduce-historyserver/sbin' %}
+{% else %}
+{% set hadoop_script_dir = '/usr/lib/hadoop/sbin' %}
+{% set yarn_script_dir = '/usr/lib/hadoop-yarn/sbin' %}
+{% set mapred_script_dir = '/usr/lib/hadoop-mapreduce/sbin' %}
+{% endif %}
+
 ##
 # Standby NN specific SLS
 ##
@@ -28,8 +39,8 @@ include:
 hadoop-hdfs-namenode-svc:
   cmd:
     - run
-    - name: /usr/hdp/current/hadoop-hdfs-namenode/../hadoop/sbin/hadoop-daemon.sh start namenode
     - user: hdfs
+    - name: {{ hadoop_script_dir }}/hadoop-daemon.sh start namenode
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-namenode.pid'
     - require: 
       - pkg: hadoop-hdfs-namenode
@@ -66,7 +77,7 @@ hadoop-yarn-resourcemanager-svc:
   cmd:
     - run
     - user: yarn
-    - name: /usr/hdp/current/hadoop-yarn-resourcemanager/sbin/yarn-daemon.sh start resourcemanager
+    - name: {{ yarn_script_dir }}/yarn-daemon.sh start resourcemanager
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/yarn/yarn-yarn-resourcemanager.pid'
     - require: 
       - pkg: hadoop-yarn-resourcemanager
@@ -86,7 +97,7 @@ hadoop-mapreduce-historyserver-svc:
   cmd:
     - run
     - user: mapred
-    - name: /usr/hdp/current/hadoop-mapreduce-historyserver/sbin/mr-jobhistory-daemon.sh start historyserver
+    - name: {{ mapred_script_dir }}/mr-jobhistory-daemon.sh start historyserver
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/yarn/mapred-mapred-historyserver.pid'
     - require:
       - pkg: hadoop-mapreduce-historyserver

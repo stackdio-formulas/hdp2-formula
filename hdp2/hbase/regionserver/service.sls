@@ -1,11 +1,17 @@
-# 
+{% if int(pillar.hdp2.version.split('.')[1]) >= 2 %}
+{% set hbase_script_dir = '/usr/hdp/current/hbase-regionserver/bin' %}
+{% else %}
+{% set hbase_script_dir = '/usr/lib/hbase/bin' %}
+{% endif %}
+
+#
 # Install the HBase regionserver package
 #
 
 hbase-regionserver-svc:
   cmd:
     - run
-    - name: /usr/hdp/current/hbase-regionserver/bin/hbase-daemon.sh start regionserver
+    - name: {{ hbase_script_dir }}/hbase-daemon.sh start regionserver
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hbase/hbase-hbase-regionserver.pid'
     - require: 
       - pkg: hbase-regionserver
