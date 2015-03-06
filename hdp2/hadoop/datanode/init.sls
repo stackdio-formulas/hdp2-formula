@@ -52,6 +52,8 @@ hadoop-hdfs-datanode:
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/krb5.conf
 {% endif %}
+    - require_in:
+      - cmd: hdfs_log_dir
 
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
 /etc/default/hadoop-hdfs-datanode:
@@ -80,6 +82,8 @@ hadoop-yarn-nodemanager:
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/krb5.conf
 {% endif %}
+    - require_in:
+      - cmd: hdfs_log_dir
 
 ##
 # Installs the mapreduce service

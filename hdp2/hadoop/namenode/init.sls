@@ -43,6 +43,8 @@ hadoop-hdfs-namenode:
     - installed 
     - require:
       - cmd: repo_placeholder
+    - require_in:
+      - cmd: hdfs_log_dir
 
 # we need a mapred user on the standby namenode for job history to work; if the
 # namenode state is not included we want to add it manually
@@ -125,6 +127,8 @@ hadoop-hdfs-namenode:
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/krb5.conf
       {% endif %}
+    - require_in:
+      - cmd: hdfs_log_dir
 
 ##
 # Installs the yarn resourcemanager package.
@@ -139,6 +143,8 @@ hadoop-yarn-resourcemanager:
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/krb5.conf
       {% endif %}
+    - require_in:
+      - cmd: hdfs_log_dir
 
 ##
 # Installs the mapreduce historyserver package.
@@ -153,6 +159,8 @@ hadoop-mapreduce-historyserver:
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/krb5.conf
       {% endif %}
+    - require_in:
+      - cmd: hdfs_log_dir
 
 {% endif %}
 ##

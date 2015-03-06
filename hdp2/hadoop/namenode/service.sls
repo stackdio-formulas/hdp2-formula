@@ -98,7 +98,7 @@ hadoop-mapreduce-historyserver-svc:
     - run
     - user: mapred
     - name: {{ mapred_script_dir }}/mr-jobhistory-daemon.sh start historyserver
-    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/yarn/mapred-mapred-historyserver.pid'
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/mapreduce/mapred-mapred-historyserver.pid'
     - require:
       - pkg: hadoop-mapreduce-historyserver
       - cmd: hadoop-hdfs-namenode-svc

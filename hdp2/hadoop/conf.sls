@@ -1,3 +1,28 @@
+hdfs_log_dir:
+  cmd:
+    - run
+    - name: 'mkdir -p /var/log/hadoop/hdfs && chown hdfs:hadoop /var/log/hadoop/hdfs'
+
+{% if 'hdp2.hadoop.standby' not in grains.roles %}
+mapred_log_dir:
+  cmd:
+    - run
+    - name: 'mkdir -p /var/log/hadoop/mapreduce && chown mapred:hadoop /var/log/hadoop/mapreduce'
+    - require:
+      - cmd: hdfs_log_dir
+    - require_in:
+      - /etc/hadoop/conf
+
+yarn_log_dir:
+  cmd:
+    - run
+    - name: 'mkdir -p /var/log/hadoop/yarn && chown yarn:hadoop /var/log/hadoop/yarn'
+    - require:
+      - cmd: mapred_log_dir
+    - require_in:
+      - /etc/hadoop/conf
+{% endif %}
+
 /etc/hadoop/conf:
   file:
     - recurse
@@ -7,6 +32,8 @@
     - group: root
     - file_mode: 644
     - exclude_pat: '.*.swp'
+    - require:
+      - cmd: hdfs_log_dir
 
 /etc/hadoop/conf/container-executor.cfg:
   file:
