@@ -26,6 +26,20 @@
     - require:
       - file: /etc/hadoop/conf
 
+/etc/hadoop/conf/hadoop-env.sh:
+  file:
+    - append
+    - text: 'export HADOOP_LOG_DIR=/var/log/hadoop/$USER'
+    - require:
+      - file: /etc/hadoop/conf
+
+/etc/hadoop/conf/mapred-env.sh:
+  file:
+    - append
+    - text: 'export HADOOP_MAPRED_LOG_DIR=/var/log/hadoop/mapreduce'
+    - require:
+      - file: /etc/hadoop/conf
+
 bigtop_java_home:
   file:
     - managed

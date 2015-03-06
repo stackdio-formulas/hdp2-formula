@@ -1,15 +1,6 @@
 {% set mapred_local_dir = salt['pillar.get']('hdp2:mapred:local_dir', '/mnt/yarn') %}
 {% set dfs_data_dir = salt['pillar.get']('hdp2:dfs:data_dir', '/mnt/hadoop/hdfs/data') %}
 
-{% if grains['os_family'] == 'Debian' %}
-extend:
-  remove_policy_file:
-    file:
-      - require:
-        - service: hadoop-hdfs-datanode-svc
-        - service: hadoop-yarn-nodemanager-svc
-{% endif %}
-
 
 ##
 # Starts the datanode service
@@ -18,9 +9,9 @@ extend:
 #
 ##
 hadoop-hdfs-datanode-svc:
-  service:
-    - running
-    - name: hadoop-hdfs-datanode
+  cmd:
+    - run
+    - name: /usr/hdp/current/hadoop-hdfs-datanode/../hadoop/sbin/hadoop-daemon.sh start datanode
     - require: 
       - pkg: hadoop-hdfs-datanode
       - cmd: dfs_data_dir
@@ -38,9 +29,9 @@ hadoop-hdfs-datanode-svc:
 # Depends on: JDK7
 ##
 hadoop-yarn-nodemanager-svc:
-  service:
-    - running
-    - name: hadoop-yarn-nodemanager
+  cmd:
+    - run
+    - name: /usr/hdp/current/hadoop-yarn-nodemanager/sbin/yarn-daemon.sh start nodemanager
     - require: 
       - pkg: hadoop-yarn-nodemanager
       - cmd: datanode_mapred_local_dirs

@@ -20,25 +20,16 @@ include:
 ##
 {% else %}
 
-{% if grains['os_family'] == 'Debian' %}
-extend:
-  remove_policy_file:
-    file:
-      - require:
-        - service: hadoop-hdfs-namenode-svc
-        - service: hadoop-yarn-resourcemanager-svc
-        - service: hadoop-mapreduce-historyserver-svc
-{% endif %}
-
 ##
 # Starts the namenode service.
 #
 # Depends on: JDK7
 ##
 hadoop-hdfs-namenode-svc:
-  service:
-    - running
-    - name: hadoop-hdfs-namenode
+  cmd:
+    - run
+    - name: /usr/hdp/current/hadoop-hdfs-namenode/../hadoop/sbin/hadoop-daemon.sh start namenode
+    - user: hdfs
     - require: 
       - pkg: hadoop-hdfs-namenode
       # Make sure HDFS is initialized before the namenode
@@ -59,7 +50,7 @@ activate_namenode:
     - user: hdfs
     - group: hdfs
     - require:
-      - service: hadoop-hdfs-namenode-svc
+      - cmd: hadoop-hdfs-namenode-svc
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: hdfs_kinit
       {% endif %}
@@ -71,12 +62,13 @@ activate_namenode:
 # Depends on: JDK7
 ##
 hadoop-yarn-resourcemanager-svc:
-  service:
-    - running
-    - name: hadoop-yarn-resourcemanager
+  cmd:
+    - run
+    - user: yarn
+    - name: /usr/hdp/current/hadoop-yarn-resourcemanager/sbin/yarn-daemon.sh start resourcemanager
     - require: 
       - pkg: hadoop-yarn-resourcemanager
-      - service: hadoop-hdfs-namenode-svc
+      - cmd: hadoop-hdfs-namenode-svc
       - cmd: hdfs_mapreduce_var_dir
       - cmd: hdfs_mapreduce_log_dir
       - file: bigtop_java_home
@@ -89,12 +81,13 @@ hadoop-yarn-resourcemanager-svc:
 # Depends on: JDK7
 ##
 hadoop-mapreduce-historyserver-svc:
-  service:
-    - running
-    - name: hadoop-mapreduce-historyserver
+  cmd:
+    - run
+    - user: mapred
+    - name: /usr/hdp/current/hadoop-mapreduce-historyserver/sbin/mr-jobhistory-daemon.sh start historyserver
     - require:
       - pkg: hadoop-mapreduce-historyserver
-      - service: hadoop-hdfs-namenode-svc
+      - cmd: hadoop-hdfs-namenode-svc
       - file: bigtop_java_home
     - watch:
       - file: /etc/hadoop/conf
@@ -140,7 +133,7 @@ hdfs_kinit:
     - user: hdfs
     - group: hdfs
     - require:
-      - service: hadoop-hdfs-namenode-svc
+      - cmd: hadoop-hdfs-namenode-svc
       - cmd: generate_hadoop_keytabs
 {% endif %}
 
@@ -153,7 +146,7 @@ hdfs_tmp_dir:
     - name: 'hdfs dfs -mkdir /tmp && hdfs dfs -chmod -R 1777 /tmp'
     - unless: 'hdfs dfs -test -d /tmp'
     - require:
-      - service: hadoop-hdfs-namenode-svc
+      - cmd: hadoop-hdfs-namenode-svc
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: hdfs_kinit
       {% endif %}
@@ -170,7 +163,7 @@ hdfs_mapreduce_log_dir:
     - name: 'hdfs dfs -mkdir -p {{ mapred_log_dir }} && hdfs dfs -chown yarn:mapred {{ mapred_log_dir }}'
     - unless: 'hdfs dfs -test -d {{ mapred_log_dir }}'
     - require:
-      - service: hadoop-hdfs-namenode-svc
+      - cmd: hadoop-hdfs-namenode-svc
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: hdfs_kinit
       {% endif %}
@@ -187,7 +180,7 @@ hdfs_mapreduce_var_dir:
     - name: 'hdfs dfs -mkdir -p {{ mapred_staging_dir }} && hdfs dfs -chmod -R 1777 {{ mapred_staging_dir }} && hdfs dfs -chown mapred:hadoop {{ mapred_staging_dir }}'
     - unless: 'hdfs dfs -test -d {{ mapred_staging_dir }}'
     - require:
-      - service: hadoop-hdfs-namenode-svc
+      - cmd: hadoop-hdfs-namenode-svc
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: hdfs_kinit
       {% endif %}
@@ -205,7 +198,7 @@ hdfs_user_dir:
     - name: 'hdfs dfs -mkdir /user/{{ user }} && hdfs dfs -chown {{ user }}:{{ user }} /user/{{ user }}'
     - unless: 'hdfs dfs -test -d /user/{{ user }}'
     - require:
-      - service: hadoop-yarn-resourcemanager-svc
+      - cmd: hadoop-yarn-resourcemanager-svc
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: hdfs_kinit
       {% endif %}
