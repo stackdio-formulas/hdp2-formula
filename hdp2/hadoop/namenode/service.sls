@@ -97,7 +97,7 @@ hadoop-mapreduce-historyserver-svc:
   cmd:
     - run
     - user: mapred
-    - name: {{ mapred_script_dir }}/mr-jobhistory-daemon.sh start historyserver
+    - name: export HADOOP_MAPRED_HOME={{ mapred_script_dir }}/.. && export HADOOP_MAPRED_LOG_DIR=/var/log/hadoop/mapreduce && export HADOOP_LIBEXEC_DIR={{ hadoop_script_dir }}/../libexec && {{ mapred_script_dir }}/mr-jobhistory-daemon.sh start historyserver
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/mapreduce/mapred-mapred-historyserver.pid'
     - require:
       - pkg: hadoop-mapreduce-historyserver
