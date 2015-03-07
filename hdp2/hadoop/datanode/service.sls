@@ -44,7 +44,7 @@ hadoop-yarn-nodemanager-svc:
   cmd:
     - run
     - user: yarn
-    - name: {{ yarn_script_dir }}/yarn-daemon.sh start nodemanager
+    - name: export HADOOP_LIBEXEC_DIR={{ hadoop_script_dir }}/../libexec && {{ yarn_script_dir }}/yarn-daemon.sh start nodemanager
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/yarn/yarn-yarn-nodemanager.pid'
     - require: 
       - pkg: hadoop-yarn-nodemanager

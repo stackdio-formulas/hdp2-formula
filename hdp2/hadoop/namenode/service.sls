@@ -77,7 +77,7 @@ hadoop-yarn-resourcemanager-svc:
   cmd:
     - run
     - user: yarn
-    - name: {{ yarn_script_dir }}/yarn-daemon.sh start resourcemanager
+    - name: export HADOOP_LIBEXEC_DIR={{ hadoop_script_dir }}/../libexec && {{ yarn_script_dir }}/yarn-daemon.sh start resourcemanager
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/yarn/yarn-yarn-resourcemanager.pid'
     - require: 
       - pkg: hadoop-yarn-resourcemanager
