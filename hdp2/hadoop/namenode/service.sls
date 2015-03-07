@@ -40,7 +40,7 @@ hadoop-hdfs-namenode-svc:
   cmd:
     - run
     - user: hdfs
-    - name: {{ hadoop_script_dir }}/hadoop-daemon.sh --config /etc/hadoop/conf start namenode
+    - name: export HADOOP_LIBEXEC_DIR={{ hadoop_script_dir }}/../libexec && {{ hadoop_script_dir }}/hadoop-daemon.sh start namenode
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-namenode.pid'
     - require: 
       - pkg: hadoop-hdfs-namenode
@@ -77,7 +77,7 @@ hadoop-yarn-resourcemanager-svc:
   cmd:
     - run
     - user: yarn
-    - name: {{ yarn_script_dir }}/yarn-daemon.sh --config /etc/hadoop/conf start resourcemanager
+    - name: {{ yarn_script_dir }}/yarn-daemon.sh start resourcemanager
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/yarn/yarn-yarn-resourcemanager.pid'
     - require: 
       - pkg: hadoop-yarn-resourcemanager
@@ -97,7 +97,7 @@ hadoop-mapreduce-historyserver-svc:
   cmd:
     - run
     - user: mapred
-    - name: {{ mapred_script_dir }}/mr-jobhistory-daemon.sh --config /etc/hadoop/conf start historyserver
+    - name: {{ mapred_script_dir }}/mr-jobhistory-daemon.sh start historyserver
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/mapreduce/mapred-mapred-historyserver.pid'
     - require:
       - pkg: hadoop-mapreduce-historyserver

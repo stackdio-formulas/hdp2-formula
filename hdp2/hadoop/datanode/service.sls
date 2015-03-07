@@ -21,7 +21,7 @@ hadoop-hdfs-datanode-svc:
   cmd:
     - run
     - user: hdfs
-    - name: {{ hadoop_script_dir }}/hadoop-daemon.sh --config /etc/hadoop/conf start datanode
+    - name: export HADOOP_LIBEXEC_DIR={{ hadoop_script_dir }}/../libexec && {{ hadoop_script_dir }}/hadoop-daemon.sh start datanode
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-datanode.pid'
     - require: 
       - pkg: hadoop-hdfs-datanode
@@ -44,7 +44,7 @@ hadoop-yarn-nodemanager-svc:
   cmd:
     - run
     - user: yarn
-    - name: {{ yarn_script_dir }}/yarn-daemon.sh --config /etc/hadoop/conf start nodemanager
+    - name: {{ yarn_script_dir }}/yarn-daemon.sh start nodemanager
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/yarn/yarn-yarn-nodemanager.pid'
     - require: 
       - pkg: hadoop-yarn-nodemanager
