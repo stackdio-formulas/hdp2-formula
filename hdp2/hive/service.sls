@@ -26,24 +26,15 @@ mysql-svc:
     - require:
       - pkg: mysql
 
-configure_mysql:
+configure_metastore:
   cmd:
     - script
     - template: jinja
-    - source: salt://hdp2/hive/configure_mysql.sh
+    - source: salt://hdp2/hive/configure_metastore.sh
     - unless: echo "show databases" | mysql -u root | grep metastore
     - require:
       - pkg: hive
       - service: mysql-svc
-
-configure_metastore:
-  cmd:
-    - run
-    - user: root
-    - name: {{ hive_home }}/bin/schematool -initSchema -dbType mysql
-    - unless: echo "show databases" | mysql -u root | grep metastore
-    - require:
-      - cmd: configure_mysql
       - file: {{ hive_home }}/lib/mysql-connector-java.jar
 
 create_warehouse_dir:
