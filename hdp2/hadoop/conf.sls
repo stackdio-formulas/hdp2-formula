@@ -1,13 +1,13 @@
 hdfs_log_dir:
   cmd:
     - run
-    - name: 'mkdir -p /var/{log,run}/hadoop/hdfs && chown hdfs:hadoop /var/{log,run}/hadoop/hdfs && chmod 755 /var/run/hadoop-hdfs'
+    - name: 'mkdir -p /var/{log,run}/hadoop/hdfs && chown hdfs:hadoop /var/{log,run}/hadoop/hdfs{% if pillar.hdp2.version.split('.')[1] | int < 2 %} && chmod 755 /var/run/hadoop-hdfs{% endif %}'
     - onlyif: id -u hdfs
 
 mapred_log_dir:
   cmd:
     - run
-    - name: 'mkdir -p /var/{log,run}/hadoop/mapreduce && chown mapred:hadoop /var/{log,run}/hadoop/mapreduce && chmod 755 /var/run/hadoop-mapreduce'
+    - name: 'mkdir -p /var/{log,run}/hadoop/mapreduce && chown mapred:hadoop /var/{log,run}/hadoop/mapreduce{% if pillar.hdp2.version.split('.')[1] | int < 2 %} && chmod 755 /var/run/hadoop-mapreduce{% endif %}'
     - onlyif: id -u mapred
     - require:
       - cmd: hdfs_log_dir
@@ -17,7 +17,7 @@ mapred_log_dir:
 yarn_log_dir:
   cmd:
     - run
-    - name: 'mkdir -p /var/{log,run}/hadoop/yarn && chown yarn:hadoop /var/{log,run}/hadoop/yarn && chmod 755 /var/run/hadoop-yarn'
+    - name: 'mkdir -p /var/{log,run}/hadoop/yarn && chown yarn:hadoop /var/{log,run}/hadoop/yarn{% if pillar.hdp2.version.split('.')[1] | int < 2 %} && chmod 755 /var/run/hadoop-yarn{% endif %}'
     - onlyif: id -u yarn
     - require:
       - cmd: mapred_log_dir
