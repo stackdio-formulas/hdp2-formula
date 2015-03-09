@@ -1,7 +1,7 @@
 
 # The scripts for starting services are in different places depending on the hdp version, so set them here
 {% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
-{% set hive_home = '/usr/hdp/current/hive' %}
+{% set hive_home = '/usr/hdp/current/hive-metastore' %}
 {% else %}
 {% set hive_home = '/usr/lib/hive' %}
 {% endif %}

@@ -1,13 +1,9 @@
 
 # The scripts for starting services are in different places depending on the hdp version, so set them here
 {% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
-{% set hive_home = '/usr/hdp/current/hive' %}
-{% set hive_metastore_home = hive_home + '-metastore' %}
-{% set hive_server_home = hive_home + '-server2' %}
+{% set hive_home = '/usr/hdp/current/hive-metastore' %}
 {% else %}
 {% set hive_home = '/usr/lib/hive' %}
-{% set hive_metastore_home = hive_home %}
-{% set hive_server_home = hive_home %}
 {% endif %}
 
 # 
@@ -88,7 +84,7 @@ hive-metastore:
   cmd:
     - run
     - user: hive
-    - name: 'nohup {{ hive_metastore_home }}/bin/hive --service metastore >/var/log/hive/hive.out 2>/var/log/hive/hive.log & ; '
+    - name: 'nohup {{ hive_home }}/bin/hive --service metastore >/var/log/hive/hive.out 2>/var/log/hive/hive.log & ; '
     #- unless:
     - require:
       - pkg: hive
@@ -105,7 +101,7 @@ hive-server2:
   cmd:
     - run
     - user: hive
-    - name: 'nohup {{ hive_server_home }}/bin/hiveserver2 >/var/log/hive/hiveserver2.out 2> /var/log/hive/hiveserver2.log & ; '
+    - name: 'nohup {{ hive_home }}/bin/hiveserver2 >/var/log/hive/hiveserver2.out 2> /var/log/hive/hiveserver2.log & ; '
     #- unless:
     - require: 
       - cmd: hive-metastore
