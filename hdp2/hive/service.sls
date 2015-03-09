@@ -75,7 +75,7 @@ hive-metastore:
   cmd:
     - run
     - user: hive
-    - name: 'nohup {{ hive_home }}/bin/hive --service metastore >/var/log/hive/hive.out 2>/var/log/hive/hive.log & ; echo $! > /var/run/hive/hive-metastore.pid'
+    - name: 'nohup {{ hive_home }}/bin/hive --service metastore >/var/log/hive/hive.out 2>/var/log/hive/hive.log & && echo $! > /var/run/hive/hive-metastore.pid'
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hive/hive-metastore.pid'
     - require:
       - pkg: hive
@@ -92,7 +92,7 @@ hive-server2:
   cmd:
     - run
     - user: hive
-    - name: 'nohup {{ hive_home }}/bin/hiveserver2 >/var/log/hive/hiveserver2.out 2>/var/log/hive/hiveserver2.log & ; echo $! > /var/run/hive/hive-server2.pid'
+    - name: 'nohup {{ hive_home }}/bin/hiveserver2 >/var/log/hive/hiveserver2.out 2>/var/log/hive/hiveserver2.log & && echo $! > /var/run/hive/hive-server2.pid'
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hive/hive-server2.pid'
     - require: 
       - cmd: hive-metastore
