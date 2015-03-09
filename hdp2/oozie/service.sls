@@ -46,7 +46,7 @@ oozie-svc:
       - cmd: ooziedb
       - cmd: populate-oozie-sharelibs
       - file: /var/log/oozie
-      - file: /var/lib/oozie
+      - file: {{ oozie_home }}
 
 prepare_server:
   cmd:
