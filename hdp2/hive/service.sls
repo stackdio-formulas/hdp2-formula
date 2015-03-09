@@ -48,7 +48,7 @@ configure_metastore:
     - unless: echo "show databases" | mysql -u root | grep metastore
     - require:
       - cmd: configure_mysql
-      - file: /usr/lib/hive/lib/mysql-connector-java.jar
+      - file: {{ hive_home }}/lib/mysql-connector-java.jar
 
 create_warehouse_dir:
   cmd:
@@ -95,7 +95,7 @@ hive-metastore:
       - cmd: configure_metastore
       - cmd: warehouse_dir_permissions
       - service: mysql-svc
-      - file: /usr/lib/hive/lib/mysql-connector-java.jar
+      - file: {{ hive_home }}/lib/mysql-connector-java.jar
       - file: /etc/hive/conf/hive-site.xml
       - file: /mnt/tmp/
     - watch:

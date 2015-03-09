@@ -1,4 +1,12 @@
-# 
+
+# The scripts for starting services are in different places depending on the hdp version, so set them here
+{% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
+{% set hive_home = '/usr/hdp/current/hive' %}
+{% else %}
+{% set hive_home = '/usr/lib/hive' %}
+{% endif %}
+
+#
 # Install the Hive package
 #
 include:
@@ -42,7 +50,7 @@ mysql:
       - mysql-connector-java
       {% endif %}
 
-/usr/lib/hive/lib/mysql-connector-java.jar:
+{{ hive_home }}/lib/mysql-connector-java.jar:
   file:
     - symlink
     - target: /usr/share/java/mysql-connector-java.jar
@@ -55,14 +63,14 @@ add_sentry_jars:
     - run
     - name: "find /usr/lib/sentry/lib -type f -name 'sentry*.jar' | xargs -n1 -Ifile ln -s file ."
     - unless: 'ls sentry*.jar &> /dev/null'
-    - cwd: /usr/lib/hive/lib
+    - cwd: {{ hive_home }}/lib
     - require:
       - pkg: hive
 
 add_hive_jars_to_sentry:
   cmd:
     - run
-    - name: "find /usr/lib/hive/lib -type f -name 'hive*.jar' | xargs -n1 -Ifile ln -s file ."
+    - name: "find {{ hive_home }}/lib -type f -name 'hive*.jar' | xargs -n1 -Ifile ln -s file ."
     - unless: 'ls hive*.jar &> /dev/null'
     - cwd: /usr/lib/sentry/lib
     - require:
