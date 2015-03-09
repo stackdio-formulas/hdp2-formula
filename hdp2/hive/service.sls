@@ -82,6 +82,14 @@ warehouse_dir_permissions:
     - require:
       - pkg: hive
 
+/etc/profile.d/hive:
+  file:
+    - managed
+    - user: root
+    - group: root
+    - mode: 644
+    - contents: 'export HIVE_HOME={{ hive_home }} ; export HIVE_BIN=$HIVE_HOME/bin ; export HIVE_CONF_DIR=$HIVE_HOME/conf'
+
 hive-metastore:
   cmd:
     - run
