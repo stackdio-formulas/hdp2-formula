@@ -21,7 +21,7 @@ fix_symlink:
     - run
     - user: root
     - name: 'ln -s `find /usr/hdp -name {{ pillar.hdp2.version }}-*`/oozie `find /usr/hdp -name {{ pillar.hdp2.version }}-*`/oozie-server'
-    - unless: 'test -d `find /usr/hdp -name {{ pillar.hdp2.version }}-*`/oozie'
+    - unless: 'test -d `find /usr/hdp -name {{ pillar.hdp2.version }}-*`/oozie-server'
     - require:
       - pkg: oozie
     - require_in:
