@@ -1,5 +1,11 @@
 #!/bin/bash -e
 
+{% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
+{% set hive_home = '/usr/hdp/current/hive-metastore' %}
+{% else %}
+{% set hive_home = '/usr/lib/hive' %}
+{% endif %}
+
 # configure mysql
 /usr/bin/mysql_secure_installation <<EOF
 
