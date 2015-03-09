@@ -19,7 +19,7 @@ fix_symlink:
   cmd:
     - run
     - user: root
-    - name: ln -s `find /usr/hdp -name {{ pillar.hdp2.version }}-*`/oozie `find /usr/hdp -name {{ pillar.hdp2.version }}-*`/oozie-server
+    - name: 'ln -s `find /usr/hdp -name {{ pillar.hdp2.version }}-*`/oozie `find /usr/hdp -name {{ pillar.hdp2.version }}-*`/oozie-server'
     - require:
       - pkg: oozie
     - require_in:
@@ -67,7 +67,7 @@ ooziedb:
   cmd:
     - run
     - name: '{{ oozie_home }}/bin/ooziedb.sh create -sqlfile oozie.sql -run Validate DB Connection'
-    - unless: 'test -d {{ oozie_data_dir }}/oozie-db
+    - unless: 'test -d {{ oozie_data_dir }}/oozie-db'
     {% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
     - user: root
     {% else %}
