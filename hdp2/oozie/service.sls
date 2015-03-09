@@ -10,6 +10,7 @@ copy_ssl_conf:
     - run
     - user: root
     - name: cp -r {{ oozie_home }}/tomcat-deployment/conf/ssl /etc/oozie/conf
+    - unless: 'test -d /etc/oozie/conf/ssl'
     - require:
       - pkg: oozie
     - require_in:
@@ -20,6 +21,7 @@ fix_symlink:
     - run
     - user: root
     - name: 'ln -s `find /usr/hdp -name {{ pillar.hdp2.version }}-*`/oozie `find /usr/hdp -name {{ pillar.hdp2.version }}-*`/oozie-server'
+    - unless: 'test -d `find /usr/hdp -name {{ pillar.hdp2.version }}-*`/oozie'
     - require:
       - pkg: oozie
     - require_in:
