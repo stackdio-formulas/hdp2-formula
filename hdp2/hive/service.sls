@@ -71,13 +71,25 @@ warehouse_dir_permissions:
     - require:
       - cmd: warehouse_dir_owner
 
+{{ hive_home }}/bin/hive-daemon.sh:
+  file:
+    - managed
+    - template: jinja
+    - source: salt://hdp2/hive/hive-daemon.sh
+    - user: root
+    - group: root
+    - mode: 755
+    - require:
+      - pkg: hive
+
 hive-metastore:
   cmd:
     - run
     - user: hive
-    - name: 'nohup {{ hive_home }}/bin/hive --service metastore >/var/log/hive/hive.out 2>/var/log/hive/hive.log & && echo $! > /var/run/hive/hive-metastore.pid'
+    - name: '{{ hive_home }}/bin/hive-daemon.sh start hive-metastore'
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hive/hive-metastore.pid'
     - require:
+      - file: {{ hive_home }}/bin/hive-daemon.sh
       - pkg: hive
       - cmd: configure_metastore
       - cmd: warehouse_dir_permissions
@@ -92,7 +104,7 @@ hive-server2:
   cmd:
     - run
     - user: hive
-    - name: 'nohup {{ hive_home }}/bin/hiveserver2 >/var/log/hive/hiveserver2.out 2>/var/log/hive/hiveserver2.log & && echo $! > /var/run/hive/hive-server2.pid'
+    - name: '{{ hive_home }}/bin/hive-daemon.sh start hive-server2'
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hive/hive-server2.pid'
     - require: 
       - cmd: hive-metastore
