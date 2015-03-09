@@ -29,20 +29,6 @@ hive:
     - require:
       - pkg: mysql
       - cmd: repo_placeholder
-      {% if grains['os_family'] == 'Debian' %}
-      - file: hive_init_script
-      {% endif %}
-
-{% if grains['os_family'] == 'Debian' %}
-hive_init_script:
-  file:
-    - managed
-    - name: /etc/init.d/hive-metastore
-    - source: salt://hdp2/etc/hive/hive-metastore
-    - user: root
-    - group: root
-    - mode: 755
-{% endif %}
 
 # @todo move this out to its own formula
 mysql:

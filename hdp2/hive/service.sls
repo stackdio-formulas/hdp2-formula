@@ -1,4 +1,15 @@
 
+# The scripts for starting services are in different places depending on the hdp version, so set them here
+{% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
+{% set hive_home = '/usr/hdp/current/hive' %}
+{% set hive_metastore_home = hive_home + '-metastore' %}
+{% set hive_server_home = hive_home + '-server2' %}
+{% else %}
+{% set hive_home = '/usr/lib/hive' %}
+{% set hive_metastore_home = hive_home %}
+{% set hive_server_home = hive_home %}
+{% endif %}
+
 # 
 # Start the Hive service
 #
@@ -19,15 +30,24 @@ mysql-svc:
     - require:
       - pkg: mysql
 
-configure_metastore:
+configure_mysql:
   cmd:
     - script
     - template: jinja
-    - source: salt://hdp2/hive/configure_metastore.sh
+    - source: salt://hdp2/hive/configure_mysql.sh
     - unless: echo "show databases" | mysql -u root | grep metastore
     - require:
       - pkg: hive
       - service: mysql-svc
+
+configure_metastore:
+  cmd:
+    - run
+    - user: root
+    - name: {{ hive_home }}/bin/schematool -initSchema -dbType mysql
+    - unless: echo "show databases" | mysql -u root | grep metastore
+    - require:
+      - cmd: configure_mysql
 
 create_warehouse_dir:
   cmd:
@@ -64,8 +84,11 @@ warehouse_dir_permissions:
       - cmd: warehouse_dir_owner
 
 hive-metastore:
-  service:
-    - running
+  cmd:
+    - run
+    - user: hive
+    - name: 'nohup {{ hive_metastore_home }}/bin/hive --service metastore >/var/log/hive/hive.out 2>/var/log/hive/hive.log & ; '
+    #- unless:
     - require:
       - pkg: hive
       - cmd: configure_metastore
@@ -78,10 +101,13 @@ hive-metastore:
       - file: /etc/hive/conf/hive-site.xml
 
 hive-server2:
-  service:
-    - running
+  cmd:
+    - run
+    - user: hive
+    - name: 'nohup {{ hive_server_home }}/bin/hiveserver2 >/var/log/hive/hiveserver2.out 2> /var/log/hive/hiveserver2.log & ; '
+    #- unless:
     - require: 
-      - service: hive-metastore
+      - cmd: hive-metastore
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hive_keytabs 
 {% endif %}

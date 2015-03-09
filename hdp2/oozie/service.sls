@@ -52,7 +52,7 @@ prepare_server:
   cmd:
     - run
     - name: '{{ oozie_home }}/bin/oozie-setup.sh prepare-war'
-    #- unless: 'service oozie status'
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/oozie/oozie.pid'
     - user: root
     - require:
       - pkg: oozie
