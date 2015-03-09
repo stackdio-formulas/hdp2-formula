@@ -8,7 +8,7 @@
 # The scripts for starting services are in different places depending on the hdp version, so set them here
 {% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
 {% set hadoop_script_dir = '/usr/hdp/current/hadoop-hdfs-namenode/../hadoop/sbin' %}
-{% set yarn_script_dir = '/usr/hdp/current/hadoop-yarn-resourcemanager/../hadoop/sbin' %}
+{% set yarn_script_dir = '/usr/hdp/current/hadoop-yarn-resourcemanager/sbin' %}
 {% set mapred_script_dir = '/usr/hdp/current/hadoop-mapreduce-historyserver/sbin' %}
 {% else %}
 {% set hadoop_script_dir = '/usr/lib/hadoop/sbin' %}
