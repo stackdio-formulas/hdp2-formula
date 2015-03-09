@@ -82,7 +82,7 @@ warehouse_dir_permissions:
     - require:
       - pkg: hive
 
-/etc/profile.d/hive:
+/etc/profile.d/hive.sh:
   file:
     - managed
     - user: root
