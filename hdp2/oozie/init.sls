@@ -1,5 +1,12 @@
 {% set oozie_data_dir = '/var/lib/oozie' %}
 
+# The scripts for starting services are in different places depending on the hdp version, so set them here
+{% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
+{% set oozie_home = '/usr/hdp/current/oozie-server' %}
+{% else %}
+{% set oozie_home = '/usr/lib/oozie' %}
+{% endif %}
+
 # 
 # Install the Oozie package
 #
@@ -28,20 +35,6 @@ oozie:
       - unzip
     - require:
       - cmd: repo_placeholder
-      {% if grains['os_family'] == 'RedHat' %}
-      - file: oozie_init_script
-      {% endif %}
-
-{% if grains['os_family'] == 'RedHat' %}
-oozie_init_script:
-  file:
-    - managed
-    - name: /etc/init.d/oozie
-    - source: salt://hdp2/etc/oozie/oozie
-    - user: root
-    - group: root
-    - mode: 755
-{% endif %}
 
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
 /etc/oozie/conf/oozie-site.xml:
@@ -59,7 +52,7 @@ oozie_init_script:
 extjs:
   cmd:
     - run
-    - name: 'cp /usr/share/HDP-oozie/ext-2.2.zip /usr/lib/oozie/libext/'
+    - name: 'cp /usr/share/HDP-oozie/ext-2.2.zip {{ oozie_home }}/libext/'
     - user: root
     - require:
       - pkg: oozie
@@ -76,7 +69,7 @@ extjs:
     - require:
       - pkg: oozie
 
-/var/lib/oozie:
+{{ oozie_home }}:
   file:
     - directory
     - user: oozie

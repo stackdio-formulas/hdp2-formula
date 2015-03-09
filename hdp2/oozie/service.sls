@@ -1,13 +1,45 @@
-{% set oozie_data_dir = '/var/lib/oozie' %}
 {% set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.namenode and not G@roles:hdp2.hadoop.standby', 'grains.items', 'compound').values()[0]['fqdn_ip4'][0] %}
+
+# The scripts for starting services are in different places depending on the hdp version, so set them here
+{% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
+{% set oozie_home = '/usr/hdp/current/oozie-server' %}
+{% set oozie_data_dir = '/var/lib/oozie/data' %}
+
+copy_ssl_conf:
+  cmd:
+    - run
+    - user: root
+    - name: cp -r {{ oozie_home }}/tomcat-deployment/conf/ssl /etc/oozie/conf
+    - require:
+      - pkg: oozie
+    - require_in:
+      - cmd: prepare_server
+
+fix_symlink:
+  cmd:
+    - run
+    - user: root
+    - name: ln -s `find /usr/hdp -name {{ pillar.hdp2.version }}-*`/oozie `find /usr/hdp -name {{ pillar.hdp2.version }}-*`/oozie-server
+    - require:
+      - pkg: oozie
+    - require_in:
+      - cmd: prepare_server
+
+{% else %}
+{% set oozie_home = '/usr/lib/oozie' %}
+{% set oozie_data_dir = '/var/lib/oozie' %}
+{% endif %}
+
 # 
 # Start the Oozie service
 #
 
 oozie-svc:
-  service:
-    - running
-    - name: oozie
+  cmd:
+    - run
+    - user: oozie
+    - name: {{ oozie_home }}/bin/oozied.sh start
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/oozie/oozie.pid'
     - require:
       - pkg: oozie
       - cmd: extjs
@@ -19,8 +51,8 @@ oozie-svc:
 prepare_server:
   cmd:
     - run
-    - name: '/usr/lib/oozie/bin/oozie-setup.sh prepare-war'
-    - unless: 'service oozie status'
+    - name: '{{ oozie_home }}/bin/oozie-setup.sh prepare-war'
+    #- unless: 'service oozie status'
     - user: root
     - require:
       - pkg: oozie
@@ -34,9 +66,13 @@ prepare_server:
 ooziedb:
   cmd:
     - run
-    - name: '/usr/lib/oozie/bin/ooziedb.sh create -sqlfile oozie.sql -run Validate DB Connection'
-    - unless: 'test -d {{ oozie_data_dir }}/oozie-db'
+    - name: '{{ oozie_home }}/bin/ooziedb.sh create -sqlfile oozie.sql -run Validate DB Connection'
+    - unless: 'test -d {{ oozie_data_dir }}/oozie-db
+    {% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
+    - user: root
+    {% else %}
     - user: oozie
+    {% endif %}
     - require:
       - cmd: prepare_server
 
@@ -53,7 +89,7 @@ create-oozie-sharelibs:
 populate-oozie-sharelibs:
   cmd:
     - run
-    - name: '/usr/lib/oozie/bin/oozie-setup.sh sharelib create -fs hdfs://{{nn_host}}:8020 -locallib /usr/lib/oozie/oozie-sharelib.tar.gz'
+    - name: '{{ oozie_home }}/bin/oozie-setup.sh sharelib create -fs hdfs://{{nn_host}}:8020 -locallib {{ oozie_home }}/oozie-sharelib.tar.gz'
     - unless: 'hdfs dfs -test -d /user/oozie/share'
     - user: oozie 
     - require:
