@@ -48,6 +48,7 @@ configure_metastore:
     - unless: echo "show databases" | mysql -u root | grep metastore
     - require:
       - cmd: configure_mysql
+      - file: /usr/lib/hive/lib/mysql-connector-java.jar
 
 create_warehouse_dir:
   cmd:
