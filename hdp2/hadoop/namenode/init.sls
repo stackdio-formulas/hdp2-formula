@@ -17,13 +17,17 @@
 # This is a HA NN, reduce the normal NN state down to all we need
 # for the standby NameNode
 ##
-{% if 'hdp2.hadoop.standby' in grains.roles %}
+
 include:
   - hdp2.repo
   - hdp2.hadoop.conf
   - hdp2.landing_page
   {% if salt['pillar.get']('hdp2:namenode:start_service', True) %}
+  {% if 'hdp2.hadoop.standby' in grains.roles %}
   - hdp2.hadoop.standby.service
+  {% else %}
+  - hdp2.hadoop.namenode.service
+  {% endif %}
   {% endif %}
   {% if salt['pillar.get']('hdp2:security:enable', False) %}
   - krb5
@@ -31,6 +35,8 @@ include:
   - hdp2.security.stackdio_user
   - hdp2.hadoop.security
   {% endif %}
+
+{% if 'hdp2.hadoop.standby' in grains.roles %}
 
 extend:
   /etc/hadoop/conf:
@@ -78,19 +84,6 @@ mapred_user:
 
 # NOT a HA NN...continue like normal with the rest of the state
 {% else %}
-include:
-  - hdp2.repo
-  - hdp2.hadoop.conf
-  - hdp2.landing_page
-  {% if salt['pillar.get']('hdp2:namenode:start_service', True) %}
-  - hdp2.hadoop.namenode.service
-  {% endif %}
-  {% if salt['pillar.get']('hdp2:security:enable', False) %}
-  - krb5
-  - hdp2.security
-  - hdp2.security.stackdio_user
-  - hdp2.hadoop.security
-  {% endif %}
 
 extend:
   /etc/hadoop/conf:

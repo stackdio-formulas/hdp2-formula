@@ -19,17 +19,17 @@
 ##
 # Standby NN specific SLS
 ##
-{% if 'hdp2.hadoop.standby' in grains.roles %}
-include:
-  - hdp2.hadoop.standby.service
-##
-# END STANDBY NN
-##
-
-##
-# Regular NN SLS
-##
-{% else %}
+{#{% if 'hdp2.hadoop.standby' in grains.roles %}#}
+{#include:#}
+{#  - hdp2.hadoop.standby.service#}
+{####}
+{## END STANDBY NN#}
+{####}
+{##}
+{####}
+{## Regular NN SLS#}
+{####}
+{#{% else %}#}
 
 ##
 # Starts the namenode service.
@@ -60,7 +60,7 @@ hadoop-hdfs-namenode-svc:
 activate_namenode:
   cmd:
     - run
-    - name: 'sleep 30 && hdfs haadmin -transitionToActive nn1'
+    - name: 'hdfs haadmin -transitionToActive nn1'
     - user: hdfs
     - group: hdfs
     - require:
