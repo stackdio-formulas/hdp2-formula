@@ -25,7 +25,6 @@ hadoop-hdfs-datanode-svc:
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-datanode.pid'
     - require: 
       - pkg: hadoop-hdfs-datanode
-      - cmd: data_run_dir
       - cmd: dfs_data_dir
       - file: bigtop_java_home
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
@@ -73,15 +72,3 @@ dfs_data_dir:
     - unless: "test -d `echo {{ dfs_data_dir }} | awk -F, '{print $1}'` && [ $(stat -c '%U' $(echo {{ dfs_data_dir }} | awk -F, '{print $1}')) == 'hdfs' ]"
     - require:
       - pkg: hadoop-hdfs-datanode
-
-data_run_dir:
-  file:
-    - directory
-    - name: /var/run/hadoop/hdfs
-    - user: hdfs
-    - group: hadoop
-    - mode: 755
-    - require:
-      - pkg: hadoop-hdfs-datanode
-
-
