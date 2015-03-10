@@ -26,18 +26,6 @@ hadoop-hdfs-namenode-svc:
     - watch:
       - file: /etc/hadoop/conf
 
-start_zkfc:
-  cmd:
-    - run
-    - user: hdfs
-    - name: {{ hadoop_script_dir }}/hadoop-daemon.sh start zkfc -formatZK
-    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-zkfc.pid'
-    - require:
-      - cmd: hadoop-hdfs-namenode-svc
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
-      - cmd: hdfs_kinit
-      {% endif %}
-
 ##
 # Sets this namenode as the "Standby" namenode
 ##
