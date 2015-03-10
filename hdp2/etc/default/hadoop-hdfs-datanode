@@ -12,8 +12,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-export HADOOP_PID_DIR=/var/run/hadoop-hdfs
-export HADOOP_LOG_DIR=/var/log/hadoop-hdfs
+export HADOOP_PID_DIR=/var/run/hadoop/hdfs
+export HADOOP_LOG_DIR=/var/log/hadoop/hdfs
 export HADOOP_NAMENODE_USER=hdfs
 export HADOOP_SECONDARYNAMENODE_USER=hdfs
 export HADOOP_DATANODE_USER=hdfs
@@ -23,13 +23,13 @@ export HADOOP_IDENT_STRING=hdfs
 # ensure this happens. Once port registration completes, privileges are dropped back from root
 # to HADOOP_PRIVILEGED_NFS_USER.
 export HADOOP_PRIVILEGED_NFS_USER=hdfs
-export HADOOP_PRIVILEGED_NFS_PID_DIR=/var/run/hadoop-hdfs
-export HADOOP_PRIVILEGED_NFS_LOG_DIR=/var/log/hadoop-hdfs
+export HADOOP_PRIVILEGED_NFS_PID_DIR=/var/run/hadoop/hdfs
+export HADOOP_PRIVILEGED_NFS_LOG_DIR=/var/log/hadoop/hdfs
 
 {%- if salt['pillar.get']('hdp2:security:enable', False) %}
 {%- from 'krb5/settings.sls' import krb5 with context %}
 export HADOOP_SECURE_DN_USER=hdfs
-export HADOOP_SECURE_DN_PID_DIR=/var/run/hadoop-hdfs
-export HADOOP_SECURE_DN_LOG_DIR=/var/log/hadoop-hdfs
+export HADOOP_SECURE_DN_PID_DIR=/var/run/hadoop/hdfs
+export HADOOP_SECURE_DN_LOG_DIR=/var/log/hadoop/hdfs
 export JSVC_HOME=/usr/lib/bigtop-utils/
 {%- endif %}
