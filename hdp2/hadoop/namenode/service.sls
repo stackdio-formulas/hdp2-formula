@@ -228,4 +228,4 @@ hdfs_user_dir:
 ##
 # END REGULAR NAMENODE 
 ##
-{% endif %}
+{#{% endif %}#}
