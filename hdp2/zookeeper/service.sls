@@ -84,19 +84,6 @@ zookeeper-server-svc:
         - cmd: generate_zookeeper_keytabs
 {% endif %}
 
-{% if standby %}
-zkfc-svc:
-  cmd:
-    - run
-    - user: zookeeper
-    - name: {{ hadoop_script_dir }}/hadoop-daemon.sh start zkfc
-    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/zookeeper/hadoop-zookeeper-zkfc.pid'
-    - require:
-        - cmd: zookeeper-server-svc
-        - cmd: zkfc_log_dir
-        - cmd: zkfc_run_dir
-{% endif %}
-
 myid:
   file:
     - managed

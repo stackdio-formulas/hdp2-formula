@@ -51,24 +51,24 @@ hadoop-hdfs-namenode-svc:
     - watch:
       - file: /etc/hadoop/conf
 
-#{% if standby %}
+{% if standby %}
 ##
 # Sets this namenode as the "Active" namenode
 ##
 # We run into a race condition sometimes where the the nn service isn't started yet on the snn,
 # so we'll sleep for 30 seconds first before continuing
-#activate_namenode:
-#  cmd:
-#    - run
-#    - name: 'sleep 30 && hdfs haadmin -transitionToActive nn1'
-#    - user: hdfs
-#    - group: hdfs
-#    - require:
-#      - cmd: hadoop-hdfs-namenode-svc
-#      {% if salt['pillar.get']('hdp2:security:enable', False) %}
-#      - cmd: hdfs_kinit
-#      {% endif %}
-#{% endif %}
+activate_namenode:
+  cmd:
+    - run
+    - name: 'sleep 30 && hdfs haadmin -transitionToActive nn1'
+    - user: hdfs
+    - group: hdfs
+    - require:
+      - cmd: hadoop-hdfs-namenode-svc
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      - cmd: hdfs_kinit
+      {% endif %}
+{% endif %}
 
 ##
 # Starts yarn resourcemanager service.
@@ -166,9 +166,9 @@ hdfs_tmp_dir:
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: hdfs_kinit
       {% endif %}
-      #{% if standby %}
-      #- cmd: activate_namenode
-      #{% endif %}
+      {% if standby %}
+      - cmd: activate_namenode
+      {% endif %}
 
 # HDFS MapReduce log directories
 hdfs_mapreduce_log_dir:
@@ -183,9 +183,9 @@ hdfs_mapreduce_log_dir:
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: hdfs_kinit
       {% endif %}
-      #{% if standby %}
-      #- cmd: activate_namenode
-      #{% endif %}
+      {% if standby %}
+      - cmd: activate_namenode
+      {% endif %}
 
 # HDFS MapReduce var directories
 hdfs_mapreduce_var_dir:
@@ -200,9 +200,9 @@ hdfs_mapreduce_var_dir:
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: hdfs_kinit
       {% endif %}
-      #{% if standby %}
-      #- cmd: activate_namenode
-      #{% endif %}
+      {% if standby %}
+      - cmd: activate_namenode
+      {% endif %}
 
 # create a user directory owned by the stack user
 {% set user = pillar.__stackdio__.username %}
@@ -218,9 +218,9 @@ hdfs_user_dir:
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: hdfs_kinit
       {% endif %}
-      #{% if standby %}
-      #- cmd: activate_namenode
-      #{% endif %}
+      {% if standby %}
+      - cmd: activate_namenode
+      {% endif %}
 
 
 #
