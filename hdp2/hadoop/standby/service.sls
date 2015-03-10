@@ -30,7 +30,7 @@ start_zkfc:
   cmd:
     - run
     - user: hdfs
-    - name: {{ hadoop_script_dir }}/hadoop-daemon.sh start zkfc
+    - name: {{ hadoop_script_dir }}/hadoop-daemon.sh start zkfc -formatZK
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-zkfc.pid'
     - require:
       - cmd: hadoop-hdfs-namenode-svc
