@@ -96,20 +96,6 @@ myid:
     - require:
       - file: zk_data_dir
 
-zkfc_log_dir:
-  cmd:
-    - run
-    - name: 'mkdir -p /var/log/hadoop/zookeeper && chown zookeeper:hadoop /var/log/hadoop/zookeeper'
-    - require:
-      - file: myid
-
-zkfc_run_dir:
-  cmd:
-    - run
-    - name: 'mkdir -p /var/run/hadoop/zookeeper && chown zookeeper:hadoop /var/run/hadoop/zookeeper'
-    - require:
-      - file: myid
-
 zk_data_dir:
   file:
     - directory
