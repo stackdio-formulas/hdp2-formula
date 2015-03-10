@@ -55,20 +55,6 @@ hadoop-hdfs-datanode:
     - require_in:
       - cmd: hdfs_log_dir
 
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
-/etc/default/hadoop-hdfs-datanode:
-  file:
-    - managed
-    - source: salt://hdp2/etc/default/hadoop-hdfs-datanode
-    - template: jinja
-    - makedirs: true
-    - user: root
-    - group: root
-    - file_mode: 644
-    - require:
-      - pkg: hadoop-hdfs-datanode
-{% endif %}
-
 ##
 # Installs the yarn nodemanager service
 #

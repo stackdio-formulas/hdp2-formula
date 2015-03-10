@@ -29,7 +29,6 @@ hadoop-hdfs-datanode-svc:
       - cmd: dfs_data_dir
       - file: bigtop_java_home
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
-      - file: /etc/default/hadoop-hdfs-datanode
       - cmd: generate_hadoop_keytabs
 {% endif %}
     - watch:
@@ -51,7 +50,6 @@ hadoop-yarn-nodemanager-svc:
       - cmd: datanode_mapred_local_dirs
       - file: bigtop_java_home
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
-      - file: /etc/default/hadoop-hdfs-datanode
       - cmd: generate_hadoop_keytabs
 {% endif %}
     - watch:

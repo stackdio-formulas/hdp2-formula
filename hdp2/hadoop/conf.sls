@@ -54,13 +54,6 @@ yarn_log_dir:
     - require:
       - file: /etc/hadoop/conf
 
-/etc/hadoop/conf/hadoop-env.sh:
-  file:
-    - append
-    - text: 'export HADOOP_LOG_DIR=/var/log/hadoop/$USER; export HADOOP_PID_DIR=/var/run/hadoop/$USER'
-    - require:
-      - file: /etc/hadoop/conf
-
 /etc/hadoop/conf/mapred-env.sh:
   file:
     - append
