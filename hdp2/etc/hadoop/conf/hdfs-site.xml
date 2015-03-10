@@ -81,6 +81,7 @@
     </property> 
 
 {% if standby %}
+    {% set master_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hbase.master', 'grains.items', 'compound').values()[0]['fqdn'] %}
     <property>
        <name>dfs.ha.automatic-failover.enabled</name>
        <value>true</value>
