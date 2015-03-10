@@ -16,7 +16,7 @@ hadoop-hdfs-namenode-svc:
   cmd:
     - run
     - user: hdfs
-    - name: sleep 30 && export HADOOP_LIBEXEC_DIR={{ hadoop_script_dir }}/../libexec && {{ hadoop_script_dir }}/hadoop-daemon.sh start namenode
+    - name: export HADOOP_LIBEXEC_DIR={{ hadoop_script_dir }}/../libexec && {{ hadoop_script_dir }}/hadoop-daemon.sh start namenode
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-namenode.pid'
     - require:
       - pkg: hadoop-hdfs-namenode
@@ -56,7 +56,7 @@ init_standby_namenode:
     - run
     - user: hdfs
     - group: hdfs
-    - name: 'hdfs namenode -bootstrapStandby -force -nonInteractive'
+    - name: 'sleep 30 && hdfs namenode -bootstrapStandby -force -nonInteractive'
     - unless: 'test -d {{ dfs_name_dir }}/current'
     - require:
       - cmd: hdp2_dfs_dirs
