@@ -25,7 +25,6 @@ hadoop-hdfs-datanode-svc:
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-datanode.pid'
     - require: 
       - pkg: hadoop-hdfs-datanode
-      - cmd: data_run_dir
       - cmd: dfs_data_dir
       - file: bigtop_java_home
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
@@ -55,21 +54,6 @@ hadoop-yarn-nodemanager-svc:
     - watch:
       - file: /etc/hadoop/conf
 
-##
-# Starts the mapreduce service
-#
-# Depends on: JDK7
-##
-#hadoop-mapreduce-svc:
-#  service:
-#    - running
-#    - name: hadoop-mapreduce
-#    - require:
-#      - pkg: hadoop-mapreduce
-#      - cmd: datanode_mapred_local_dirs
-#      - file: /etc/hadoop/conf
-#    - watch:
-#      - file: /etc/hadoop/conf
 
 # make the local storage directories
 datanode_mapred_local_dirs:
@@ -88,13 +72,4 @@ dfs_data_dir:
     - unless: "test -d `echo {{ dfs_data_dir }} | awk -F, '{print $1}'` && [ $(stat -c '%U' $(echo {{ dfs_data_dir }} | awk -F, '{print $1}')) == 'hdfs' ]"
     - require:
       - pkg: hadoop-hdfs-datanode
-
-data_run_dir:
-  cmd:
-    - run
-    - name: mkdir /var/run/hadoop-hdfs && chown hdfs:hadoop /var/run/hadoop-hdfs
-    - unless: 'test -d /var/run/hadoop-hdfs'
-    - require:
-      - pkg: hadoop-hdfs-datanode
-
 
