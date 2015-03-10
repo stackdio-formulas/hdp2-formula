@@ -166,9 +166,9 @@ hdfs_tmp_dir:
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: hdfs_kinit
       {% endif %}
-      {% if standby %}
-      - cmd: activate_namenode 
-      {% endif %}
+      #{% if standby %}
+      #- cmd: activate_namenode
+      #{% endif %}
 
 # HDFS MapReduce log directories
 hdfs_mapreduce_log_dir:
@@ -183,9 +183,9 @@ hdfs_mapreduce_log_dir:
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: hdfs_kinit
       {% endif %}
-      {% if standby %}
-      - cmd: activate_namenode 
-      {% endif %}
+      #{% if standby %}
+      #- cmd: activate_namenode
+      #{% endif %}
 
 # HDFS MapReduce var directories
 hdfs_mapreduce_var_dir:
@@ -200,9 +200,9 @@ hdfs_mapreduce_var_dir:
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: hdfs_kinit
       {% endif %}
-      {% if standby %}
-      - cmd: activate_namenode 
-      {% endif %}
+      #{% if standby %}
+      #- cmd: activate_namenode
+      #{% endif %}
 
 # create a user directory owned by the stack user
 {% set user = pillar.__stackdio__.username %}
@@ -218,9 +218,9 @@ hdfs_user_dir:
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: hdfs_kinit
       {% endif %}
-      {% if standby %}
-      - cmd: activate_namenode 
-      {% endif %}
+      #{% if standby %}
+      #- cmd: activate_namenode
+      #{% endif %}
 
 
 #
