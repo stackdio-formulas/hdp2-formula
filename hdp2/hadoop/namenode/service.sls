@@ -60,7 +60,7 @@ hadoop-hdfs-namenode-svc:
 activate_namenode:
   cmd:
     - run
-    - name: 'hdfs haadmin -transitionToActive nn1'
+    - name: 'sleep 30 && hdfs haadmin -transitionToActive nn1'
     - user: hdfs
     - group: hdfs
     - require:
