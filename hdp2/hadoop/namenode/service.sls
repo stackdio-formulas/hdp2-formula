@@ -57,17 +57,30 @@ hadoop-hdfs-namenode-svc:
 ##
 # We run into a race condition sometimes where the the nn service isn't started yet on the snn,
 # so we'll sleep for 30 seconds first before continuing
-activate_namenode:
+{#activate_namenode:#}
+{#  cmd:#}
+{#    - run#}
+{#    - name: 'sleep 30 && hdfs haadmin -transitionToActive nn1'#}
+{#    - user: hdfs#}
+{#    - group: hdfs#}
+{#    - require:#}
+{#      - cmd: hadoop-hdfs-namenode-svc#}
+{#      {% if salt['pillar.get']('hdp2:security:enable', False) %}#}
+{#      - cmd: hdfs_kinit#}
+{#      {% endif %}#}
+
+start_zkfc:
   cmd:
     - run
-    - name: 'sleep 30 && hdfs haadmin -transitionToActive nn1'
     - user: hdfs
-    - group: hdfs
+    - name: {{ hadoop_script_dir }}/hadoop-daemon.sh start zkfc
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-zkfc.pid'
     - require:
       - cmd: hadoop-hdfs-namenode-svc
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: hdfs_kinit
       {% endif %}
+
 {% endif %}
 
 ##
