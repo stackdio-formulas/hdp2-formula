@@ -20,7 +20,11 @@
 hadoop-hdfs-datanode-svc:
   cmd:
     - run
+    {% if salt['pillar.get']('hdp2:security:enable', False) %}
+    - user: root
+    {% else %}
     - user: hdfs
+    {% endif %}
     - name: export HADOOP_LIBEXEC_DIR={{ hadoop_script_dir }}/../libexec && {{ hadoop_script_dir }}/hadoop-daemon.sh start datanode
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-datanode.pid'
     - require: 
