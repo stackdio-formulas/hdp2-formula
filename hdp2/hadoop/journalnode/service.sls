@@ -22,6 +22,7 @@ hadoop-hdfs-journalnode-svc:
       - pkg: hadoop-hdfs-journalnode
       - file: bigtop_java_home
       - cmd: hdp2_journal_dir
+      - file: /etc/hadoop/conf
     - watch:
       - file: /etc/hadoop/conf
 
