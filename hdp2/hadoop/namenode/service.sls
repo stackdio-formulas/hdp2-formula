@@ -57,10 +57,11 @@ hadoop-hdfs-namenode-svc:
 ##
 # We run into a race condition sometimes where the the nn service isn't started yet on the snn,
 # so we'll sleep for 30 seconds first before continuing
+{% set activate = 'hdfs haadmin -transitionToActive nn1' %}
 activate_namenode:
   cmd:
     - run
-    - name: 'sleep 30 && hdfs haadmin -transitionToActive nn1'
+    - name: '{{ activate }} || sleep 30 && {{ activate }}'
     - user: hdfs
     - group: hdfs
     - require:
@@ -87,6 +88,7 @@ hadoop-yarn-resourcemanager-svc:
       - cmd: hadoop-hdfs-namenode-svc
       - cmd: hdfs_mapreduce_var_dir
       - cmd: hdfs_mapreduce_log_dir
+      - cmd: hdfs_tmp_dir
       - file: bigtop_java_home
     - watch:
       - file: /etc/hadoop/conf
@@ -105,6 +107,9 @@ hadoop-mapreduce-historyserver-svc:
     - require:
       - pkg: hadoop-mapreduce-historyserver
       - cmd: hadoop-hdfs-namenode-svc
+      - cmd: hdfs_mapreduce_var_dir
+      - cmd: hdfs_mapreduce_log_dir
+      - cmd: hdfs_tmp_dir
       - file: bigtop_java_home
     - watch:
       - file: /etc/hadoop/conf

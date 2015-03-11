@@ -51,12 +51,13 @@ hdp2_dfs_dirs:
 
 # Initialize the standby namenode, which will sync the configuration
 # and metadata from the active namenode
+{% set bootstrap = 'hdfs namenode -bootstrapStandby -force -nonInteractive' %}
 init_standby_namenode:
   cmd:
     - run
     - user: hdfs
     - group: hdfs
-    - name: 'sleep 30 && hdfs namenode -bootstrapStandby -force -nonInteractive'
+    - name: '{{ bootstrap }} || sleep 30 && {{ bootstrap }}'
     - unless: 'test -d {{ dfs_name_dir }}/current'
     - require:
       - cmd: hdp2_dfs_dirs
