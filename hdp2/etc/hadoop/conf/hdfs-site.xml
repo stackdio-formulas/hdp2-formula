@@ -44,7 +44,7 @@
     </property>
     <property>
         <name>dfs.domain.socket.path</name>
-        <value>/var/run/hadoop-hdfs/dn._PORT</value>
+        <value>/var/run/hadoop/hdfs/dn._PORT</value>
     </property>
     <property>
         <name>dfs.client.file-block-storage-locations.timeout.millis</name>
@@ -77,7 +77,7 @@
     <property>
       <name>dfs.datanode.hdfs-blocks-metadata.enabled</name>
       <value>true</value>
-    </property> 
+    </property>
 
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
 {% from 'krb5/settings.sls' import krb5 with context %}

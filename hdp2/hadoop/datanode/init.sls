@@ -52,20 +52,8 @@ hadoop-hdfs-datanode:
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/krb5.conf
 {% endif %}
-
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
-/etc/default/hadoop-hdfs-datanode:
-  file:
-    - managed
-    - source: salt://hdp2/etc/default/hadoop-hdfs-datanode
-    - template: jinja
-    - makedirs: true
-    - user: root
-    - group: root
-    - file_mode: 644
-    - require:
-      - pkg: hadoop-hdfs-datanode
-{% endif %}
+    - require_in:
+      - cmd: hdfs_log_dir
 
 ##
 # Installs the yarn nodemanager service
@@ -80,6 +68,8 @@ hadoop-yarn-nodemanager:
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/krb5.conf
 {% endif %}
+    - require_in:
+      - cmd: hdfs_log_dir
 
 ##
 # Installs the mapreduce service
@@ -94,5 +84,7 @@ hadoop-mapreduce:
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/krb5.conf
 {% endif %}
+    - require_in:
+      - cmd: hdfs_log_dir
 
 

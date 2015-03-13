@@ -1,11 +1,10 @@
 {% set journal_dir = salt['pillar.get']('hdp2:dfs:journal_dir', '/mnt/hadoop/hdfs/jn') %}
 
-{% if grains['os_family'] == 'Debian' %}
-extend:
-  remove_policy_file:
-    file:
-      - require:
-        - service: hadoop-hdfs-journalnode-svc
+# The scripts for starting services are in different places depending on the hdp version, so set them here
+{% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
+{% set hadoop_script_dir = '/usr/hdp/current/hadoop-hdfs-journalnode/../hadoop/sbin' %}
+{% else %}
+{% set hadoop_script_dir = '/usr/lib/hadoop/sbin' %}
 {% endif %}
 
 ##
@@ -14,13 +13,16 @@ extend:
 # Depends on: JDK7
 ##
 hadoop-hdfs-journalnode-svc:
-  service:
-    - running
-    - name: hadoop-hdfs-journalnode
+  cmd:
+    - run
+    - user: hdfs
+    - name: export HADOOP_LIBEXEC_DIR={{ hadoop_script_dir }}/../libexec && {{ hadoop_script_dir }}/hadoop-daemon.sh start journalnode
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-journalnode.pid'
     - require:
       - pkg: hadoop-hdfs-journalnode
       - file: bigtop_java_home
       - cmd: hdp2_journal_dir
+      - file: /etc/hadoop/conf
     - watch:
       - file: /etc/hadoop/conf
 

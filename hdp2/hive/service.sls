@@ -1,4 +1,11 @@
 
+# The scripts for starting services are in different places depending on the hdp version, so set them here
+{% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
+{% set hive_home = '/usr/hdp/current/hive-metastore' %}
+{% else %}
+{% set hive_home = '/usr/lib/hive' %}
+{% endif %}
+
 # 
 # Start the Hive service
 #
@@ -6,15 +13,6 @@
 include:
   - hdp2.repo
 
-{% if grains['os_family'] == 'Debian' %}
-extend:
-  remove_policy_file:
-    file:
-      - require:
-        - service: hive-metastore
-        - service: hive-server2
-        - service: mysql-svc
-{% endif %}
 
 # @todo move this out to its own formula
 mysql-svc:
@@ -37,6 +35,7 @@ configure_metastore:
     - require:
       - pkg: hive
       - service: mysql-svc
+      - file: {{ hive_home }}/lib/mysql-connector-java.jar
 
 create_warehouse_dir:
   cmd:
@@ -72,25 +71,51 @@ warehouse_dir_permissions:
     - require:
       - cmd: warehouse_dir_owner
 
-hive-metastore:
-  service:
-    - running
+{{ hive_home }}/bin/hive-daemon.sh:
+  file:
+    - managed
+    - template: jinja
+    - source: salt://hdp2/hive/hive-daemon.sh
+    - user: root
+    - group: root
+    - mode: 755
     - require:
+      - pkg: hive
+
+/etc/profile.d/hive.sh:
+  file:
+    - managed
+    - user: root
+    - group: root
+    - mode: 644
+    - contents: 'export HIVE_HOME={{ hive_home }} ; export HIVE_BIN=$HIVE_HOME/bin ; export HIVE_CONF_DIR=$HIVE_HOME/conf'
+
+hive-metastore:
+  cmd:
+    - run
+    - user: hive
+    - name: '{{ hive_home }}/bin/hive-daemon.sh start hive-metastore'
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hive/hive-metastore.pid'
+    - require:
+      - file: {{ hive_home }}/bin/hive-daemon.sh
       - pkg: hive
       - cmd: configure_metastore
       - cmd: warehouse_dir_permissions
       - service: mysql-svc
-      - file: /usr/lib/hive/lib/mysql-connector-java.jar
+      - file: {{ hive_home }}/lib/mysql-connector-java.jar
       - file: /etc/hive/conf/hive-site.xml
       - file: /mnt/tmp/
     - watch:
       - file: /etc/hive/conf/hive-site.xml
 
 hive-server2:
-  service:
-    - running
+  cmd:
+    - run
+    - user: hive
+    - name: '{{ hive_home }}/bin/hive-daemon.sh start hive-server2'
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hive/hive-server2.pid'
     - require: 
-      - service: hive-metastore
+      - cmd: hive-metastore
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hive_keytabs 
 {% endif %}

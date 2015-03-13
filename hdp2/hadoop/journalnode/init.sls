@@ -45,3 +45,5 @@ hadoop-hdfs-journalnode:
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/krb5.conf
       {% endif %}
+    - require_in:
+      - cmd: hdfs_log_dir

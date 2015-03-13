@@ -1,4 +1,11 @@
-# 
+# The scripts for starting services are in different places depending on the hdp version, so set them here
+{% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
+{% set hbase_script_dir = '/usr/hdp/current/hbase-master/bin' %}
+{% else %}
+{% set hbase_script_dir = '/usr/lib/hbase/bin' %}
+{% endif %}
+
+#
 # Start the HBase master service
 #
 include:
@@ -7,14 +14,6 @@ include:
   - hdp2.zookeeper
   - hdp2.hbase.conf
 
-{% if grains['os_family'] == 'Debian' %}
-extend:
-  remove_policy_file:
-    file:
-      - require:
-        - service: hbase-master-svc
-        - service: hbase-thrift-svc
-{% endif %}
 
 # When security is enabled, we need to get a kerberos ticket
 # for the hdfs principal so that any interaction with HDFS
@@ -46,13 +45,15 @@ hbase-init:
 {% endif %}
 
 hbase-master-svc:
-  service:
-    - running
-    - name: hbase-master
+  cmd:
+    - run
+    - user: hbase
+    - name: {{ hbase_script_dir }}/hbase-daemon.sh start master && sleep 25
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hbase/hbase-hbase-master.pid'
     - require: 
       - pkg: hbase-master
       - cmd: hbase-init
-      - service: zookeeper-server
+      - cmd: zookeeper-server-svc
       - file: /etc/hbase/conf/hbase-site.xml
       - file: /etc/hbase/conf/hbase-env.sh
       - file: {{ pillar.hdp2.hbase.tmp_dir }}
@@ -65,9 +66,11 @@ hbase-master-svc:
       - file: /etc/hbase/conf/hbase-env.sh
 
 hbase-thrift-svc:
-  service:
-    - running
-    - name: hbase-thrift
+  cmd:
+    - run
+    - user: hbase
+    - name: {{ hbase_script_dir }}/hbase-daemon.sh start thrift
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hbase/hbase-hbase-thrift.pid'
     - require:
-      - service: hbase-master
+      - cmd: hbase-master-svc
 

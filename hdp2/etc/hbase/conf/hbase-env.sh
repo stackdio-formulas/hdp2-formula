@@ -97,7 +97,8 @@ export HBASE_MASTER_OPTS="-Xss{{ pillar.hdp2.hbase.java_stack_size }} -Xms{{ pil
 
 export HBASE_REGIONSERVER_OPTS="-Xms{{ pillar.hdp2.hbase.region_initial_heap }} -Xmx{{ pillar.hdp2.hbase.region_max_heap }} -Xmn{{ pillar.hdp2.hbase.region_young_gen}} -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:ParallelGCThreads=8 -XX:+AggressiveOpts -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:{{ pillar.hdp2.hbase.log_dir }}/hbase-regionserver-gc.log"
 
-HBASE_LOG_DIR={{ pillar.hdp2.hbase.log_dir }}
+export HBASE_LOG_DIR={{ pillar.hdp2.hbase.log_dir }}
+export HBASE_PID_DIR=/var/run/hbase
 
 {% if not pillar.hdp2.hbase.manage_zk %}
 export HBASE_MANAGES_ZK=false

@@ -1,3 +1,15 @@
+{%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.standby', 'grains.items', 'compound') -%}
+
+
+# The scripts for starting services are in different places depending on the hdp version, so set them here
+{% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
+{% set hadoop_script_dir = '/usr/hdp/current/hadoop-client/sbin' %}
+{% set zk_script_dir = '/usr/hdp/current/zookeeper-client/bin' %}
+{% else %}
+{% set hadoop_script_dir = '/usr/lib/hadoop/sbin' %}
+{% set zk_script_dir = '/usr/lib/zookeeper/bin' %}
+{% endif %}
+
 #
 # Start the ZooKeeper service
 #
@@ -15,20 +27,14 @@ bigtop_java_home_zoo:
     - require:
       - pkg: zookeeper
 
-{% if grains['os_family'] == 'Debian' %}
-extend:
-  remove_policy_file:
-    file:
-      - require:
-        - service: zookeeper-server-svc
-{% endif %}
-
 /etc/zookeeper/conf/zoo.cfg:
   file:
     - managed
     - template: jinja
     - source: salt://hdp2/etc/zookeeper/conf/zoo.cfg
-    - mode: 755
+    - user: root
+    - group: root
+    - mode: 644
     - require: 
       - pkg: zookeeper
 
@@ -37,6 +43,8 @@ extend:
     - managed
     - template: jinja
     - source: salt://hdp2/etc/zookeeper/conf/zookeeper-env.sh
+    - user: root
+    - group: root
     - mode: 644
     - require:
       - file: /etc/zookeeper/conf/zoo.cfg
@@ -68,12 +76,12 @@ extend:
 {% endif %}
     
 zookeeper-server-svc:
-  service:
-    - running
-    - name: zookeeper-server
-    - unless: service zookeeper-server status
+  cmd:
+    - run
+    - user: zookeeper
+    - name: export ZOOCFGDIR=/etc/zookeeper/conf; source /etc/zookeeper/conf/zookeeper-env.sh; {{ zk_script_dir }}/zkServer.sh start
+    - unless: '. /etc/init.d/functions && pidofproc -p {{pillar.hdp2.zookeeper.data_dir}}/zookeeper_server.pid'
     - require:
-        - cmd: zookeeper-init
         - file: /etc/zookeeper/conf/zookeeper-env.sh
         - file: /etc/zookeeper/conf/log4j.properties
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
@@ -86,43 +94,22 @@ myid:
     - name: '{{pillar.hdp2.zookeeper.data_dir}}/myid'
     - template: jinja
     - user: zookeeper
-    - group: zookeeper
-    - mode: 755
+    - group: hadoop
+    - mode: 644
     - source: salt://hdp2/etc/zookeeper/conf/myid
     - require:
       - file: zk_data_dir
-
-{% if grains['os_family'] == 'RedHat' %}
-zookeeper_group:
-  group:
-    - present
-    - name: zookeeper
-{% endif %}
-
-zookeeper-init:
-  cmd:
-    - run
-    - name: 'service zookeeper-server init --force'
-    - unless: 'ls {{pillar.hdp2.zookeeper.data_dir}}/version-*'
-    - require:
-      - file: myid
-      {% if grains['os_family'] == 'RedHat' %}
-      - group: zookeeper
-      {% endif %}
 
 zk_data_dir:
   file:
     - directory
     - name: {{pillar.hdp2.zookeeper.data_dir}}
     - user: zookeeper
-    - group: zookeeper
+    - group: hadoop
     - dir_mode: 755
     - makedirs: true
     - require:
       - pkg: zookeeper-server
-      {% if grains['os_family'] == 'RedHat' %}
-      - group: zookeeper
-      {% endif %}
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_zookeeper_keytabs
       {% endif %}

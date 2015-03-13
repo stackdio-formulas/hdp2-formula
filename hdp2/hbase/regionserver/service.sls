@@ -1,18 +1,19 @@
-# 
-# Install the HBase regionserver package
-#
-{% if grains['os_family'] == 'Debian' %}
-extend:
-  remove_policy_file:
-    file:
-      - require:
-        - service: hbase-regionserver-svc
+{% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
+{% set hbase_script_dir = '/usr/hdp/current/hbase-regionserver/bin' %}
+{% else %}
+{% set hbase_script_dir = '/usr/lib/hbase/bin' %}
 {% endif %}
 
+#
+# Install the HBase regionserver package
+#
+
 hbase-regionserver-svc:
-  service:
-    - running
-    - name: hbase-regionserver
+  cmd:
+    - run
+    - user: hbase
+    - name: {{ hbase_script_dir }}/hbase-daemon.sh start regionserver
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hbase/hbase-hbase-regionserver.pid'
     - require: 
       - pkg: hbase-regionserver
       - file: /etc/hbase/conf/hbase-site.xml
