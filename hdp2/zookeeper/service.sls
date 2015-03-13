@@ -32,7 +32,9 @@ bigtop_java_home_zoo:
     - managed
     - template: jinja
     - source: salt://hdp2/etc/zookeeper/conf/zoo.cfg
-    - mode: 755
+    - user: root
+    - group: root
+    - mode: 644
     - require: 
       - pkg: zookeeper
 
@@ -41,6 +43,8 @@ bigtop_java_home_zoo:
     - managed
     - template: jinja
     - source: salt://hdp2/etc/zookeeper/conf/zookeeper-env.sh
+    - user: root
+    - group: root
     - mode: 644
     - require:
       - file: /etc/zookeeper/conf/zoo.cfg
@@ -91,7 +95,7 @@ myid:
     - template: jinja
     - user: zookeeper
     - group: hadoop
-    - mode: 755
+    - mode: 644
     - source: salt://hdp2/etc/zookeeper/conf/myid
     - require:
       - file: zk_data_dir
