@@ -69,7 +69,7 @@ prepare_server:
 ooziedb:
   cmd:
     - run
-    - name: '{{ oozie_home }}/bin/ooziedb.sh create -sqlfile /var/lib/oozie/oozie-db-creation.sql -run Validate DB Connection'
+    - name: '{{ oozie_home }}/bin/ooziedb.sh create -sqlfile /var/lib/oozie/data/oozie-db-creation.sql -run Validate DB Connection'
     - unless: 'test -d {{ oozie_data_dir }}/oozie-db'
     - user: oozie
     - require:
