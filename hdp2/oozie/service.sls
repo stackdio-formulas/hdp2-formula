@@ -48,7 +48,6 @@ oozie-svc:
       - cmd: ooziedb
       - cmd: populate-oozie-sharelibs
       - file: /var/log/oozie
-      - file: {{ oozie_home }}
 
 prepare_server:
   cmd:
@@ -63,21 +62,18 @@ prepare_server:
       - file: /etc/oozie/conf/oozie-site.xml
       - cmd: generate_oozie_keytabs
 {% endif %}
-
+{% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
+      - file: /etc/oozie/conf/oozie-env.sh
+{% endif %}
 
 ooziedb:
   cmd:
     - run
-    - name: '{{ oozie_home }}/bin/ooziedb.sh create -sqlfile oozie.sql -run Validate DB Connection'
+    - name: '{{ oozie_home }}/bin/ooziedb.sh create -sqlfile /var/lib/oozie/oozie-db-creation.sql -run Validate DB Connection'
     - unless: 'test -d {{ oozie_data_dir }}/oozie-db'
-    {% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
-    - user: root
-    {% else %}
     - user: oozie
-    {% endif %}
     - require:
       - cmd: prepare_server
-
 
 create-oozie-sharelibs:
   cmd:

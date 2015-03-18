@@ -2,7 +2,7 @@
 
 # The scripts for starting services are in different places depending on the hdp version, so set them here
 {% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
-{% set oozie_home = '/usr/hdp/current/oozie-server' %}
+{% set oozie_home = '/usr/hdp/current/oozie-client' %}
 {% else %}
 {% set oozie_home = '/usr/lib/oozie' %}
 {% endif %}
@@ -30,6 +30,7 @@ oozie:
       - oozie
       - oozie-client
       - extjs
+      - hadooplzo
       # oozie scripts depend on zip AND unzip, but don't list them as deps :/
       - zip
       - unzip
@@ -49,10 +50,29 @@ oozie:
       - pkg: oozie
 {% endif %}
 
+{% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
+/etc/oozie/conf/oozie-env.sh:
+  file:
+    - replace
+    - pattern: 'export CATALINA_BASE=.*'
+    - repl: 'export CATALINA_BASE={{ oozie_home }}/oozie-server'
+    - require:
+      - pkg: oozie
+{% endif %}
+
 extjs:
   cmd:
     - run
     - name: 'cp /usr/share/HDP-oozie/ext-2.2.zip {{ oozie_home }}/libext/'
+    - user: root
+    - require:
+      - pkg: oozie
+      - cmd: hadoop-lzo
+
+hadoop-lzo:
+  cmd:
+    - run
+    - name: 'cp {{ oozie_home }}/../hadoop/lib/hadoop-lzo*.jar {{ oozie_home }}/libext/'
     - user: root
     - require:
       - pkg: oozie
@@ -68,15 +88,3 @@ extjs:
       - group
     - require:
       - pkg: oozie
-
-{{ oozie_home }}:
-  file:
-    - directory
-    - user: oozie
-    - group: oozie
-    - recurse:
-      - user
-      - group
-    - require:
-      - pkg: oozie
-
