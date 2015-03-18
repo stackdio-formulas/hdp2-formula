@@ -108,6 +108,14 @@ export HADOOP_PRIVILEGED_NFS_USER=hdfs
 export HADOOP_PRIVILEGED_NFS_PID_DIR=/var/run/hadoop/hdfs
 export HADOOP_PRIVILEGED_NFS_LOG_DIR=/var/log/hadoop/hdfs
 
+{% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
+prefix=`find /usr/hdp -name {{ pillar.hdp2.version }}-*`
+export HADOOP_COMMON_HOME=$prefix/hadoop
+export HADOOP_HDFS_HOME=$prefix/hadoop-hdfs
+export HADOOP_YARN_HOME=$prefix/hadoop-yarn
+export HADOOP_MAPRED_HOME=$prefix/hadoop-mapreduce
+{% endif %}
+
 {%- if salt['pillar.get']('hdp2:security:enable', False) %}
 {%- from 'krb5/settings.sls' import krb5 with context %}
 export HADOOP_SECURE_DN_USER=hdfs
