@@ -40,7 +40,7 @@ hbase-master:
       - file: /etc/krb5.conf
 {% endif %}
 {% if salt['pillar.get']('hdp2:hbase:manage_zk', True) %}
-      - service: zookeeper-server-svc
+      - cmd: zookeeper-server-svc
 {% endif %}
     - require_in:
       - file: {{ pillar.hdp2.hbase.log_dir }}
