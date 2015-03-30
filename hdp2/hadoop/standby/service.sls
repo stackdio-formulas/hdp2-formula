@@ -12,31 +12,6 @@
 #
 # Depends on: JDK7
 ##
-hadoop-hdfs-namenode-svc:
-  cmd:
-    - run
-    - user: hdfs
-    - name: export HADOOP_LIBEXEC_DIR={{ hadoop_script_dir }}/../libexec && {{ hadoop_script_dir }}/hadoop-daemon.sh start namenode
-    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-namenode.pid'
-    - require:
-      - pkg: hadoop-hdfs-namenode
-      - cmd: init_standby_namenode
-      - file: bigtop_java_home
-      - user: mapred_user
-    - watch:
-      - file: /etc/hadoop/conf
-
-##
-# Sets this namenode as the "Standby" namenode
-##
-#activate_standby:
-#  cmd:
-#    - run
-#    - name: 'hdfs haadmin -transitionToStandby nn2'
-#    - user: hdfs
-#    - group: hdfs
-#    - require:
-#      - cmd: hadoop-hdfs-namenode-svc
 
 # Make sure the namenode metadata directory exists
 # and is owned by the hdfs user
@@ -64,3 +39,17 @@ init_standby_namenode:
     {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hadoop_keytabs
     {% endif %}
+
+hadoop-hdfs-namenode-svc:
+  cmd:
+    - run
+    - user: hdfs
+    - name: export HADOOP_LIBEXEC_DIR={{ hadoop_script_dir }}/../libexec && {{ hadoop_script_dir }}/hadoop-daemon.sh start namenode
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-namenode.pid'
+    - require:
+      - pkg: hadoop-hdfs-namenode
+      - cmd: init_standby_namenode
+      - file: bigtop_java_home
+      - user: mapred_user
+    - watch:
+      - file: /etc/hadoop/conf

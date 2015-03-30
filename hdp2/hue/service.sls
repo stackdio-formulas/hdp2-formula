@@ -13,6 +13,8 @@ hue-svc:
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hue_keytabs 
 {% endif %}
+    - watch:
+      - file: /etc/hue/conf/hue.ini
 
 /etc/hue/conf/hue.ini:
   file:

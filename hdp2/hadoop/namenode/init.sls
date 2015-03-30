@@ -36,21 +36,35 @@ include:
   - hdp2.hadoop.security
   {% endif %}
 
-{% if 'hdp2.hadoop.standby' in grains.roles %}
-
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
 extend:
-  /etc/hadoop/conf:
-    file:
+  load_admin_keytab:
+    module:
       - require:
-        - pkg: hadoop-hdfs-namenode
+        - file: /etc/krb5.conf
+        - file: /etc/hadoop/conf
+  generate_hadoop_keytabs:
+    cmd:
+      - require:
+        - module: load_admin_keytab
+{% endif %}
 
 hadoop-hdfs-namenode:
   pkg:
-    - installed 
+    - installed
     - require:
       - cmd: repo_placeholder
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      - file: /etc/krb5.conf
+      {% endif %}
     - require_in:
+      - file: /etc/hadoop/conf
       - cmd: hdfs_log_dir
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
+
+{% if 'hdp2.hadoop.standby' in grains.roles %}
 
 # we need a mapred user on the standby namenode for job history to work; if the
 # namenode state is not included we want to add it manually
@@ -85,28 +99,6 @@ mapred_user:
 # NOT a HA NN...continue like normal with the rest of the state
 {% else %}
 
-extend:
-  /etc/hadoop/conf:
-    file:
-      - require:
-        - pkg: hadoop-hdfs-namenode
-        - pkg: hadoop-yarn-resourcemanager 
-        - pkg: hadoop-mapreduce-historyserver
-  {% if salt['pillar.get']('hdp2:security:enable', False) %}
-  load_admin_keytab:
-    module:
-      - require:
-        - file: /etc/krb5.conf
-        - file: /etc/hadoop/conf
-  generate_hadoop_keytabs:
-    cmd:
-      - require:
-        - pkg: hadoop-hdfs-namenode
-        - pkg: hadoop-yarn-resourcemanager
-        - pkg: hadoop-mapreduce-historyserver
-        - module: load_admin_keytab
-  {% endif %}
-
 ##
 # Installs the namenode package.
 #
@@ -121,7 +113,11 @@ hadoop-hdfs-namenode:
       - file: /etc/krb5.conf
       {% endif %}
     - require_in:
+      - file: /etc/hadoop/conf
       - cmd: hdfs_log_dir
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
 
 ##
 # Installs the yarn resourcemanager package.
@@ -137,7 +133,11 @@ hadoop-yarn-resourcemanager:
       - file: /etc/krb5.conf
       {% endif %}
     - require_in:
+      - file: /etc/hadoop/conf
       - cmd: hdfs_log_dir
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
 
 ##
 # Installs the mapreduce historyserver package.
@@ -153,7 +153,11 @@ hadoop-mapreduce-historyserver:
       - file: /etc/krb5.conf
       {% endif %}
     - require_in:
+      - file: /etc/hadoop/conf
       - cmd: hdfs_log_dir
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
 
 {% endif %}
 ##

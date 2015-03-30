@@ -28,7 +28,11 @@ export JAVA_HOME=/usr/java/latest
 # export HBASE_CLASSPATH=
 
 # The maximum amount of heap to use, in MB. Default is 1000.
-# export HBASE_HEAPSIZE=1000
+{% if 'hdp2.hbase.regionserver' in grains.roles %}
+export HBASE_HEAPSIZE="{{ pillar.hdp2.hbase.region_max_heap_mb }}"
+{% elif 'hdp2.hbase.master' in grains.roles %}
+export HBASE_HEAPSIZE="{{ pillar.hdp2.hbase.master_max_heap_mb }}"
+{% endif %}
 
 # Extra Java runtime options.
 # Below are what we set by default.  May only work with SUN JVM.
@@ -93,14 +97,16 @@ export HBASE_OPTS="-XX:+UseConcMarkSweepGC"
 # DRFA doesn't put any cap on the log size. Please refer to HBase-5655 for more context.
 
 # The above is all standard, adding the below for stackd.io deployment
-export HBASE_MASTER_OPTS="-Xss{{ pillar.hdp2.hbase.java_stack_size }} -Xms{{ pillar.hdp2.hbase.master_initial_heap }} -Xmx{{ pillar.hdp2.hbase.master_max_heap }} -Xmn{{ pillar.hdp2.hbase.master_young_gen }} -XX:+UseConcMarkSweepGC -XX:+AggressiveOpts -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:{{ pillar.hdp2.hbase.log_dir }}/hbase-master-gc.log -Djute.maxbuffer={{ pillar.hdp2.hbase.jute_maxbuffer }}" 
+export HBASE_MASTER_OPTS="-Xss{{ pillar.hdp2.hbase.java_stack_size }} -Xms{{ pillar.hdp2.hbase.master_initial_heap_mb }}m -Xmn{{ pillar.hdp2.hbase.master_young_gen_mb }}m -XX:+UseConcMarkSweepGC -XX:+AggressiveOpts -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:{{ pillar.hdp2.hbase.log_dir }}/hbase-master-gc.log -Djute.maxbuffer={{ pillar.hdp2.hbase.jute_maxbuffer }}"
 
-export HBASE_REGIONSERVER_OPTS="-Xms{{ pillar.hdp2.hbase.region_initial_heap }} -Xmx{{ pillar.hdp2.hbase.region_max_heap }} -Xmn{{ pillar.hdp2.hbase.region_young_gen}} -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:ParallelGCThreads=8 -XX:+AggressiveOpts -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:{{ pillar.hdp2.hbase.log_dir }}/hbase-regionserver-gc.log"
+export HBASE_REGIONSERVER_OPTS="-Xms{{ pillar.hdp2.hbase.region_initial_heap_mb }}m -Xmn{{ pillar.hdp2.hbase.region_young_gen_mb }}m -XX:+UseConcMarkSweepGC -XX:+CMSIncrementalMode -XX:ParallelGCThreads=8 -XX:+AggressiveOpts -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:{{ pillar.hdp2.hbase.log_dir }}/hbase-regionserver-gc.log"
 
 export HBASE_LOG_DIR={{ pillar.hdp2.hbase.log_dir }}
 export HBASE_PID_DIR=/var/run/hbase
 
-{% if not pillar.hdp2.hbase.manage_zk %}
+{% if pillar.hdp2.hbase.manage_zk %}
+export HBASE_MANAGES_ZK=true
+{% else %}
 export HBASE_MANAGES_ZK=false
 {% endif %}
 

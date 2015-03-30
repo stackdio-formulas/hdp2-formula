@@ -13,8 +13,6 @@
 #
 # Start the ZooKeeper service
 #
-include:
-  - hdp2.repo
 
 bigtop_java_home_zoo:
   file:
@@ -61,6 +59,8 @@ bigtop_java_home_zoo:
     - require: 
       - pkg: zookeeper
       - file: /etc/zookeeper/conf/zookeeper-env.sh
+    - require_in:
+      - cmd: zookeeper-server-svc
 
 /etc/zookeeper/conf/java.env:
   file:
@@ -73,32 +73,9 @@ bigtop_java_home_zoo:
     - require: 
       - pkg: zookeeper
       - file: /etc/zookeeper/conf/zookeeper-env.sh
+    - require_in:
+      - cmd: zookeeper-server-svc
 {% endif %}
-    
-zookeeper-server-svc:
-  cmd:
-    - run
-    - user: zookeeper
-    - name: export ZOOCFGDIR=/etc/zookeeper/conf; source /etc/zookeeper/conf/zookeeper-env.sh; {{ zk_script_dir }}/zkServer.sh start
-    - unless: '. /etc/init.d/functions && pidofproc -p {{pillar.hdp2.zookeeper.data_dir}}/zookeeper_server.pid'
-    - require:
-        - file: /etc/zookeeper/conf/zookeeper-env.sh
-        - file: /etc/zookeeper/conf/log4j.properties
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
-        - cmd: generate_zookeeper_keytabs
-{% endif %}
-
-myid:
-  file:
-    - managed
-    - name: '{{pillar.hdp2.zookeeper.data_dir}}/myid'
-    - template: jinja
-    - user: zookeeper
-    - group: hadoop
-    - mode: 644
-    - source: salt://hdp2/etc/zookeeper/conf/myid
-    - require:
-      - file: zk_data_dir
 
 zk_data_dir:
   file:
@@ -113,3 +90,35 @@ zk_data_dir:
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_zookeeper_keytabs
       {% endif %}
+
+myid:
+  file:
+    - managed
+    - name: '{{pillar.hdp2.zookeeper.data_dir}}/myid'
+    - template: jinja
+    - user: zookeeper
+    - group: hadoop
+    - mode: 644
+    - source: salt://hdp2/etc/zookeeper/conf/myid
+    - require:
+      - file: zk_data_dir
+
+zookeeper-server-svc:
+  cmd:
+    - run
+    - user: zookeeper
+    - name: export ZOOCFGDIR=/etc/zookeeper/conf; source /etc/zookeeper/conf/zookeeper-env.sh; {{ zk_script_dir }}/zkServer.sh start
+    - unless: '. /etc/init.d/functions && pidofproc -p {{pillar.hdp2.zookeeper.data_dir}}/zookeeper_server.pid'
+    - require:
+        - file: /etc/zookeeper/conf/zookeeper-env.sh
+        - file: /etc/zookeeper/conf/log4j.properties
+        - file: /etc/zookeeper/conf/zoo.cfg
+        - file: bigtop_java_home_zoo
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
+        - cmd: generate_zookeeper_keytabs
+{% endif %}
+    - watch:
+        - file: /etc/zookeeper/conf/zookeeper-env.sh
+        - file: /etc/zookeeper/conf/log4j.properties
+        - file: /etc/zookeeper/conf/zoo.cfg
+

@@ -36,19 +36,6 @@ fix_symlink:
 # Start the Oozie service
 #
 
-oozie-svc:
-  cmd:
-    - run
-    - user: oozie
-    - name: {{ oozie_home }}/bin/oozied.sh start
-    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/oozie/oozie.pid'
-    - require:
-      - pkg: oozie
-      - cmd: extjs
-      - cmd: ooziedb
-      - cmd: populate-oozie-sharelibs
-      - file: /var/log/oozie
-
 prepare_server:
   cmd:
     - run
@@ -93,3 +80,15 @@ populate-oozie-sharelibs:
     - require:
       - cmd: create-oozie-sharelibs
 
+oozie-svc:
+  cmd:
+    - run
+    - user: oozie
+    - name: {{ oozie_home }}/bin/oozied.sh start
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/oozie/oozie.pid'
+    - require:
+      - pkg: oozie
+      - cmd: extjs
+      - cmd: ooziedb
+      - cmd: populate-oozie-sharelibs
+      - file: /var/log/oozie
