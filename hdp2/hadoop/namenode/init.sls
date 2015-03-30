@@ -100,26 +100,6 @@ mapred_user:
 {% else %}
 
 ##
-# Installs the namenode package.
-#
-# Depends on: JDK7
-##
-hadoop-hdfs-namenode:
-  pkg:
-    - installed 
-    - require:
-      - cmd: repo_placeholder
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
-      - file: /etc/krb5.conf
-      {% endif %}
-    - require_in:
-      - file: /etc/hadoop/conf
-      - cmd: hdfs_log_dir
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
-      - cmd: generate_hadoop_keytabs
-      {% endif %}
-
-##
 # Installs the yarn resourcemanager package.
 #
 # Depends on: JDK7
