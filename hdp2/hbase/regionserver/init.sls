@@ -34,7 +34,7 @@ hbase-regionserver:
       - file: /etc/krb5.conf
 {% endif %}
     - require_in:
-      - file: {{ pillar.cdh5.hbase.log_dir }}
-      - file: {{ pillar.cdh5.hbase.tmp_dir }}
+      - file: {{ pillar.hdp2.hbase.log_dir }}
+      - file: {{ pillar.hdp2.hbase.tmp_dir }}
       - file: /etc/hbase/conf/hbase-env.sh
       - file: /etc/hbase/conf/hbase-site.xml
