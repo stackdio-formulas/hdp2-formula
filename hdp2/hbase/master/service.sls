@@ -8,12 +8,6 @@
 #
 # Start the HBase master service
 #
-include:
-  - hdp2.repo
-  - hdp2.hadoop.client
-  - hdp2.zookeeper
-  - hdp2.hbase.conf
-
 
 # When security is enabled, we need to get a kerberos ticket
 # for the hdfs principal so that any interaction with HDFS
@@ -53,7 +47,6 @@ hbase-master-svc:
     - require: 
       - pkg: hbase-master
       - cmd: hbase-init
-      - cmd: zookeeper-server-svc
       - file: /etc/hbase/conf/hbase-site.xml
       - file: /etc/hbase/conf/hbase-env.sh
       - file: {{ pillar.hdp2.hbase.tmp_dir }}
@@ -73,4 +66,7 @@ hbase-thrift-svc:
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hbase/hbase-hbase-thrift.pid'
     - require:
       - cmd: hbase-master-svc
+    - watch:
+      - file: /etc/hbase/conf/hbase-site.xml
+      - file: /etc/hbase/conf/hbase-env.sh
 

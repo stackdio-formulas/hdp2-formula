@@ -16,14 +16,8 @@ include:
   - hdp2.hadoop.security
 {% endif %}
 
-extend:
-  /etc/hadoop/conf:
-    file:
-      - require:
-        - pkg: hadoop-hdfs-datanode
-        - pkg: hadoop-yarn-nodemanager
-        - pkg: hadoop-mapreduce
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
+extend:
   load_admin_keytab:
     module:
       - require:
@@ -32,9 +26,6 @@ extend:
   generate_hadoop_keytabs:
     cmd:
       - require:
-        - pkg: hadoop-hdfs-datanode
-        - pkg: hadoop-yarn-nodemanager
-        - pkg: hadoop-mapreduce
         - module: load_admin_keytab
 {% endif %}
 
@@ -53,7 +44,11 @@ hadoop-hdfs-datanode:
       - file: /etc/krb5.conf
 {% endif %}
     - require_in:
+      - file: /etc/hadoop/conf
       - cmd: hdfs_log_dir
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
 
 ##
 # Installs the yarn nodemanager service
@@ -69,7 +64,11 @@ hadoop-yarn-nodemanager:
       - file: /etc/krb5.conf
 {% endif %}
     - require_in:
+      - file: /etc/hadoop/conf
       - cmd: hdfs_log_dir
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
 
 ##
 # Installs the mapreduce service
@@ -85,6 +84,10 @@ hadoop-mapreduce:
       - file: /etc/krb5.conf
 {% endif %}
     - require_in:
+      - file: /etc/hadoop/conf
       - cmd: hdfs_log_dir
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
 
 

@@ -14,12 +14,8 @@ include:
   - hdp2.hadoop.security
   {% endif %}
 
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
 extend:
-  /etc/hadoop/conf:
-    file:
-      - require:
-        - pkg: hadoop-hdfs-journalnode
-  {% if salt['pillar.get']('hdp2:security:enable', False) %}
   load_admin_keytab:
     module:
       - require:
@@ -28,9 +24,8 @@ extend:
   generate_hadoop_keytabs:
     cmd:
       - require:
-        - pkg: hadoop-hdfs-journalnode
         - module: load_admin_keytab
-  {% endif %}
+{% endif %}
 
 ##
 # Installs the journalnode package for high availability
@@ -46,4 +41,8 @@ hadoop-hdfs-journalnode:
       - file: /etc/krb5.conf
       {% endif %}
     - require_in:
+      - file: /etc/hadoop/conf
       - cmd: hdfs_log_dir
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
