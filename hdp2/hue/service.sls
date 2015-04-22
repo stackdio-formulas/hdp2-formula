@@ -2,6 +2,28 @@
 # Start the Hue service
 #
 
+/etc/hue/conf/hue.ini:
+  file:
+    - managed
+    - template: jinja
+    - source: salt://hdp2/etc/hue/hue.ini
+    - mode: 755
+
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
+/etc/init.d/hue:
+  file:
+    - replace
+    - pattern: 'USER=hue'
+    - repl: 'USER=hue\nexport KRB5_CONFIG={{ pillar.krb5.conf_file }}'
+    - unless: cat /etc/init.d/hue | grep KRB5_CONFIG
+    - require:
+      - pkg: hue
+    - require_in:
+      - service: hue-svc
+    - watch_in:
+      - service: hue-svc
+{% endif %}
+
 hue-svc:
   service:
     - running
@@ -15,10 +37,3 @@ hue-svc:
 {% endif %}
     - watch:
       - file: /etc/hue/conf/hue.ini
-
-/etc/hue/conf/hue.ini:
-  file:
-    - managed
-    - template: jinja
-    - source: salt://hdp2/etc/hue/hue.ini
-    - mode: 755

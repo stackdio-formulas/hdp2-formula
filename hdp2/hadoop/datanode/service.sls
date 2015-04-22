@@ -54,8 +54,10 @@ hadoop-hdfs-datanode-svc:
     {% else %}
     - user: hdfs
     {% endif %}
-    - name: export HADOOP_LIBEXEC_DIR={{ hadoop_script_dir }}/../libexec && {{ hadoop_script_dir }}/hadoop-daemon.sh start datanode
+    - name: {{ hadoop_script_dir }}/hadoop-daemon.sh start datanode
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-datanode.pid'
+    - env:
+      - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require: 
       - pkg: hadoop-hdfs-datanode
       - cmd: dfs_data_dir
@@ -75,8 +77,10 @@ hadoop-yarn-nodemanager-svc:
   cmd:
     - run
     - user: yarn
-    - name: export HADOOP_LIBEXEC_DIR={{ hadoop_script_dir }}/../libexec && {{ yarn_script_dir }}/yarn-daemon.sh start nodemanager
+    - name: {{ yarn_script_dir }}/yarn-daemon.sh start nodemanager
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/yarn/yarn-yarn-nodemanager.pid'
+    - env:
+      - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require: 
       - pkg: hadoop-yarn-nodemanager
       - cmd: datanode_yarn_local_dirs

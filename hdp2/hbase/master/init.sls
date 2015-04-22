@@ -17,17 +17,6 @@ include:
   - hdp2.hbase.security
 {% endif %}
 
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
-extend:
-  load_admin_keytab:
-    module:
-      - require:
-        - file: /etc/krb5.conf
-        - file: /etc/hbase/conf/hbase-site.xml
-        - file: /etc/hbase/conf/hbase-env.sh
-        - pkg: hbase-master
-{% endif %}
-
 hbase-master:
   pkg:
     - installed 
@@ -37,7 +26,7 @@ hbase-master:
     - require:
       - cmd: repo_placeholder
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
-      - file: /etc/krb5.conf
+      - file: krb5_conf_file
 {% endif %}
 {% if salt['pillar.get']('hdp2:hbase:manage_zk', True) %}
       - cmd: zookeeper-server-svc

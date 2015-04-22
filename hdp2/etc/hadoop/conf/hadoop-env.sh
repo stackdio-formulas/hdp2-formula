@@ -48,6 +48,11 @@
 # Extra Java runtime options.  Empty by default.
 #export HADOOP_OPTS="$HADOOP_OPTS -Djava.net.preferIPv4Stack=true"
 
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
+export HADOOP_OPTS="$HADOOP_OPTS -Djava.security.krb5.conf={{ pillar.krb5.conf_file }}"
+export HADOOP_CLIENT_OPTS="$HADOOP_CLIENT_OPTS -Djava.security.krb5.conf={{ pillar.krb5.conf_file }}"
+{% endif %}
+
 # Command specific options appended to HADOOP_OPTS when specified
 #export HADOOP_NAMENODE_OPTS="-Dhadoop.security.logger=${HADOOP_SECURITY_LOGGER:-INFO,RFAS} -Dhdfs.audit.logger=${HDFS_AUDIT_LOGGER:-INFO,NullAppender} $HADOOP_NAMENODE_OPTS"
 #export HADOOP_DATANODE_OPTS="-Dhadoop.security.logger=ERROR,RFAS $HADOOP_DATANODE_OPTS"
