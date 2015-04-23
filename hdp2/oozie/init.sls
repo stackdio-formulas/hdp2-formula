@@ -83,7 +83,17 @@ hadoop-lzo:
     - directory
     - user: oozie
     - group: oozie
-    - mode: 777
+    - recurse:
+      - user
+      - group
+    - require:
+      - pkg: oozie
+
+/var/lib/oozie:
+  file:
+    - directory
+    - user: oozie
+    - group: oozie
     - recurse:
       - user
       - group

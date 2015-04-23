@@ -1,9 +1,9 @@
 {% set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.namenode and not G@roles:hdp2.hadoop.standby', 'grains.items', 'compound').values()[0]['fqdn'] %}
+{% set oozie_data_dir = '/var/lib/oozie' %}
 
 # The scripts for starting services are in different places depending on the hdp version, so set them here
 {% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
 {% set oozie_home = '/usr/hdp/current/oozie-server' %}
-{% set oozie_data_dir = '/var/lib/oozie/data' %}
 
 copy_ssl_conf:
   cmd:
@@ -29,7 +29,6 @@ fix_symlink:
 
 {% else %}
 {% set oozie_home = '/usr/lib/oozie' %}
-{% set oozie_data_dir = '/var/lib/oozie' %}
 {% endif %}
 
 # 
@@ -46,6 +45,8 @@ prepare_server:
       - pkg: oozie
       - cmd: extjs
       - file: /etc/oozie/conf/oozie-env.sh
+      - file: /var/lib/oozie
+      - file: /var/log/oozie
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/oozie/conf/oozie-site.xml
       - cmd: generate_oozie_keytabs
@@ -54,7 +55,7 @@ prepare_server:
 ooziedb:
   cmd:
     - run
-    - name: '{{ oozie_home }}/bin/ooziedb.sh create -sqlfile /var/lib/oozie/data/oozie-db-creation.sql -run Validate DB Connection'
+    - name: '{{ oozie_home }}/bin/ooziedb.sh {% if salt['pillar.get']('hdp2:security:enable', False) %}-Djava.security.krb5.conf={{ pillar.krb5.conf_file }}{% endif %} create -run'
     - unless: 'test -d {{ oozie_data_dir }}/oozie-db'
     - user: oozie
     - require:
@@ -87,7 +88,7 @@ populate-oozie-sharelibs:
   cmd:
     - run
     {% if salt['pillar.get']('hdp2:security:enable', False) %}
-    - name: '{{ oozie_home }}/bin/oozie-sharelib-kerberos.sh create -fs hdfs://{{nn_host}}:8020 -locallib {{ oozie_home }}/oozie-sharelib-yarn.tar.gz'
+    - name: '{{ oozie_home }}/bin/oozie-sharelib-kerberos.sh create -fs hdfs://{{nn_host}}:8020 -locallib {{ oozie_home }}/oozie-sharelib.tar.gz'
     {% else %}
     - name: '{{ oozie_home }}/bin/oozie-setup.sh sharelib create -fs hdfs://{{nn_host}}:8020 -locallib {{ oozie_home }}/oozie-sharelib.tar.gz'
     {% endif %}
