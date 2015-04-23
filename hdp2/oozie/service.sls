@@ -51,17 +51,6 @@ prepare_server:
       - cmd: generate_oozie_keytabs
 {% endif %}
 
-ooziedb:
-  cmd:
-    - run
-    - name: '{{ oozie_home }}/bin/ooziedb.sh create -sqlfile /var/lib/oozie/data/oozie-db-creation.sql -run Validate DB Connection'
-    - unless: 'test -d {{ oozie_data_dir }}/oozie-db'
-    - user: oozie
-    - env:
-      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
-    - require:
-      - cmd: prepare_server
-
 create-oozie-sharelibs:
   cmd:
     - run
@@ -69,7 +58,7 @@ create-oozie-sharelibs:
     - unless: 'hdfs dfs -test -d /user/oozie'
     - user: hdfs
     - require:
-      - cmd: ooziedb
+      - cmd: prepare_server
 
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
 create_sharelib_script:
@@ -107,6 +96,5 @@ oozie-svc:
     - require:
       - pkg: oozie
       - cmd: extjs
-      - cmd: ooziedb
       - cmd: populate-oozie-sharelibs
       - file: /var/log/oozie
