@@ -57,6 +57,8 @@ ooziedb:
     - name: '{{ oozie_home }}/bin/ooziedb.sh create -sqlfile /var/lib/oozie/data/oozie-db-creation.sql -run Validate DB Connection'
     - unless: 'test -d {{ oozie_data_dir }}/oozie-db'
     - user: oozie
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
     - require:
       - cmd: prepare_server
 
