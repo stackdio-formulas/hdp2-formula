@@ -46,6 +46,8 @@ prepare_server:
       - pkg: oozie
       - cmd: extjs
       - file: /etc/oozie/conf/oozie-env.sh
+      - file: /var/lib/oozie
+      - file: /var/log/oozie
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/oozie/conf/oozie-site.xml
       - cmd: generate_oozie_keytabs
@@ -54,7 +56,7 @@ prepare_server:
 ooziedb:
   cmd:
     - run
-    - name: '{{ oozie_home }}/bin/ooziedb.sh create -run'
+    - name: '{{ oozie_home }}/bin/ooziedb.sh {% if salt['pillar.get']('hdp2:security:enable', False) %}-Djava.security.krb5.conf={{ pillar.krb5.conf_file }}{% endif %} create -run'
     - unless: 'test -d {{ oozie_data_dir }}/oozie-db'
     - user: oozie
     - require:
