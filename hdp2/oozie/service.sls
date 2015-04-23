@@ -1,9 +1,9 @@
 {% set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.namenode and not G@roles:hdp2.hadoop.standby', 'grains.items', 'compound').values()[0]['fqdn'] %}
+{% set oozie_data_dir = '/var/lib/oozie' %}
 
 # The scripts for starting services are in different places depending on the hdp version, so set them here
 {% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
 {% set oozie_home = '/usr/hdp/current/oozie-server' %}
-{% set oozie_data_dir = '/var/lib/oozie/data' %}
 
 copy_ssl_conf:
   cmd:
@@ -29,7 +29,6 @@ fix_symlink:
 
 {% else %}
 {% set oozie_home = '/usr/lib/oozie' %}
-{% set oozie_data_dir = '/var/lib/oozie' %}
 {% endif %}
 
 # 
