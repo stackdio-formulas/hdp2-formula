@@ -21,12 +21,6 @@ include:
   - hdp2.hive.security
 {% endif %}
 
-extend:
-  /etc/hive/conf/hive-site.xml:
-    file:
-      - require:
-        - pkg: hive
-
 hive:
   pkg:
     - installed
@@ -37,6 +31,8 @@ hive:
     - require:
       - pkg: mysql
       - cmd: repo_placeholder
+    - require_in:
+      - file: /etc/hive/conf/hive-site.xml
 
 # @todo move this out to its own formula
 mysql:

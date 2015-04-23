@@ -50,15 +50,16 @@ oozie:
       - pkg: oozie
 {% endif %}
 
-{% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
 /etc/oozie/conf/oozie-env.sh:
   file:
-    - replace
-    - pattern: 'export CATALINA_BASE=.*'
-    - repl: 'export CATALINA_BASE={{ oozie_home }}/oozie-server'
+    - managed
+    - source: salt://hdp2/etc/oozie/conf/oozie-env.sh
+    - user: root
+    - group: root
+    - mode: 644
+    - template: jinja
     - require:
       - pkg: oozie
-{% endif %}
 
 extjs:
   cmd:

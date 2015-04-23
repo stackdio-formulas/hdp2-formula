@@ -1,4 +1,4 @@
-{% set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.namenode and not G@roles:hdp2.hadoop.standby', 'grains.items', 'compound').values()[0]['fqdn_ip4'][0] %}
+{% set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.namenode and not G@roles:hdp2.hadoop.standby', 'grains.items', 'compound').values()[0]['fqdn'] %}
 
 # The scripts for starting services are in different places depending on the hdp version, so set them here
 {% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
@@ -45,12 +45,10 @@ prepare_server:
     - require:
       - pkg: oozie
       - cmd: extjs
+      - file: /etc/oozie/conf/oozie-env.sh
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/oozie/conf/oozie-site.xml
       - cmd: generate_oozie_keytabs
-{% endif %}
-{% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
-      - file: /etc/oozie/conf/oozie-env.sh
 {% endif %}
 
 ooziedb:
@@ -71,12 +69,30 @@ create-oozie-sharelibs:
     - require:
       - cmd: ooziedb
 
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
+create_sharelib_script:
+  file:
+    - managed
+    - name: {{ oozie_home }}/bin/oozie-sharelib-kerberos.sh
+    - source: salt://hdp2/oozie/create_sharelibs.sh
+    - user: root
+    - group: root
+    - mode: 755
+    - template: jinja
+    - require_in:
+      - cmd: populate-oozie-sharelibs
+{% endif %}
+
 populate-oozie-sharelibs:
   cmd:
     - run
+    {% if salt['pillar.get']('hdp2:security:enable', False) %}
+    - name: '{{ oozie_home }}/bin/oozie-sharelib-kerberos.sh create -fs hdfs://{{nn_host}}:8020 -locallib {{ oozie_home }}/oozie-sharelib-yarn.tar.gz'
+    {% else %}
     - name: '{{ oozie_home }}/bin/oozie-setup.sh sharelib create -fs hdfs://{{nn_host}}:8020 -locallib {{ oozie_home }}/oozie-sharelib.tar.gz'
+    {% endif %}
+    - user: oozie
     - unless: 'hdfs dfs -test -d /user/oozie/share'
-    - user: oozie 
     - require:
       - cmd: create-oozie-sharelibs
 

@@ -54,8 +54,10 @@ hadoop-hdfs-namenode-svc:
   cmd:
     - run
     - user: hdfs
-    - name: export HADOOP_LIBEXEC_DIR={{ hadoop_script_dir }}/../libexec && {{ hadoop_script_dir }}/hadoop-daemon.sh start namenode
+    - name: {{ hadoop_script_dir }}/hadoop-daemon.sh start namenode
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-namenode.pid'
+    - env:
+      - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require: 
       - pkg: hadoop-hdfs-namenode
       # Make sure HDFS is initialized before the namenode
@@ -77,6 +79,8 @@ hdfs_kinit:
     - name: 'kinit -kt /etc/hadoop/conf/hdfs.keytab hdfs/{{ grains.fqdn }}'
     - user: hdfs
     - group: hdfs
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
     - require:
       - cmd: hadoop-hdfs-namenode-svc
       - cmd: generate_hadoop_keytabs
@@ -166,8 +170,10 @@ hadoop-yarn-resourcemanager-svc:
   cmd:
     - run
     - user: yarn
-    - name: export HADOOP_LIBEXEC_DIR={{ hadoop_script_dir }}/../libexec && {{ yarn_script_dir }}/yarn-daemon.sh start resourcemanager
+    - name: {{ yarn_script_dir }}/yarn-daemon.sh start resourcemanager
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/yarn/yarn-yarn-resourcemanager.pid'
+    - env:
+      - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require: 
       - pkg: hadoop-yarn-resourcemanager
       - cmd: hadoop-hdfs-namenode-svc
@@ -187,8 +193,12 @@ hadoop-mapreduce-historyserver-svc:
   cmd:
     - run
     - user: mapred
-    - name: export HADOOP_MAPRED_HOME={{ mapred_script_dir }}/.. && export HADOOP_MAPRED_LOG_DIR=/var/log/hadoop/mapreduce && export HADOOP_LIBEXEC_DIR={{ hadoop_script_dir }}/../libexec && {{ mapred_script_dir }}/mr-jobhistory-daemon.sh start historyserver
+    - name: {{ mapred_script_dir }}/mr-jobhistory-daemon.sh start historyserver
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/mapreduce/mapred-mapred-historyserver.pid'
+    - env:
+      - HADOOP_MAPRED_HOME: '{{ mapred_script_dir }}/..'
+      - HADOOP_MAPRED_LOG_DIR: '/var/log/hadoop/mapreduce'
+      - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require:
       - pkg: hadoop-mapreduce-historyserver
       - cmd: hadoop-hdfs-namenode-svc
