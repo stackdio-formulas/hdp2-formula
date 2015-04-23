@@ -51,6 +51,15 @@ prepare_server:
       - cmd: generate_oozie_keytabs
 {% endif %}
 
+ooziedb:
+  cmd:
+    - run
+    - name: '{{ oozie_home }}/bin/ooziedb.sh create -run'
+    - unless: 'test -d {{ oozie_data_dir }}/oozie-db'
+    - user: oozie
+    - require:
+      - cmd: prepare_server
+
 create-oozie-sharelibs:
   cmd:
     - run
@@ -58,7 +67,7 @@ create-oozie-sharelibs:
     - unless: 'hdfs dfs -test -d /user/oozie'
     - user: hdfs
     - require:
-      - cmd: prepare_server
+      - cmd: ooziedb
 
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
 create_sharelib_script:
@@ -96,5 +105,6 @@ oozie-svc:
     - require:
       - pkg: oozie
       - cmd: extjs
+      - cmd: ooziedb
       - cmd: populate-oozie-sharelibs
       - file: /var/log/oozie
