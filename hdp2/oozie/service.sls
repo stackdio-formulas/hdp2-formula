@@ -88,7 +88,7 @@ populate-oozie-sharelibs:
   cmd:
     - run
     {% if salt['pillar.get']('hdp2:security:enable', False) %}
-    - name: '{{ oozie_home }}/bin/oozie-sharelib-kerberos.sh create -fs hdfs://{{nn_host}}:8020 -locallib {{ oozie_home }}/oozie-sharelib-yarn.tar.gz'
+    - name: '{{ oozie_home }}/bin/oozie-sharelib-kerberos.sh create -fs hdfs://{{nn_host}}:8020 -locallib {{ oozie_home }}/oozie-sharelib.tar.gz'
     {% else %}
     - name: '{{ oozie_home }}/bin/oozie-setup.sh sharelib create -fs hdfs://{{nn_host}}:8020 -locallib {{ oozie_home }}/oozie-sharelib.tar.gz'
     {% endif %}
