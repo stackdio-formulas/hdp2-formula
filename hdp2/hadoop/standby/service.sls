@@ -46,7 +46,8 @@ hadoop-hdfs-namenode-svc:
     - user: hdfs
     - name: {{ hadoop_script_dir }}/hadoop-daemon.sh start namenode
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-namenode.pid'
-    - env: HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
+    - env:
+      - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require:
       - pkg: hadoop-hdfs-namenode
       - cmd: init_standby_namenode
