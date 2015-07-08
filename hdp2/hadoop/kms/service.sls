@@ -9,11 +9,12 @@
 hadoop-kms-server-svc:
   cmd:
     - run
+    - user: kms
     - name: {{ kms_script_dir }}/kms.sh run
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/kms/hadoop-kms-server.pid'
     - require:
       - pkg: hadoop-kms-server
       - file: /etc/hadoop-kms/conf
-      - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/kms/hadoop-kms-server.pid'
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hadoop_kms_keytabs
       {% endif %}

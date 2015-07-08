@@ -17,7 +17,7 @@ hadoop-kms-server:
   pkg:
     - installed
     - require:
-      - module: hdp2_refresh_db
+      - cmd: repo_placeholder
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: krb5_conf_file
       {% endif %}
