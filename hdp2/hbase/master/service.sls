@@ -5,6 +5,8 @@
 {% set hbase_script_dir = '/usr/lib/hbase/bin' %}
 {% endif %}
 
+{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.kms', 'grains.items', 'compound') %}
+
 #
 # Start the HBase master service
 #
@@ -25,6 +27,16 @@ hdfs_kinit:
       - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
     - require:
       - cmd: generate_hbase_keytabs
+      
+hbase_kinit:
+  cmd:
+    - run
+    - name: 'kinit -kt /etc/hbase/conf/hbase.keytab hbase/{{ grains.fqdn }}'
+    - user: hbase
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
+    - require:
+      - cmd: generate_hbase_keytabs
 {% endif %}
 
 hbase-init:
@@ -36,8 +48,33 @@ hbase-init:
     - unless: 'hdfs dfs -test -d /hbase'
     - require:
       - pkg: hadoop-client
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: hdfs_kinit
+      {% endif %}
+
+{% if kms %}
+create_hbase_key:
+  cmd:
+    - run
+    - user: hbase
+    - name: 'hadoop key create hbase'
+    - unless: 'hadoop key list | grep hbase'
+    {% if salt['pillar.get']('hdp2:security:enable', False) %}
+    - require:
+      - cmd: hbase_kinit
+    {% endif %}
+
+create_hbase_zone:
+  cmd:
+    - run
+    - user: hdfs
+    - name: 'hdfs crypto -createZone -keyName hbase -path /hbase'
+    - unless: 'hdfs crypto -listZones | grep /hbase'
+    - require:
+      - cmd: create_hbase_key
+      - cmd: hbase-init
+    - require_in:
+      - cmd: hbase-master-svc
 {% endif %}
 
 hbase-master-svc:

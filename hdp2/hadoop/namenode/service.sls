@@ -1,4 +1,5 @@
 {% set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.standby', 'grains.items', 'compound') %}
+{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.kms', 'grains.items', 'compound') %}
 {% set dfs_name_dir = salt['pillar.get']('hdp2:dfs:name_dir', '/mnt/hadoop/hdfs/nn') %}
 {% set mapred_local_dir = salt['pillar.get']('hdp2:mapred:local_dir', '/mnt/hadoop/mapred/local') %}
 {% set mapred_system_dir = salt['pillar.get']('hdp2:mapred:system_dir', '/hadoop/system/mapred') %}
@@ -89,6 +90,17 @@ hdfs_kinit:
       - cmd: hdfs_mapreduce_log_dir
       - cmd: hdfs_mapreduce_var_dir
       - cmd: hdfs_user_dir
+
+mapred_kinit:
+  cmd:
+    - run
+    - name: 'kinit -kt /etc/hadoop/conf/mapred.keytab mapred/{{ grains.fqdn }}'
+    - user: mapred
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
+    - require:
+      - cmd: hadoop-hdfs-namenode-svc
+      - cmd: generate_hadoop_keytabs
 {% endif %}
 
 {% if standby %}
@@ -148,6 +160,33 @@ hdfs_mapreduce_var_dir:
     - unless: 'hdfs dfs -test -d {{ mapred_staging_dir }}'
     - require:
       - cmd: hadoop-hdfs-namenode-svc
+
+{% if kms %}
+create_mapred_key:
+  cmd:
+    - run
+    - user: mapred
+    - name: 'hadoop key create mapred'
+    - unless: 'hadoop key list | grep mapred'
+    - require:
+      - file: /etc/hadoop/conf
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      - cmd: mapred_kinit
+      {% endif %}
+
+create_mapred_zone:
+  cmd:
+    - run
+    - user: hdfs
+    - name: 'hdfs crypto -createZone -keyName mapred -path {{ mapred_staging_dir }}'
+    - unless: 'hdfs crypto -listZones | grep {{ mapred_staging_dir }}'
+    - require:
+      - cmd: create_mapred_key
+      - cmd: hdfs_mapreduce_var_dir
+    - require_in:
+      - cmd: hadoop-yarn-resourcemanager-svc
+      - cmd: hadoop-mapreduce-historyserver-svc
+{% endif %}
 
 # create a user directory owned by the stack user
 {% set user = pillar.__stackdio__.username %}

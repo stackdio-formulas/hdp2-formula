@@ -14,6 +14,7 @@
 include:
   - hdp2.repo
   - hdp2.landing_page
+  - hdp2.hadoop.conf
 {% if salt['pillar.get']('hdp2:oozie:start_service', True) %}
   - hdp2.oozie.service
 {% endif %}
@@ -22,6 +23,8 @@ include:
   - hdp2.security
   - hdp2.oozie.security
 {% endif %}
+
+
 
 oozie:
   pkg:
@@ -36,6 +39,17 @@ oozie:
       - unzip
     - require:
       - cmd: repo_placeholder
+
+/etc/oozie/conf/hadoop-conf:
+  file:
+    - symlink
+    - target: /etc/hadoop/conf
+    - force: true
+    - user: root
+    - group: root
+    - require:
+      - file: /etc/hadoop/conf
+      - pkg: oozie
 
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
 /etc/oozie/conf/oozie-site.xml:
