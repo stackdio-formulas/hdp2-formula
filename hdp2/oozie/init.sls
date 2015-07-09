@@ -37,6 +37,28 @@ oozie:
     - require:
       - cmd: repo_placeholder
 
+<<<<<<< Updated upstream
+=======
+/etc/oozie/conf/hadoop-conf:
+  file:
+    - symlink
+    - target: /etc/hadoop/conf
+    - force: true
+    - user: root
+    - group: root
+    - require:
+      - file: /etc/hadoop/conf
+      - pkg: oozie
+
+/etc/oozie/conf/oozie-log4j.properties:
+  file:
+    - replace
+    - pattern: 'RollingPolicy.MaxHistory=720'
+    - repl: 'RollingPolicy.MaxHistory={{ salt['pillar.get']('hdp2:oozie:max_log_index', 168) }}'
+    - require:
+      - pkg: oozie
+
+>>>>>>> Stashed changes
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
 /etc/oozie/conf/oozie-site.xml:
   file:
