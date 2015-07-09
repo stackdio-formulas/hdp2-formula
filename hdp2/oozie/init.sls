@@ -37,8 +37,6 @@ oozie:
     - require:
       - cmd: repo_placeholder
 
-<<<<<<< Updated upstream
-=======
 /etc/oozie/conf/hadoop-conf:
   file:
     - symlink
@@ -58,7 +56,6 @@ oozie:
     - require:
       - pkg: oozie
 
->>>>>>> Stashed changes
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
 /etc/oozie/conf/oozie-site.xml:
   file:
