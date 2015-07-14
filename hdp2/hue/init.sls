@@ -3,6 +3,7 @@
 #
 include:
   - hdp2.repo
+  - hdp2.hadoop.client
   - hdp2.landing_page
   - hdp2.hue.plugins
 {% if salt['pillar.get']('hdp2:hue:start_service', True) %}

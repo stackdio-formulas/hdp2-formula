@@ -14,6 +14,7 @@
 include:
   - hdp2.repo
   - hdp2.landing_page
+  - hdp2.hadoop.conf
 {% if salt['pillar.get']('hdp2:oozie:start_service', True) %}
   - hdp2.oozie.service
 {% endif %}
@@ -22,6 +23,8 @@ include:
   - hdp2.security
   - hdp2.oozie.security
 {% endif %}
+
+
 
 oozie:
   pkg:
