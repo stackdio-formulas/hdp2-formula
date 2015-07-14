@@ -89,6 +89,7 @@ pillar_defaults:
       start_service: true
     oozie:
       start_service: true
+      max_log_index: 168  # 1 week
     zookeeper:
       start_service: true
       data_dir: /mnt/zk/data
