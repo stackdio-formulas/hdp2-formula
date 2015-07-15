@@ -32,7 +32,7 @@ EOF
 
 # The script sources another scrip in that directory, so if we aren't in this directory,
 # everything breaks
-cd {{pillar.hdp2.hive.home}}/scripts/metastore/upgrade/mysql
+cd {{ hive_home }}/scripts/metastore/upgrade/mysql
 
 mysql -u root < ${SETUPSQL}
 
