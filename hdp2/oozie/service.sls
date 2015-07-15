@@ -5,6 +5,15 @@
 {% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
 {% set oozie_home = '/usr/hdp/current/oozie-server' %}
 
+kill-oozie:
+  cmd:
+    - run
+    - user: oozie
+    - name: {{ oozie_home }}/bin/oozied.sh stop
+    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/oozie/oozie.pid'
+    - require:
+      - pkg: oozie
+
 copy_ssl_conf:
   cmd:
     - run
@@ -106,6 +115,7 @@ oozie-svc:
     - require:
       - pkg: oozie
       - cmd: extjs
+      - cmd: kill-oozie
       - cmd: ooziedb
       - cmd: populate-oozie-sharelibs
       - file: /var/log/oozie

@@ -13,6 +13,17 @@
 # Depends on: JDK7
 ##
 
+kill-journalnode:
+  cmd:
+    - run
+    - user: hdfs
+    - name: {{ hadoop_script_dir }}/hadoop-daemon.sh stop journalnode
+    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-journalnode.pid'
+    - env:
+      - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
+    - require:
+      - pkg: hadoop-hdfs-journalnode
+
 # Make sure the journal data directory exists if necessary
 hdp2_journal_dir:
   cmd:
@@ -39,5 +50,6 @@ hadoop-hdfs-journalnode-svc:
       - file: bigtop_java_home
       - cmd: hdp2_journal_dir
       - file: /etc/hadoop/conf
+      - cmd: kill-journalnode
     - watch:
       - file: /etc/hadoop/conf

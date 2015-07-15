@@ -9,4 +9,5 @@ generate_hue_keytabs:
     - cwd: /etc/hue
     - require:
       - module: load_admin_keytab
+      - pkg: hue
 {% endif %}

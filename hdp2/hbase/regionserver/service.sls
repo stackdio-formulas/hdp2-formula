@@ -8,6 +8,15 @@
 # Install the HBase regionserver package
 #
 
+kill-regionserver:
+  cmd:
+    - run
+    - user: hbase
+    - name: {{ hbase_script_dir }}/hbase-daemon.sh stop regionserver
+    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hbase/hbase-hbase-regionserver.pid'
+    - require:
+      - pkg: hbase-regionserver
+
 hbase-regionserver-svc:
   cmd:
     - run
@@ -16,6 +25,7 @@ hbase-regionserver-svc:
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hbase/hbase-hbase-regionserver.pid'
     - require: 
       - pkg: hbase-regionserver
+      - cmd: kill-regionserver
       - file: /etc/hbase/conf/hbase-site.xml
       - file: /etc/hbase/conf/hbase-env.sh
       - file: {{ pillar.hdp2.hbase.tmp_dir }}

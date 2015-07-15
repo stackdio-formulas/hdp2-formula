@@ -13,6 +13,17 @@
 # Depends on: JDK7
 ##
 
+kill-namenode:
+  cmd:
+    - run
+    - user: hdfs
+    - name: {{ hadoop_script_dir }}/hadoop-daemon.sh stop namenode
+    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-namenode.pid'
+    - env:
+      - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
+    - require:
+      - pkg: hadoop-hdfs-namenode
+
 # Make sure the namenode metadata directory exists
 # and is owned by the hdfs user
 hdp2_dfs_dirs:
@@ -53,5 +64,6 @@ hadoop-hdfs-namenode-svc:
       - cmd: init_standby_namenode
       - file: bigtop_java_home
       - user: mapred_user
+      - cmd: kill-namenode
     - watch:
       - file: /etc/hadoop/conf

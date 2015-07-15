@@ -14,6 +14,15 @@
 # Start the ZooKeeper service
 #
 
+kill-zookeeper:
+  cmd:
+    - run
+    - user: zookeeper
+    - name: export ZOOCFGDIR=/etc/zookeeper/conf; source /etc/zookeeper/conf/zookeeper-env.sh; {{ zk_script_dir }}/zkServer.sh stop
+    - onlyif: '. /etc/init.d/functions && pidofproc -p {{pillar.hdp2.zookeeper.data_dir}}/zookeeper_server.pid'
+    - require:
+        - pkg: zookeeper-server
+
 bigtop_java_home_zoo:
   file:
     - managed
@@ -114,6 +123,7 @@ zookeeper-server-svc:
         - file: /etc/zookeeper/conf/log4j.properties
         - file: /etc/zookeeper/conf/zoo.cfg
         - file: bigtop_java_home_zoo
+        - cmd: kill-zookeeper
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
         - cmd: generate_zookeeper_keytabs
 {% endif %}

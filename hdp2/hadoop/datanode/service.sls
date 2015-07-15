@@ -19,6 +19,32 @@
 #
 ##
 
+kill-datanode:
+  cmd:
+    - run
+    {% if salt['pillar.get']('hdp2:security:enable', False) %}
+    - user: root
+    {% else %}
+    - user: hdfs
+    {% endif %}
+    - name: {{ hadoop_script_dir }}/hadoop-daemon.sh stop datanode
+    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-datanode.pid'
+    - env:
+      - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
+    - require:
+      - pkg: hadoop-hdfs-datanode
+
+kill-nodemanager:
+  cmd:
+    - run
+    - user: yarn
+    - name: {{ yarn_script_dir }}/yarn-daemon.sh stop nodemanager
+    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/yarn/yarn-yarn-nodemanager.pid'
+    - env:
+      - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
+    - require:
+      - pkg: hadoop-yarn-nodemanager
+
 # make the local storage directories
 datanode_yarn_local_dirs:
   cmd:
@@ -60,6 +86,7 @@ hadoop-hdfs-datanode-svc:
       - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require: 
       - pkg: hadoop-hdfs-datanode
+      - cmd: kill-datanode
       - cmd: dfs_data_dir
       - file: bigtop_java_home
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
@@ -86,6 +113,7 @@ hadoop-yarn-nodemanager-svc:
       - cmd: datanode_yarn_local_dirs
       - cmd: datanode_yarn_log_dirs
       - file: bigtop_java_home
+      - cmd: kill-nodemanager
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hadoop_keytabs
 {% endif %}

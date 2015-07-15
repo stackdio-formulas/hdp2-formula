@@ -11,6 +11,24 @@
 # Start the HBase master service
 #
 
+kill-master:
+  cmd:
+    - run
+    - user: hbase
+    - name: {{ hbase_script_dir }}/hbase-daemon.sh stop master
+    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hbase/hbase-hbase-master.pid'
+    - require:
+      - pkg: hbase-master
+
+kill-thrift:
+  cmd:
+    - run
+    - user: hbase
+    - name: {{ hbase_script_dir }}/hbase-daemon.sh stop thrift
+    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hbase/hbase-hbase-thrift.pid'
+    - require:
+      - cmd: kill-master
+
 # When security is enabled, we need to get a kerberos ticket
 # for the hdfs principal so that any interaction with HDFS
 # through the hadoop client may authorize successfully.
@@ -86,6 +104,7 @@ hbase-master-svc:
     - require: 
       - pkg: hbase-master
       - cmd: hbase-init
+      - cmd: kill-master
       - file: /etc/hbase/conf/hbase-site.xml
       - file: /etc/hbase/conf/hbase-env.sh
       - file: {{ pillar.hdp2.hbase.tmp_dir }}
@@ -105,6 +124,7 @@ hbase-thrift-svc:
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hbase/hbase-hbase-thrift.pid'
     - require:
       - cmd: hbase-master-svc
+      - cmd: kill-thrift
     - watch:
       - file: /etc/hbase/conf/hbase-site.xml
       - file: /etc/hbase/conf/hbase-env.sh

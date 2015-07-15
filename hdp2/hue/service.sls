@@ -10,6 +10,8 @@
     - template: jinja
     - source: salt://hdp2/etc/hue/hue.ini
     - mode: 755
+    - require:
+      - pkg: hue
 
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
 hdfs_kinit:

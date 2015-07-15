@@ -23,6 +23,41 @@
 # Depends on: JDK7
 ##
 
+kill-namenode:
+  cmd:
+    - run
+    - user: hdfs
+    - name: {{ hadoop_script_dir }}/hadoop-daemon.sh stop namenode
+    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-namenode.pid'
+    - env:
+      - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
+    - require:
+      - pkg: hadoop-hdfs-namenode
+
+kill-resourcemanager:
+  cmd:
+    - run
+    - user: yarn
+    - name: {{ yarn_script_dir }}/yarn-daemon.sh stop resourcemanager
+    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/yarn/yarn-yarn-resourcemanager.pid'
+    - env:
+      - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
+    - require:
+      - pkg: hadoop-yarn-resourcemanager
+
+kill-historyserver:
+  cmd:
+    - run
+    - user: mapred
+    - name: {{ mapred_script_dir }}/mr-jobhistory-daemon.sh stop historyserver
+    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/mapreduce/mapred-mapred-historyserver.pid'
+    - env:
+      - HADOOP_MAPRED_HOME: '{{ mapred_script_dir }}/..'
+      - HADOOP_MAPRED_LOG_DIR: '/var/log/hadoop/mapreduce'
+      - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
+    - require:
+      - pkg: hadoop-mapreduce-historyserver
+
 ##
 # Make sure the namenode metadata directory exists
 # and is owned by the hdfs user
@@ -65,6 +100,7 @@ hadoop-hdfs-namenode-svc:
       # is started
       - cmd: init_hdfs
       - file: bigtop_java_home
+      - cmd: kill-namenode
     - watch:
       - file: /etc/hadoop/conf
 
@@ -219,6 +255,7 @@ hadoop-yarn-resourcemanager-svc:
       - cmd: hdfs_mapreduce_var_dir
       - cmd: hdfs_mapreduce_log_dir
       - cmd: hdfs_tmp_dir
+      - cmd: kill-resourcemanager
       - file: bigtop_java_home
     - watch:
       - file: /etc/hadoop/conf
@@ -245,5 +282,6 @@ hadoop-mapreduce-historyserver-svc:
       - cmd: hdfs_mapreduce_log_dir
       - cmd: hdfs_tmp_dir
       - file: bigtop_java_home
+      - cmd: kill-historyserver
     - watch:
       - file: /etc/hadoop/conf
