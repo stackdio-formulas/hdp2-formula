@@ -3,8 +3,10 @@
 # The scripts for starting services are in different places depending on the hdp version, so set them here
 {% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
 {% set oozie_home = '/usr/hdp/current/oozie-client' %}
+{% set lzo_pkg = 'hadooplzo' %}
 {% else %}
 {% set oozie_home = '/usr/lib/oozie' %}
+{% set lzo_pkg = 'hadoop-lzo' %}
 {% endif %}
 
 # 
@@ -33,7 +35,7 @@ oozie:
       - oozie
       - oozie-client
       - extjs
-      - hadooplzo
+      - {{ lzo_pkg }}
       # oozie scripts depend on zip AND unzip, but don't list them as deps :/
       - zip
       - unzip
