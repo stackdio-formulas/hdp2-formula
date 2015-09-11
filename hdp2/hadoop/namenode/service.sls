@@ -1,4 +1,4 @@
-{% set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.standby', 'grains.items', 'compound') %}
+{% set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.standby-namenode', 'grains.items', 'compound') %}
 {% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.kms', 'grains.items', 'compound') %}
 {% set dfs_name_dir = salt['pillar.get']('hdp2:dfs:name_dir', '/mnt/hadoop/hdfs/nn') %}
 {% set mapred_local_dir = salt['pillar.get']('hdp2:mapred:local_dir', '/mnt/hadoop/mapred/local') %}
@@ -22,6 +22,17 @@
 #
 # Depends on: JDK7
 ##
+
+kill-zkfc:
+  cmd:
+    - run
+    - user: hdfs
+    - name: {{ hadoop_script_dir }}/hadoop-daemon.sh stop zkfc
+    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-zkfc.pid'
+    - env:
+      - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
+    - require:
+      - pkg: hadoop-hdfs-zkfc
 
 kill-namenode:
   cmd:
@@ -86,6 +97,38 @@ init_hdfs:
     - require:
       - cmd: hdp2_dfs_dirs
 
+{% if standby %}
+init_zkfc:
+  cmd:
+    - run
+    - name: hdfs zkfc -formatZK
+    - user: hdfs
+    - group: hdfs
+    - unless: 'zookeeper-client stat /hadoop-ha 2>&1 | grep "cZxid"'
+    - require:
+      - cmd: hdp2_dfs_dirs
+
+# Start up the ZKFC
+hadoop-hdfs-zkfc-svc:
+  cmd:
+    - run
+    - user: hdfs
+    - name: {{ hadoop_script_dir }}/hadoop-daemon.sh start zkfc
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-zkfc.pid'
+    - env:
+      - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
+    - require:
+      - pkg: hadoop-hdfs-zkfc
+      - cmd: init_zkfc
+      - file: bigtop_java_home
+      - cmd: kill-zkfc
+    - require_in:
+      - cmd: hadoop-yarn-resourcemanager-svc
+      - cmd: hadoop-mapreduce-historyserver-svc
+    - watch:
+      - file: /etc/hadoop/conf
+{% endif %}
+
 hadoop-hdfs-namenode-svc:
   cmd:
     - run
@@ -137,31 +180,6 @@ mapred_kinit:
     - require:
       - cmd: hadoop-hdfs-namenode-svc
       - cmd: generate_hadoop_keytabs
-{% endif %}
-
-{% if standby %}
-##
-# Sets this namenode as the "Active" namenode
-##
-# We run into a race condition sometimes where the the nn service isn't started yet on the snn,
-# so we'll sleep for 30 seconds first before continuing
-{% set activate = 'hdfs haadmin -transitionToActive nn1' %}
-activate_namenode:
-  cmd:
-    - run
-    - name: '{{ activate }} || sleep 30 && {{ activate }}'
-    - user: hdfs
-    - group: hdfs
-    - require:
-      - cmd: hadoop-hdfs-namenode-svc
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
-      - cmd: hdfs_kinit
-      {% endif %}
-    - require_in:
-      - cmd: hdfs_tmp_dir
-      - cmd: hdfs_mapreduce_log_dir
-      - cmd: hdfs_mapreduce_var_dir
-      - cmd: hdfs_user_dir
 {% endif %}
 
 # HDFS tmp directory

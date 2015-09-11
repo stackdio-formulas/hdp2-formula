@@ -7,7 +7,7 @@ components:
     sls_path: hdp2.hadoop.namenode
   - title: Standby NameNode
     description: Standby NameNode for high-availability
-    sls_path: hdp2.hadoop.standby
+    sls_path: hdp2.hadoop.standby-namenode
   - title: JournalNode
     description: Hadoop JournalNode for high-availability
     sls_path: hdp2.hadoop.journalnode

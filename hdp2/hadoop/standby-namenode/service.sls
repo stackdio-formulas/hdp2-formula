@@ -13,6 +13,17 @@
 # Depends on: JDK7
 ##
 
+kill-zkfc:
+  cmd:
+    - run
+    - user: hdfs
+    - name: {{ hadoop_script_dir }}/hadoop-daemon.sh stop zkfc
+    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-zkfc.pid'
+    - env:
+      - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
+    - require:
+      - pkg: hadoop-hdfs-zkfc
+
 kill-namenode:
   cmd:
     - run
@@ -51,6 +62,25 @@ init_standby_namenode:
       - cmd: generate_hadoop_keytabs
     {% endif %}
 
+# Start up the ZKFC
+hadoop-hdfs-zkfc-svc:
+  cmd:
+    - run
+    - user: hdfs
+    - name: {{ hadoop_script_dir }}/hadoop-daemon.sh start zkfc
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-zkfc.pid'
+    - env:
+      - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
+    - require:
+      - pkg: hadoop-hdfs-zkfc
+      - file: bigtop_java_home
+      - cmd: kill-zkfc
+    - require_in:
+      - cmd: hadoop-yarn-resourcemanager-svc
+      - cmd: hadoop-mapreduce-historyserver-svc
+    - watch:
+      - file: /etc/hadoop/conf
+
 hadoop-hdfs-namenode-svc:
   cmd:
     - run
@@ -63,7 +93,6 @@ hadoop-hdfs-namenode-svc:
       - pkg: hadoop-hdfs-namenode
       - cmd: init_standby_namenode
       - file: bigtop_java_home
-      - user: mapred_user
       - cmd: kill-namenode
     - watch:
       - file: /etc/hadoop/conf
