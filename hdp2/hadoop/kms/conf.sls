@@ -11,6 +11,6 @@
 /usr/hdp/current/ranger-kms/ews/ranger-kms-site.xml:
   file:
     - symlink
-    - target: /etc/ranger/kms/conf/ranger-kms-site.xml
+    - target: /etc/ranger/kms/conf/kms-site.xml
     - require:
       - file: /etc/ranger/kms/conf

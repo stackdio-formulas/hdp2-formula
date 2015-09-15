@@ -5,7 +5,7 @@
 
     <property>
         <name>hadoop.kms.key.provider.uri</name>
-        <value>jceks://file@//var/lib/ranger/kms.keystore</value>
+        <value>jceks://file@/${user.home}/kms.keystore</value>
     </property>
 
     <property>
