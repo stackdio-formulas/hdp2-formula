@@ -13,7 +13,7 @@ include:
 {% endif %}
 
 
-hadoop-kms-server:
+ranger-kms:
   pkg:
     - installed
     - require:
@@ -26,3 +26,19 @@ hadoop-kms-server:
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hadoop_kms_keytabs
       {% endif %}
+
+fix-kms-script:
+  cmd:
+    - run
+    - chmod +x /usr/hdp/current/ranger-kms/ranger-kms
+    - require:
+      - pkg: ranger-kms
+
+
+/etc/init.d/ranger-kms:
+  file:
+    - symlink
+    - target: /usr/hdp/current/ranger-kms/ranger-kms-initd
+    - require:
+      - pkg: ranger-kms
+      - cmd: fix-kms-script

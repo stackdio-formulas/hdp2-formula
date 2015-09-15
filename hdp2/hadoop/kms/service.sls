@@ -1,22 +1,15 @@
 
-{% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
-{% set kms_script_dir = '/usr/hdp/current/hadoop-kms-server/sbin' %}
-{% else %}
-{% set kms_script_dir = '/usr/lib/hadoop-kms/sbin' %}
-{% endif %}
 
 
-hadoop-kms-server-svc:
-  cmd:
-    - run
-    - user: kms
-    - name: {{ kms_script_dir }}/kms.sh run
-    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/kms/hadoop-kms-server.pid'
+ranger-kms-svc:
+  service:
+    - running
+    - name: ranger-kms
     - require:
-      - pkg: hadoop-kms-server
-      - file: /etc/hadoop-kms/conf
+      - pkg: ranger-kms
+      - file: /etc/init.d/ranger-kms
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hadoop_kms_keytabs
       {% endif %}
     - watch:
-      - file: /etc/hadoop-kms/conf
+      - file: /etc/ranger/kms/conf

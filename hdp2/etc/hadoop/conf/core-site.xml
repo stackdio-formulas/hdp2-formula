@@ -107,7 +107,7 @@
 {% if kms %}
     <property>
         <name>hadoop.security.key.provider.path</name>
-        <value>kms://http@{{ kms_fqdn }}:16000/kms</value>
+        <value>kms://http@{{ kms_fqdn }}:9292/kms</value>
     </property>
 {% endif %}
 </configuration>
