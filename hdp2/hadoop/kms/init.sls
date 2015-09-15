@@ -30,7 +30,7 @@ ranger-kms:
 fix-kms-script:
   cmd:
     - run
-    - chmod +x /usr/hdp/current/ranger-kms/ranger-kms
+    - name: chmod +x /usr/hdp/current/ranger-kms/ranger-kms
     - require:
       - pkg: ranger-kms
 
