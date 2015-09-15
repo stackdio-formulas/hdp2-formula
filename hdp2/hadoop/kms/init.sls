@@ -16,6 +16,10 @@ include:
 ranger-kms:
   pkg:
     - installed
+    - pkgs:
+      - ranger-kms
+      - mysql-server
+      - mysql-connector-java
     - require:
       - cmd: repo_placeholder
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
@@ -27,18 +31,17 @@ ranger-kms:
       - cmd: generate_hadoop_kms_keytabs
       {% endif %}
 
+/usr/hdp/current/ranger-kms/ews/webapp/lib/mysql-connector-java.jar:
+  file:
+    - symlink
+    - target: /usr/share/java/mysql-connector-java.jar
+    - require:
+      - pkg: ranger-kms
+
 fix-kms-script:
   cmd:
     - run
     - name: chmod +x /usr/hdp/current/ranger-kms/ranger-kms
     - require:
       - pkg: ranger-kms
-
-
-/etc/init.d/ranger-kms:
-  file:
-    - symlink
-    - target: /usr/hdp/current/ranger-kms/ranger-kms-initd
-    - require:
-      - pkg: ranger-kms
-      - cmd: fix-kms-script
+      - file: /usr/hdp/current/ranger-kms/ews/webapp/lib/mysql-connector-java.jar
