@@ -3,6 +3,7 @@
 {% set mapred_system_dir = salt['pillar.get']('hdp2:mapred:system_dir', '/hadoop/system/mapred') %}
 {% set mapred_staging_dir = '/user/history' %}
 {% set mapred_log_dir = '/var/log/hadoop-yarn' %}
+{% set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.standby-namenode', 'grains.items', 'compound') %}
 
 ##
 # Adding high-availability to the mix makes things a bit more complicated.
@@ -23,11 +24,7 @@ include:
   - hdp2.hadoop.conf
   - hdp2.landing_page
   {% if salt['pillar.get']('hdp2:namenode:start_service', True) %}
-  {% if 'hdp2.hadoop.standby' in grains.roles %}
-  - hdp2.hadoop.standby.service
-  {% else %}
   - hdp2.hadoop.namenode.service
-  {% endif %}
   {% endif %}
   {% if salt['pillar.get']('hdp2:security:enable', False) %}
   - krb5
@@ -35,7 +32,6 @@ include:
   - hdp2.security.stackdio_user
   - hdp2.hadoop.security
   {% endif %}
-
 
 hadoop-hdfs-namenode:
   pkg:
@@ -52,40 +48,22 @@ hadoop-hdfs-namenode:
       - cmd: generate_hadoop_keytabs
       {% endif %}
 
-{% if 'hdp2.hadoop.standby' in grains.roles %}
-
-# we need a mapred user on the standby namenode for job history to work; if the
-# namenode state is not included we want to add it manually
-mapred_group:
-  group:
-    - present
-    - name: mapred
-
-hadoop_group:
-  group:
-    - present
-    - name: hadoop
-
-mapred_user:
-  user:
-    - present
-    - name: mapred
-    - fullname: Hadoop MapReduce
-    - shell: /bin/bash
-    - home: /var/lib/hadoop-mapreduce
-    - groups:
-      - mapred
-      - hadoop
+{% if standby %}
+# Only needed for HA
+hadoop-hdfs-zkfc:
+  pkg:
+    - installed
     - require:
-      - group: mapred_group
-      - group: hadoop_group
-
-##
-# END HA NN
-##
-
-# NOT a HA NN...continue like normal with the rest of the state
-{% else %}
+      - cmd: repo_placeholder
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      - file: krb5_conf_file
+      {% endif %}
+    - require_in:
+      - file: /etc/hadoop/conf
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
+{% endif %}
 
 ##
 # Installs the yarn resourcemanager package.
@@ -126,8 +104,3 @@ hadoop-mapreduce-historyserver:
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
-
-{% endif %}
-##
-# END OF REGULAR NAMENODE
-##

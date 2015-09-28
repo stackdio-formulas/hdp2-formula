@@ -64,16 +64,16 @@ a:hover {
                     {% if 'hdp2.hadoop.namenode' in grains['roles'] %}
                     <li><a href='http://{{ fqdn }}:50070/'>Hadoop HDFS NameNode</a></li>
                     {% endif %}
-                    {% if 'hdp2.hadoop.standby' in grains['roles'] %}
+                    {% if 'hdp2.hadoop.standby-namenode' in grains['roles'] %}
                     <li><a href='http://{{ fqdn }}:50070/'>Hadoop HDFS Standby NameNode</a></li>
                     {% endif %}
                     {% if 'hdp2.hadoop.namenode' in grains['roles'] %}
-                    {% set snn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.standby', 'grains.items', 'compound').values() %}
+                    {% set snn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.standby-namenode', 'grains.items', 'compound').values() %}
                     {% if snn %}
                     <li><a href='http://{{ snn[0]["fqdn"] }}:50070/'>Hadoop HDFS Standby NameNode</a></li>
                     {% endif %}
                     {% endif %}
-                    {% if 'hdp2.hadoop.namenode' in grains['roles'] and 'hdp2.hadoop.standby' not in grains['roles'] %}
+                    {% if 'hdp2.hadoop.namenode' in grains['roles'] %}
                     <li><a href='http://{{ fqdn }}:8088/'>Hadoop Yarn ResourceManager</a></li>
                     <li><a href='http://{{ fqdn }}:19888/'>Hadoop Mapreduce HistoryServer</a></li>
                     {% endif %}
