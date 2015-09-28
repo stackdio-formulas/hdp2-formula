@@ -3,8 +3,10 @@
 # The scripts for starting services are in different places depending on the hdp version, so set them here
 {% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
 {% set hadoop_script_dir = '/usr/hdp/current/hadoop-hdfs-namenode/../hadoop/sbin' %}
+{% set yarn_script_dir = '/usr/hdp/current/hadoop-yarn-resourcemanager/sbin' %}
 {% else %}
 {% set hadoop_script_dir = '/usr/lib/hadoop/sbin' %}
+{% set yarn_script_dir = '/usr/lib/hadoop-yarn/sbin' %}
 {% endif %}
 
 ##
@@ -12,6 +14,17 @@
 #
 # Depends on: JDK7
 ##
+
+kill-zkfc:
+  cmd:
+    - run
+    - user: hdfs
+    - name: {{ hadoop_script_dir }}/hadoop-daemon.sh stop zkfc
+    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-zkfc.pid'
+    - env:
+      - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
+    - require:
+      - pkg: hadoop-hdfs-zkfc
 
 kill-namenode:
   cmd:
@@ -23,6 +36,17 @@ kill-namenode:
       - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require:
       - pkg: hadoop-hdfs-namenode
+
+kill-resourcemanager:
+  cmd:
+    - run
+    - user: yarn
+    - name: {{ yarn_script_dir }}/yarn-daemon.sh stop resourcemanager
+    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/yarn/yarn-yarn-resourcemanager.pid'
+    - env:
+      - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
+    - require:
+      - pkg: hadoop-yarn-resourcemanager
 
 # Make sure the namenode metadata directory exists
 # and is owned by the hdfs user
@@ -51,6 +75,22 @@ init_standby_namenode:
       - cmd: generate_hadoop_keytabs
     {% endif %}
 
+# Start up the ZKFC
+hadoop-hdfs-zkfc-svc:
+  cmd:
+    - run
+    - user: hdfs
+    - name: {{ hadoop_script_dir }}/hadoop-daemon.sh start zkfc
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-zkfc.pid'
+    - env:
+      - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
+    - require:
+      - pkg: hadoop-hdfs-zkfc
+      - file: bigtop_java_home
+      - cmd: kill-zkfc
+    - watch:
+      - file: /etc/hadoop/conf
+
 hadoop-hdfs-namenode-svc:
   cmd:
     - run
@@ -63,7 +103,23 @@ hadoop-hdfs-namenode-svc:
       - pkg: hadoop-hdfs-namenode
       - cmd: init_standby_namenode
       - file: bigtop_java_home
-      - user: mapred_user
       - cmd: kill-namenode
+    - watch:
+      - file: /etc/hadoop/conf
+
+
+hadoop-yarn-resourcemanager-svc:
+  cmd:
+    - run
+    - user: yarn
+    - name: {{ yarn_script_dir }}/yarn-daemon.sh start resourcemanager
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/yarn/yarn-yarn-resourcemanager.pid'
+    - env:
+      - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
+    - require:
+      - pkg: hadoop-yarn-resourcemanager
+      - cmd: hadoop-hdfs-namenode-svc
+      - cmd: kill-resourcemanager
+      - file: bigtop_java_home
     - watch:
       - file: /etc/hadoop/conf
