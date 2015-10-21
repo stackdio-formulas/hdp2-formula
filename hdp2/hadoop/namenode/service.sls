@@ -23,6 +23,7 @@
 # Depends on: JDK7
 ##
 
+{% if standby %}
 kill-zkfc:
   cmd:
     - run
@@ -33,6 +34,7 @@ kill-zkfc:
       - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require:
       - pkg: hadoop-hdfs-zkfc
+{% endif %}
 
 kill-namenode:
   cmd:
