@@ -76,11 +76,22 @@ hdfs_kinit:
     - run
     - name: 'kinit -kt /etc/hadoop/conf/hdfs.keytab hdfs/{{ grains.fqdn }}'
     - user: hdfs
-    - group: hdfs
     - env:
       - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
     - require_in:
       - cmd: create-oozie-sharelibs
+
+oozie_kinit:
+  cmd:
+    - run
+    - name: 'kinit -kt /etc/oozie/conf/oozie.keytab oozie/{{ grains.fqdn }}'
+    - user: oozie
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
+    - require:
+      - cmd: generate_oozie_keytabs
+    - require_in:
+      - cmd: populate-oozie-sharelibs
 {% endif %}
 
 create-oozie-sharelibs:
