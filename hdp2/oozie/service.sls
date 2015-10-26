@@ -56,6 +56,7 @@ prepare_server:
       - file: /etc/oozie/conf/oozie-env.sh
       - file: /var/lib/oozie
       - file: /var/log/oozie
+      - cmd: kill-oozie
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/oozie/conf/oozie-site.xml
       - cmd: generate_oozie_keytabs
