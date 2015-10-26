@@ -80,6 +80,7 @@ hdfs_kinit:
       - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
     - require_in:
       - cmd: create-oozie-sharelibs
+      - cmd: wait-for-safemode
 
 oozie_kinit:
   cmd:
@@ -94,6 +95,14 @@ oozie_kinit:
       - cmd: populate-oozie-sharelibs
 {% endif %}
 
+wait-for-safemode:
+  cmd:
+    - run
+    - name: 'hdfs dfsadmin -safemode wait'
+    - user: hdfs
+    - require:
+      - cmd: kill-oozie
+
 create-oozie-sharelibs:
   cmd:
     - run
@@ -101,6 +110,7 @@ create-oozie-sharelibs:
     - user: hdfs
     - require:
       - cmd: ooziedb
+      - cmd: wait-for-safemode
 
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
 create_sharelib_script:
