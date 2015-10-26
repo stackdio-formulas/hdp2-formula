@@ -79,8 +79,6 @@ hdfs_kinit:
     - group: hdfs
     - env:
       - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
-    - require:
-      - cmd: generate_hadoop_keytabs
     - require_in:
       - cmd: create-oozie-sharelibs
 {% endif %}
