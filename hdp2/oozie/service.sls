@@ -86,8 +86,7 @@ hdfs_kinit:
 create-oozie-sharelibs:
   cmd:
     - run
-    - name: 'hdfs dfs -mkdir /user/oozie && hdfs dfs -chown -R oozie:oozie /user/oozie'
-    - unless: 'hdfs dfs -test -d /user/oozie'
+    - name: 'hdfs dfs -mkdir -p /user/oozie && hdfs dfs -chown -R oozie:oozie /user/oozie'
     - user: hdfs
     - require:
       - cmd: ooziedb
