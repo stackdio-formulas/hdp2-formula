@@ -29,7 +29,7 @@ OOZIE_OPTS="${OOZIE_OPTS} -Djava.security.krb5.conf={{ pillar.krb5.conf_file }}"
 
 
 OOZIECPPATH=""
-OOZIECPPATH=${BASEDIR}/libtools/'*':${BASEDIR}/libext/'*'
+OOZIECPPATH=${BASEDIR}/lib/'*':${BASEDIR}/libtools/'*':${BASEDIR}/libext/'*'
 
 if test -z ${JAVA_HOME}; then
   JAVA_BIN=java
