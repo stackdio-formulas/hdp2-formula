@@ -86,7 +86,7 @@ pillar_defaults:
       region_max_heap_mb: 1024
       region_young_gen_mb: 256
       jute_maxbuffer: 1000000
-      manage_zk: true
+      manage_zk: false
     zookeeper:
       data_dir: /mnt/zk/data
       start_service: true
