@@ -21,7 +21,7 @@ hue:
     - pkgs:
       - hue
       - hue-server
-      {% if grains['os_family'] == 'RedHat' %}
+      {% if grains['os_family'] == 'RedHat' and pillar.hdp2.version.split('.')[1] | int <= 2 %}
       - hue-plugins
       {% endif %}
     - require:
