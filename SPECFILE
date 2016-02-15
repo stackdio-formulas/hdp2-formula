@@ -2,6 +2,9 @@ title: HDP2 Salt Formula
 description: Salt formula for installing components of Hortonworks Data Platform v2
 root_path: hdp2
 components:
+  - title: Hadoop Client Node
+    description: Hadoop Client Node
+    sls_path: hdp2.hadoop.client
   - title: NameNode
     description: Hadoop NameNode component of HDP2
     sls_path: hdp2.hadoop.namenode
@@ -32,6 +35,9 @@ components:
   - title: Oozie 
     description: Oozie
     sls_path: hdp2.oozie
+  - title: Oozie Client Node
+    description: Oozie Client Node
+    sls_path: hdp2.oozie.client
   - title: Hue
     description: Hue
     sls_path: hdp2.hue
