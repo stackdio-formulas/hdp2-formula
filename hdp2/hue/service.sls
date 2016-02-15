@@ -21,8 +21,8 @@ hdfs_kinit:
     - user: hdfs
     - env:
       - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
-    - require:
-      - cmd: generate_hue_keytabs
+    - require_in:
+      - cmd: hue_dir
 
 hue_kinit:
   cmd:

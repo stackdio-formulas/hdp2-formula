@@ -56,28 +56,53 @@ prepare_server:
       - file: /etc/oozie/conf/oozie-env.sh
       - file: /var/lib/oozie
       - file: /var/log/oozie
+      - cmd: kill-oozie
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: /etc/oozie/conf/oozie-site.xml
       - cmd: generate_oozie_keytabs
 {% endif %}
 
-ooziedb:
+{% if salt['pillar.get']('hdp2:security:enable', False) %}
+hdfs_kinit:
   cmd:
     - run
-    - name: '{{ oozie_home }}/bin/ooziedb.sh {% if salt['pillar.get']('hdp2:security:enable', False) %}-Djava.security.krb5.conf={{ pillar.krb5.conf_file }}{% endif %} create -run'
-    - unless: 'test -d {{ oozie_data_dir }}/oozie-db'
+    - name: 'kinit -kt /etc/hadoop/conf/hdfs.keytab hdfs/{{ grains.fqdn }}'
+    - user: hdfs
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
+    - require_in:
+      - cmd: create-oozie-sharelibs
+      - cmd: wait-for-safemode
+
+oozie_kinit:
+  cmd:
+    - run
+    - name: 'kinit -kt /etc/oozie/conf/oozie.keytab oozie/{{ grains.fqdn }}'
     - user: oozie
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
     - require:
-      - cmd: prepare_server
+      - cmd: generate_oozie_keytabs
+    - require_in:
+      - cmd: populate-oozie-sharelibs
+{% endif %}
+
+wait-for-safemode:
+  cmd:
+    - run
+    - name: 'hdfs dfsadmin -safemode wait'
+    - user: hdfs
+    - require:
+      - cmd: kill-oozie
 
 create-oozie-sharelibs:
   cmd:
     - run
-    - name: 'hdfs dfs -mkdir /user/oozie && hdfs dfs -chown -R oozie:oozie /user/oozie'
-    - unless: 'hdfs dfs -test -d /user/oozie'
+    - name: 'hdfs dfs -mkdir -p /user/oozie && hdfs dfs -chown -R oozie:oozie /user/oozie'
     - user: hdfs
     - require:
-      - cmd: ooziedb
+      - cmd: prepare_server
+      - cmd: wait-for-safemode
 
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
 create_sharelib_script:
@@ -112,10 +137,14 @@ oozie-svc:
     - user: oozie
     - name: {{ oozie_home }}/bin/oozied.sh start
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/oozie/oozie.pid'
+    {% if salt['pillar.get']('hdp2:security:enable', False) %}
+    - env:
+      - JAVA_PROPERTIES: '-Djava.security.krb5.conf={{ pillar.krb5.conf_file }}'
+    {% endif %}
     - require:
       - pkg: oozie
       - cmd: extjs
       - cmd: kill-oozie
-      - cmd: ooziedb
+      - cmd: prepare_server
       - cmd: populate-oozie-sharelibs
       - file: /var/log/oozie
