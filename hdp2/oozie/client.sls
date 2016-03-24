@@ -16,7 +16,7 @@ oozie-client:
   pkg:
     - installed
     - require:
-      - module: hdp2_refresh_db
+      - cmd: repo_placeholder
 
 /etc/profile.d/oozie.sh:
   file:
