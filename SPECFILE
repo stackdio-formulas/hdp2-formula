@@ -64,6 +64,7 @@ pillar_defaults:
       num_cpus: 8
       local_dirs: /mnt/hadoop/yarn/local
       log_dirs: /mnt/hadoop/yarn/logs
+      max_completed_applications: 5000
     io:
       sort_factor: 64
       sort_mb: 256
@@ -80,6 +81,7 @@ pillar_defaults:
       system_dir: /hadoop/system/mapred
       memory_mb: 2048
       reduces: 3
+      metainfo_maxsplit: 10000000
     hbase:
       start_service: true
       tmp_dir: /mnt/hbase/tmp
