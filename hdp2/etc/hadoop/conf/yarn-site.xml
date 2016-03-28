@@ -53,6 +53,11 @@
   </property>
 
   <property>
+    <name>yarn.resourcemanager.max-completed-applications</name>
+    <value>{{ pillar.cdh5.yarn.max_completed_applications }}</value>
+  </property>
+
+  <property>
     <description>Where to aggregate logs to.</description>
     <name>yarn.nodemanager.remote-app-log-dir</name>
     <value>/var/log/hadoop/yarn/apps</value>
