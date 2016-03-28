@@ -25,7 +25,7 @@
     <name>mapreduce.job.reduces</name>
     <value>{{ pillar.hdp2.mapred.reduces }}</value>
   </property>
-  {% set metainfo_split = pillar.cdh5.mapred.metainfo_maxsplit %}
+  {% set metainfo_split = pillar.hdp2.mapred.metainfo_maxsplit %}
   <property>
     <name>mapreduce.job.split.metainfo.maxsize</name>
     <value>{{ metainfo_split }}</value>
@@ -138,9 +138,8 @@
     <value>/etc/hadoop/conf/mapred.keytab</value>    <!-- path to the MAPRED keytab for the Job History Server -->
   </property>
   <property>
-    <name>mapreduce.jobhistory.principal</name>   
+    <name>mapreduce.jobhistory.principal</name>
     <value>mapred/_HOST@{{ krb5.realm }}</value>
   </property>
 {%- endif %}
 </configuration>
-
