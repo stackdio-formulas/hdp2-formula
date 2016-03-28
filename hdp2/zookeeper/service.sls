@@ -39,7 +39,7 @@ bigtop_java_home_zoo:
     - user: root
     - group: root
     - mode: 644
-    - require: 
+    - require:
       - pkg: zookeeper
 
 /etc/zookeeper/conf/zookeeper-env.sh:
@@ -62,7 +62,7 @@ bigtop_java_home_zoo:
     - user: root
     - group: root
     - mode: 644
-    - require: 
+    - require:
       - pkg: zookeeper
       - file: /etc/zookeeper/conf/zookeeper-env.sh
     - require_in:
@@ -76,7 +76,7 @@ bigtop_java_home_zoo:
     - user: root
     - group: root
     - mode: 644
-    - require: 
+    - require:
       - pkg: zookeeper
       - file: /etc/zookeeper/conf/zookeeper-env.sh
     - require_in:
@@ -88,7 +88,7 @@ zk_data_dir:
     - directory
     - name: {{pillar.hdp2.zookeeper.data_dir}}
     - user: zookeeper
-    - group: hadoop
+    - group: zookeeper
     - dir_mode: 755
     - makedirs: true
     - require:
@@ -103,7 +103,7 @@ myid:
     - name: '{{pillar.hdp2.zookeeper.data_dir}}/myid'
     - template: jinja
     - user: zookeeper
-    - group: hadoop
+    - group: zookeeper
     - mode: 644
     - source: salt://hdp2/etc/zookeeper/conf/myid
     - require:
@@ -128,4 +128,3 @@ zookeeper-server-svc:
         - file: /etc/zookeeper/conf/zookeeper-env.sh
         - file: /etc/zookeeper/conf/log4j.properties
         - file: /etc/zookeeper/conf/zoo.cfg
-
