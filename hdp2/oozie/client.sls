@@ -9,7 +9,6 @@ include:
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
   - krb5
   - hdp2.security
-  - hdp2.oozie.security
 {% endif %}
 
 oozie-client:
