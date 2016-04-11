@@ -1,10 +1,14 @@
 {%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
 <?xml version="1.0"?>
 <configuration>
-    <property>
-      <name>mapreduce.framework.name</name>
-      <value>yarn</value>
-    </property>
+  <property>
+    <name>mapreduce.framework.name</name>
+    <value>yarn</value>
+  </property>
+  <property>
+    <name>mapreduce.cluster.temp.dir</name>
+    <value>/tmp/mapred/temp</value>
+  </property>
   <property>
      <name>mapreduce.jobhistory.webapp.address</name>
      <value>{{ namenode_fqdn }}:19888</value>
