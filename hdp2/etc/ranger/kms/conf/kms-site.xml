@@ -47,7 +47,7 @@
 
     <property>
         <name>hadoop.kms.authentication.kerberos.keytab</name>
-        <value>/etc/hadoop-kms/conf/kms.keytab</value>
+        <value>/etc/ranger/kms/conf/kms.keytab</value>
     </property>
 
     <property>
