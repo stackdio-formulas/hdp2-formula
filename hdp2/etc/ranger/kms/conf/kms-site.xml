@@ -162,4 +162,20 @@
   	<value>org.apache.ranger.authorization.kms.authorizer.RangerKmsAuthorizer</value>
   </property>
 
+        <!-- access for oozie & kms -->
+    <property>
+        <name>hadoop.kms.proxyuser.oozie.users</name>
+        <value>*</value>
+    </property>
+
+    <property>
+        <name>hadoop.kms.proxyuser.oozie.groups</name>
+        <value>*</value>
+    </property>
+
+    <property>
+        <name>hadoop.kms.proxyuser.oozie.hosts</name>
+        <value>*</value>
+    </property>
+
 </configuration>
