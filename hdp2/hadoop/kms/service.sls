@@ -47,6 +47,7 @@ configure-ranger:
     - run
     - user: root
     - name: /usr/hdp/current/ranger-admin/setup.sh
+    - cwd: /usr/hdp/current/ranger-admin
     - env:
       - JAVA_HOME: /usr/java/latest
     - require:
@@ -70,6 +71,7 @@ configure-ranger-kms:
     - run
     - user: root
     - name: /usr/hdp/current/ranger-kms/setup.sh
+    - cwd: /usr/hdp/current/ranger-kms
     - env:
       - JAVA_HOME: /usr/java/latest
     - require:
