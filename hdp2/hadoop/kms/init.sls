@@ -1,6 +1,6 @@
 include:
   - hdp2.repo
-{#  - hdp2.hadoop.kms.conf#}
+  - hdp2.hadoop.kms.conf
   - hdp2.landing_page
 {% if salt['pillar.get']('hdp2:kms:start_service', True) %}
   - hdp2.hadoop.kms.service
@@ -31,7 +31,7 @@ ranger-kms:
       - file: krb5_conf_file
       {% endif %}
     - require_in:
-{#      - file: /etc/ranger/kms/conf#}
+      - file: /etc/ranger/kms/conf
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hadoop_kms_keytabs
       {% endif %}
