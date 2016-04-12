@@ -109,5 +109,13 @@
         <name>hadoop.security.key.provider.path</name>
         <value>kms://http@{{ kms_fqdn }}:9292/kms</value>
     </property>
+    <property>
+        <name>hadoop.proxyuser.kms.groups</name>
+        <value>*</value>
+    </property>
+        <property>
+        <name>hadoop.proxyuser.kms.hosts</name>
+        <value>*</value>
+    </property>
 {% endif %}
 </configuration>
