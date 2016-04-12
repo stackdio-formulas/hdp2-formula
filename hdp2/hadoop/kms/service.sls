@@ -59,8 +59,10 @@ ranger-admin-svc:
   service:
     - running
     - name: ranger-admin
+    - watch:
+      - file: /usr/hdp/current/ranger-admin/install.properties
+      - file: /etc/ranger/kms/conf/core-site.xml
     - require:
-      - watch: /usr/hdp/current/ranger-admin/install.properties
       - pkg: ranger-kms
       - cmd: configure-ranger
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
@@ -86,8 +88,10 @@ ranger-kms-svc:
   service:
     - running
     - name: ranger-kms
+    - watch:
+      - file: /usr/hdp/current/ranger-kms/install.properties
+      - file: /etc/ranger/kms/conf/core-site.xml
     - require:
-      - watch: /usr/hdp/current/ranger-kms/install.properties
       - pkg: ranger-kms
       - service: ranger-admin-svc
       - cmd: configure-ranger-kms

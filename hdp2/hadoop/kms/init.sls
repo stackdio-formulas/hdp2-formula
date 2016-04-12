@@ -35,3 +35,14 @@ ranger-kms:
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hadoop_kms_keytabs
       {% endif %}
+
+/etc/ranger/kms/conf/core-site.xml:
+  file:
+    - managed
+    - template: jinja
+    - source: salt://hdp2/etc/hadoop/conf/core-site.xml
+    - user: root
+    - group: root
+    - mode: 644
+    - require:
+      - pkg: ranger-kms
