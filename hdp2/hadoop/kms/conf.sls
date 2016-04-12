@@ -1,7 +1,7 @@
-/etc/hadoop-kms/conf:
+/etc/ranger/kms/conf:
   file:
     - recurse
-    - source: salt://hdp2/etc/hadoop-kms/conf
+    - source: salt://hdp2/etc/ranger/kms/conf
     - template: jinja
     - user: root
     - group: root
