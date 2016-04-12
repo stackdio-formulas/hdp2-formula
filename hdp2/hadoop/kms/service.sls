@@ -60,6 +60,7 @@ ranger-admin-svc:
     - running
     - name: ranger-admin
     - require:
+      - watch: /usr/hdp/current/ranger-admin/install.properties
       - pkg: ranger-kms
       - cmd: configure-ranger
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
@@ -86,6 +87,7 @@ ranger-kms-svc:
     - running
     - name: ranger-kms
     - require:
+      - watch: /usr/hdp/current/ranger-kms/install.properties
       - pkg: ranger-kms
       - service: ranger-admin-svc
       - cmd: configure-ranger-kms
