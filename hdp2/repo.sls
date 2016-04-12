@@ -2,7 +2,8 @@ repo_placeholder:
   cmd:
     - run
     - name: which java
-    - cmd: hortonworks_repo
+    - require:
+      - cmd: hortonworks_repo
 
 {% if grains['os_family'] == 'Debian' %}
 

@@ -18,7 +18,12 @@ ranger-kms:
     - installed
     - pkgs:
       - ranger-kms
+      - ranger-admin
+      {% if grains.os_family == 'RedHat' and grains.osmajorrelease == '7' %}
+      - mariadb-server
+      {% else %}
       - mysql-server
+      {% endif %}
       - mysql-connector-java
     - require:
       - cmd: repo_placeholder
@@ -30,18 +35,3 @@ ranger-kms:
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hadoop_kms_keytabs
       {% endif %}
-
-/usr/hdp/current/ranger-kms/ews/webapp/lib/mysql-connector-java.jar:
-  file:
-    - symlink
-    - target: /usr/share/java/mysql-connector-java.jar
-    - require:
-      - pkg: ranger-kms
-
-fix-kms-script:
-  cmd:
-    - run
-    - name: chmod +x /usr/hdp/current/ranger-kms/ranger-kms
-    - require:
-      - pkg: ranger-kms
-      - file: /usr/hdp/current/ranger-kms/ews/webapp/lib/mysql-connector-java.jar
