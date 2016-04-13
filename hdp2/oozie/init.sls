@@ -1,4 +1,5 @@
 {% set oozie_data_dir = '/var/lib/oozie' %}
+{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.kms', 'grains.items', 'compound') %}
 
 # The scripts for starting services are in different places depending on the hdp version, so set them here
 {% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
@@ -101,6 +102,35 @@ hadoop-lzo:
     - user: root
     - require:
       - pkg: oozie
+
+{% if kms %}
+copy-keystore:
+  cmd:
+    - run
+    - user: root
+    - name: 'cp /etc/hadoop/conf/hadoop.keystore /etc/oozie/conf/oozie.keystore'
+    - require:
+      - pkg: oozie
+
+chown-keystore:
+  cmd:
+    - run
+    - user: root
+    - name: 'chown oozie:oozie /etc/oozie/conf/oozie.keystore && chmod 440 /etc/oozie/conf/oozie.keystore'
+    - require:
+      - cmd: copy-keystore
+
+enable-https:
+  cmd:
+    - run
+    - user: root
+    - name: alternatives --set oozie-tomcat-deployment /etc/oozie/tomcat-conf.https
+    - require:
+      - pkg: oozie
+      - cmd: chown-keystore
+    - require_in:
+      - cmd: ooziedb
+{% endif %}
 
 /var/log/oozie:
   file:

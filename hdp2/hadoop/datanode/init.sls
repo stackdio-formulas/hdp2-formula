@@ -1,3 +1,4 @@
+{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.kms', 'grains.items', 'compound') %}
 
 # From cloudera, CDH5 requires JDK7, so include it along with the 
 # CDH5 repository to install their packages.
@@ -8,6 +9,9 @@ include:
   - hdp2.hadoop.client
 {% if salt['pillar.get']('hdp2:datanode:start_service', True) %}
   - hdp2.hadoop.datanode.service
+{% endif %}
+{% if kms %}
+  - hdp2.hadoop.encryption
 {% endif %}
 {% if salt['pillar.get']('hdp2:security:enable', False) %}
   - krb5
@@ -33,6 +37,9 @@ hadoop-hdfs-datanode:
     - require_in:
       - file: /etc/hadoop/conf
       - cmd: hdfs_log_dir
+      {% if kms %}
+      - cmd: create-keystore
+      {% endif %}
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hadoop_keytabs
       {% endif %}

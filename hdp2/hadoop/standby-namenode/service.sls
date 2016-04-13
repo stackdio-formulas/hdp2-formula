@@ -1,4 +1,5 @@
 {% set dfs_name_dir = salt['pillar.get']('hdp2:dfs:name_dir', '/mnt/hadoop/hdfs/nn') %}
+{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.kms', 'grains.items', 'compound') %}
 
 # The scripts for starting services are in different places depending on the hdp version, so set them here
 {% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
@@ -71,9 +72,12 @@ init_standby_namenode:
     - unless: 'test -d {{ dfs_name_dir }}/current'
     - require:
       - cmd: hdp2_dfs_dirs
-    {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if kms %}
+      - cmd: chown-keystore
+      {% endif %}
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hadoop_keytabs
-    {% endif %}
+      {% endif %}
 
 # Start up the ZKFC
 hadoop-hdfs-zkfc-svc:

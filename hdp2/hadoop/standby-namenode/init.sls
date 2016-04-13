@@ -1,3 +1,5 @@
+{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.kms', 'grains.items', 'compound') %}
+
 ##
 # Standby NameNode
 ##
@@ -6,21 +8,27 @@ include:
   - hdp2.repo
   - hdp2.hadoop.conf
   - hdp2.landing_page
-{% if salt['pillar.get']('hdp2:namenode:start_service', True) %}
+  {% if salt['pillar.get']('hdp2:namenode:start_service', True) %}
   - hdp2.hadoop.standby-namenode.service
-{% endif %}
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+  {% endif %}
+  {% if kms %}
+  - hdp2.hadoop.encryption
+  {% endif %}
+  {% if salt['pillar.get']('hdp2:security:enable', False) %}
   - krb5
   - hdp2.security
   - hdp2.security.stackdio_user
   - hdp2.hadoop.security
-{% endif %}
+  {% endif %}
 
 hadoop-hdfs-namenode:
   pkg:
     - installed
     - require:
       - cmd: repo_placeholder
+      {% if kms %}
+      - cmd: create-keystore
+      {% endif %}
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: krb5_conf_file
       {% endif %}
