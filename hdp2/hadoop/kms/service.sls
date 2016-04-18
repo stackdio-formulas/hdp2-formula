@@ -54,6 +54,10 @@ configure-ranger:
       - service: mysqld
       - cmd: setup_mysql
       - file: /usr/hdp/current/ranger-admin/install.properties
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      - cmd: generate_http_keytab
+      - cmd: generate_hadoop_kms_keytabs
+      {% endif %}
 
 ranger-admin-svc:
   service:
@@ -65,6 +69,7 @@ ranger-admin-svc:
       - pkg: ranger-kms
       - cmd: configure-ranger
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      - cmd: generate_http_keytab
       - cmd: generate_hadoop_kms_keytabs
       {% endif %}
 
@@ -82,6 +87,10 @@ configure-ranger-kms:
       - cmd: setup_mysql
       - file: /usr/hdp/current/ranger-kms/install.properties
       - cmd: configure-ranger
+      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      - cmd: generate_http_keytab
+      - cmd: generate_hadoop_kms_keytabs
+      {% endif %}
 
 ranger-kms-svc:
   service:
@@ -95,5 +104,6 @@ ranger-kms-svc:
       - service: ranger-admin-svc
       - cmd: configure-ranger-kms
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      - cmd: generate_http_keytab
       - cmd: generate_hadoop_kms_keytabs
       {% endif %}

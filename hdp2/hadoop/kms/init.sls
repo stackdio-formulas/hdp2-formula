@@ -29,8 +29,6 @@ ranger-kms:
       - cmd: repo_placeholder
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: krb5_conf_file
-      - cmd: generate_http_keytab
-      - cmd: generate_hadoop_kms_keytabs
       {% endif %}
     - require_in:
       - file: /etc/ranger/kms/conf
