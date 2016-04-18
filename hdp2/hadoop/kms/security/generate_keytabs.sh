@@ -6,5 +6,5 @@ rm -rf *.keytab
 
 cp /root/HTTP.keytab kms.keytab
 
-chown kms:hadoop kms.keytab
+chown kms:kms kms.keytab
 chmod 400 kms.keytab

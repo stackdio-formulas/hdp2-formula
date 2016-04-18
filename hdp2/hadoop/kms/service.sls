@@ -59,6 +59,7 @@ ranger-admin-svc:
   service:
     - running
     - name: ranger-admin
+    - init_delay: 10
     - require:
       - file: /usr/hdp/current/ranger-admin/install.properties
       - pkg: ranger-kms
