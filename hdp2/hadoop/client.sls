@@ -5,7 +5,7 @@ include:
   - hdp2.hadoop.conf
   - hdp2.landing_page
   {% if kms %}
-  - cdh5.hadoop.encryption
+  - hdp2.hadoop.encryption
   {% endif %}
   {% if salt['pillar.get']('hdp2:security:enable', False) %}
   - krb5
