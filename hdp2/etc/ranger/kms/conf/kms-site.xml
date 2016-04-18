@@ -1,3 +1,4 @@
+{%- from 'krb5/settings.sls' import krb5 with context -%}
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
@@ -85,7 +86,7 @@
 
   <property>
     <name>hadoop.kms.authentication.kerberos.principal</name>
-    <value>HTTP/#HOSTNAME#</value>
+    <value>HTTP/_HOST@{{ krb5.realm }}</value>
     <description>
       The Kerberos principal to use for the HTTP endpoint.
       The principal must start with 'HTTP/' as per the Kerberos HTTP SPNEGO specification.
@@ -151,7 +152,7 @@
 
   <property>
     <name>hadoop.kms.authentication.signer.secret.provider.zookeeper.kerberos.principal</name>
-    <value>kms/#HOSTNAME#</value>
+    <value>kms/_HOST@{{ krb5.realm }}</value>
     <description>
       The Kerberos service principal used to connect to Zookeeper.
     </description>
