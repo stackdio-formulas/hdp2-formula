@@ -32,6 +32,7 @@ ranger-kms:
       {% endif %}
     - require_in:
       - file: /etc/ranger/kms/conf
+      - file: /etc/ranger/admin/conf
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hadoop_kms_keytabs
       {% endif %}
