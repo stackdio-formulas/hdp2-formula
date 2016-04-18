@@ -63,7 +63,7 @@ db_password=password
 #------------------------- DB CONFIG - END ----------------------------------
 
 #------------------------- RANGER KMS Master Key Crypt Key ------------------
-KMS_MASTER_KEY_PASSWD=Str0ngPassw0rd
+KMS_MASTER_KEY_PASSWD=keyadmin
 
 #
 # ------- UNIX User CONFIG ----------------
@@ -92,6 +92,8 @@ POLICY_MGR_URL=http://localhost:6080
 # REPOSITORY_NAME=kmsdev
 #
 REPOSITORY_NAME=kmsdev
+REPOSITORY_CONFIG_USERNAME=keyadmin
+REPOSITORY_CONFIG_PASSWORD=keyadmin
 
 # AUDIT configuration with V3 properties
 
