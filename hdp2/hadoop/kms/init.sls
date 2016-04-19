@@ -1,6 +1,5 @@
 include:
   - hdp2.repo
-  - hdp2.hadoop.kms.conf
   - hdp2.landing_page
 {% if salt['pillar.get']('hdp2:kms:start_service', True) %}
   - hdp2.hadoop.kms.service
@@ -30,9 +29,6 @@ ranger-kms:
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: krb5_conf_file
       {% endif %}
-    - require_in:
-      - file: /etc/ranger/kms/conf
-      - file: /etc/ranger/admin/conf
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hadoop_kms_keytabs
       {% endif %}
@@ -42,6 +38,28 @@ ranger-kms:
     - managed
     - template: jinja
     - source: salt://hdp2/etc/hadoop/conf/core-site.xml
+    - user: root
+    - group: root
+    - mode: 644
+    - require:
+      - pkg: ranger-kms
+
+/usr/hdp/current/ranger-admin/install.properties:
+  file:
+    - managed
+    - template: jinja
+    - source: salt://hdp2/hadoop/kms/install.properties-admin
+    - user: root
+    - group: root
+    - mode: 644
+    - require:
+      - pkg: ranger-kms
+
+/usr/hdp/current/ranger-kms/install.properties:
+  file:
+    - managed
+    - template: jinja
+    - source: salt://hdp2/hadoop/kms/install.properties-kms
     - user: root
     - group: root
     - mode: 644

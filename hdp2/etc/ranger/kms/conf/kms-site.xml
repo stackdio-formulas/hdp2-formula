@@ -6,7 +6,7 @@
 
   <property>
     <name>hadoop.kms.key.provider.uri</name>
-    <value>dbks://http@localhost:9292/kms</value>
+    <value>dbks://http@{{ grains.fqdn }}:9292/kms</value>
     <description>
       URI of the backing KeyProvider for the KMS.
     </description>
@@ -86,7 +86,7 @@
 
   <property>
     <name>hadoop.kms.authentication.kerberos.principal</name>
-    <value>HTTP/_HOST@{{ krb5.realm }}</value>
+    <value>HTTP/{{ grains.fqdn }}@{{ krb5.realm }}</value>
     <description>
       The Kerberos principal to use for the HTTP endpoint.
       The principal must start with 'HTTP/' as per the Kerberos HTTP SPNEGO specification.
@@ -152,7 +152,7 @@
 
   <property>
     <name>hadoop.kms.authentication.signer.secret.provider.zookeeper.kerberos.principal</name>
-    <value>kms/_HOST@{{ krb5.realm }}</value>
+    <value>kms/{{ grains.fqdn }}@{{ krb5.realm }}</value>
     <description>
       The Kerberos service principal used to connect to Zookeeper.
     </description>

@@ -1,4 +1,7 @@
 
+include:
+  - hdp2.hadoop.kms.conf
+
 mysqld:
   service:
     - running
@@ -18,30 +21,6 @@ setup_mysql:
     - require:
       - service: mysqld
 
-/usr/hdp/current/ranger-admin/install.properties:
-  file:
-    - managed
-    - template: jinja
-    - source: salt://hdp2/hadoop/kms/install.properties-admin
-    - user: root
-    - group: root
-    - mode: 644
-    - require:
-      - pkg: ranger-kms
-
-
-/usr/hdp/current/ranger-kms/install.properties:
-  file:
-    - managed
-    - template: jinja
-    - source: salt://hdp2/hadoop/kms/install.properties-kms
-    - user: root
-    - group: root
-    - mode: 644
-    - require:
-      - pkg: ranger-kms
-
-
 configure-ranger:
   cmd:
     - run
@@ -54,10 +33,22 @@ configure-ranger:
       - service: mysqld
       - cmd: setup_mysql
       - file: /usr/hdp/current/ranger-admin/install.properties
+      - file: /usr/hdp/current/ranger-kms/install.properties
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_http_keytab
       - cmd: generate_hadoop_kms_keytabs
       {% endif %}
+    - require_in:
+      - file: /etc/ranger/kms/conf
+      - file: /etc/ranger/admin/conf
+
+reload-systemd-admin:
+  cmd:
+    - run
+    - user: root
+    - name: systemctl daemon-reload
+    - require:
+      - cmd: configure-ranger
 
 ranger-admin-svc:
   service:
@@ -68,6 +59,7 @@ ranger-admin-svc:
       - file: /usr/hdp/current/ranger-admin/install.properties
       - pkg: ranger-kms
       - cmd: configure-ranger
+      - cmd: reload-systemd-admin
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_http_keytab
       - cmd: generate_hadoop_kms_keytabs
@@ -91,6 +83,17 @@ configure-ranger-kms:
       - cmd: generate_http_keytab
       - cmd: generate_hadoop_kms_keytabs
       {% endif %}
+    - require_in:
+      - file: /etc/ranger/kms/conf
+      - file: /etc/ranger/admin/conf
+
+reload-systemd-kms:
+  cmd:
+    - run
+    - user: root
+    - name: systemctl daemon-reload
+    - require:
+      - cmd: configure-ranger-kms
 
 ranger-kms-svc:
   service:
@@ -103,6 +106,7 @@ ranger-kms-svc:
       - pkg: ranger-kms
       - service: ranger-admin-svc
       - cmd: configure-ranger-kms
+      - cmd: reload-systemd-kms
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_http_keytab
       - cmd: generate_hadoop_kms_keytabs
