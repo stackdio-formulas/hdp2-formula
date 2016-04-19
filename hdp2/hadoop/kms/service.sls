@@ -39,7 +39,6 @@ configure-ranger:
       - cmd: generate_hadoop_kms_keytabs
       {% endif %}
     - require_in:
-      - file: /etc/ranger/kms/conf
       - file: /etc/ranger/admin/conf
 
 reload-systemd-admin:
@@ -86,7 +85,6 @@ configure-ranger-kms:
       {% endif %}
     - require_in:
       - file: /etc/ranger/kms/conf
-      - file: /etc/ranger/admin/conf
 
 reload-systemd-kms:
   cmd:
