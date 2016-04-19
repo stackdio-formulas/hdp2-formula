@@ -29,6 +29,7 @@ ranger-kms:
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - file: krb5_conf_file
       {% endif %}
+    - require_in:
       {% if salt['pillar.get']('hdp2:security:enable', False) %}
       - cmd: generate_hadoop_kms_keytabs
       {% endif %}
