@@ -1,4 +1,5 @@
 {% set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] %}
+{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.kms', 'grains.items', 'compound') %}
 {% set oozie_data_dir = '/var/lib/oozie' %}
 
 # The scripts for starting services are in different places depending on the hdp version, so set them here
