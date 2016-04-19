@@ -129,7 +129,7 @@ enable-https:
       - pkg: oozie
       - cmd: chown-keystore
     - require_in:
-      - cmd: ooziedb
+      - cmd: prepare_server
 {% endif %}
 
 /var/log/oozie:
