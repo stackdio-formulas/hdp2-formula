@@ -47,7 +47,7 @@ kill-oozie:
 prepare_server:
   cmd:
     - run
-    - name: '{{ oozie_home }}/bin/oozie-setup.sh prepare-war'
+    - name: '{{ oozie_home }}/bin/oozie-setup.sh prepare-war{% if kms %} -secure{% endif %}'
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/oozie/oozie.pid'
     - user: root
     - require:

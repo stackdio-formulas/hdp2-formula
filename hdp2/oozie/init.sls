@@ -119,17 +119,6 @@ chown-keystore:
     - name: 'chown oozie:oozie /etc/oozie/conf/oozie.keystore && chmod 440 /etc/oozie/conf/oozie.keystore'
     - require:
       - cmd: copy-keystore
-
-enable-https:
-  cmd:
-    - run
-    - user: root
-    - name: alternatives --set oozie-tomcat-deployment /etc/oozie/tomcat-conf.https
-    - require:
-      - pkg: oozie
-      - cmd: chown-keystore
-    - require_in:
-      - cmd: prepare_server
 {% endif %}
 
 /var/log/oozie:
