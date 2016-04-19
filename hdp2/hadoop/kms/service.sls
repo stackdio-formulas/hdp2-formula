@@ -114,10 +114,9 @@ ranger-kms-svc:
   service:
     - running
     - name: ranger-kms
-    - watch:
+    - require:
       - file: /usr/hdp/current/ranger-kms/install.properties
       - file: /etc/ranger/kms/conf/core-site.xml
-    - require:
       - pkg: ranger-kms
       - service: ranger-admin-svc
       - cmd: configure-ranger-kms
