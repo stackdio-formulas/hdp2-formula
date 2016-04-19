@@ -1,7 +1,3 @@
-
-include:
-  - hdp2.hadoop.kms.conf
-
 mysqld:
   service:
     - running
@@ -38,8 +34,18 @@ configure-ranger:
       - cmd: generate_http_keytab
       - cmd: generate_hadoop_kms_keytabs
       {% endif %}
-    - require_in:
-      - file: /etc/ranger/admin/conf
+
+/etc/ranger/admin/conf:
+  file:
+    - recurse
+    - source: salt://hdp2/etc/ranger/admin/conf
+    - template: jinja
+    - user: root
+    - group: root
+    - file_mode: 644
+    - exclude_pat: '.*.swp'
+    - require:
+      - cmd: configure-ranger
 
 reload-systemd-admin:
   cmd:
@@ -83,8 +89,18 @@ configure-ranger-kms:
       - cmd: generate_http_keytab
       - cmd: generate_hadoop_kms_keytabs
       {% endif %}
-    - require_in:
-      - file: /etc/ranger/kms/conf
+
+/etc/ranger/kms/conf:
+  file:
+    - recurse
+    - source: salt://hdp2/etc/ranger/kms/conf
+    - template: jinja
+    - user: root
+    - group: root
+    - file_mode: 644
+    - exclude_pat: '.*.swp'
+    - require:
+      - cmd: configure-ranger-kms
 
 reload-systemd-kms:
   cmd:
