@@ -53,7 +53,7 @@
 
   <property>
     <name>yarn.resourcemanager.max-completed-applications</name>
-    <value>{{ pillar.cdh5.yarn.max_completed_applications }}</value>
+    <value>{{ pillar.hdp2.yarn.max_completed_applications }}</value>
   </property>
 
   <property>

@@ -25,7 +25,7 @@
     <name>mapreduce.job.reduces</name>
     <value>{{ pillar.hdp2.mapred.reduces }}</value>
   </property>
-  {% set metainfo_split = pillar.cdh5.mapred.metainfo_maxsplit %}
+  {% set metainfo_split = pillar.hdp2.mapred.metainfo_maxsplit %}
   <property>
     <name>mapreduce.job.split.metainfo.maxsize</name>
     <value>{{ metainfo_split }}</value>
