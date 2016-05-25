@@ -6,7 +6,6 @@ needed-pkgs:
   pkg:
     - installed
     - pkgs:
-      - scp
       - curl
       - unzip
       - tar
