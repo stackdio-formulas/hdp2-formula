@@ -5,7 +5,7 @@ ambari-server:
   pkg:
     - installed
     - require:
-      - needed-pkgs
+      - pkg: needed-pkgs
 
 setup-ambari:
   cmd:

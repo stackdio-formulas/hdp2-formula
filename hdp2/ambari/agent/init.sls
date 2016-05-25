@@ -5,7 +5,7 @@ ambari-agent:
   pkg:
     - installed
     - require:
-      - needed-pkgs
+      - pkg: needed-pkgs
 
 /etc/ambari-agent/conf/ambari-agent.ini:
   file:
