@@ -47,10 +47,18 @@ components:
   - title: Hive
     description: Hive
     sls_path: hdp2.hive
+  - title: Ambari Server
+    description: Ambari Server
+    sls_path: hdp2.ambari.server
+  - title: Ambari Agent
+    description: Ambari Agent
+    sls_path: hdp2.ambari.agent
 
 pillar_defaults:
   hdp2:
-    version: 2.2.0.0
+    version: 2.4.0.0
+    ambari:
+      version: 2.2.1.0
     landing_page: true
     max_log_index: 1
     security:
