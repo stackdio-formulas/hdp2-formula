@@ -146,6 +146,9 @@ hadoop-hdfs-namenode-svc:
       - cmd: init_hdfs
       - file: bigtop_java_home
       - cmd: kill-namenode
+      {% if kms %}
+      - cmd: chown-keystore
+      {% endif %}
     - watch:
       - file: /etc/hadoop/conf
 

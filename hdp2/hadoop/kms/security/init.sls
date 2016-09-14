@@ -6,7 +6,7 @@ generate_hadoop_kms_keytabs:
     - template: jinja
     - user: root
     - group: root
-    - cwd: /etc/hadoop-kms/conf
+    - cwd: /etc/ranger/kms/conf
     - require:
       - module: load_admin_keytab
       - cmd: generate_http_keytab

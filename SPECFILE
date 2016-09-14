@@ -61,6 +61,9 @@ pillar_defaults:
       version: 2.2.1.0
     landing_page: true
     max_log_index: 1
+    encryption:
+      certificate: CHANGE_ME
+      private_key: CHANGE_ME
     security:
       enable: false
     namenode:

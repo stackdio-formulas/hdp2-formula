@@ -2,7 +2,8 @@ repo_placeholder:
   cmd:
     - run
     - name: which java
-    - cmd: hortonworks_repo
+    - require:
+      - cmd: hortonworks_repo
 
 {% if grains['os_family'] == 'Debian' %}
 
@@ -13,6 +14,8 @@ hortonworks_repo_try1:
   cmd:
     - run
     - name: curl -o /etc/apt/sources.list.d/hdp.list http://public-repo-1.hortonworks.com/HDP/ubuntu12/2.x/GA/{{ pillar.hdp2.version }}/hdp.list
+    - user: root
+    - unless: 'apt-cache search | grep HDP'
 
 hortonworks_repo:
   cmd:
