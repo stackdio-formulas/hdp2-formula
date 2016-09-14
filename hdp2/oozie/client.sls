@@ -7,7 +7,7 @@
 
 include:
   - hdp2.repo
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+{% if pillar.hdp2.security.enable %}
   - krb5
   - hdp2.security
 {% endif %}
@@ -32,7 +32,7 @@ oozie-client:
     - mode: 644
     - contents:
       - export OOZIE_URL={{ oozie_url }}
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - export OOZIE_CLIENT_OPTS="-Djava.security.krb5.conf={{ pillar.krb5.conf_file }}"
       {% endif %}
       {% if kms %}

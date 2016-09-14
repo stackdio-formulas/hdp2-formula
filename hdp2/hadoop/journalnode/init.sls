@@ -13,7 +13,7 @@ include:
   {% if kms %}
   - hdp2.hadoop.encryption
   {% endif %}
-  {% if salt['pillar.get']('hdp2:security:enable', False) %}
+  {% if pillar.hdp2.security.enable %}
   - krb5
   - hdp2.security
   - hdp2.hadoop.security
@@ -30,7 +30,7 @@ hadoop-hdfs-journalnode:
     - installed
     - require:
       - cmd: repo_placeholder
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - file: krb5_conf_file
       {% endif %}
     - require_in:
@@ -39,6 +39,6 @@ hadoop-hdfs-journalnode:
       {% if kms %}
       - cmd: create-keystore
       {% endif %}
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}

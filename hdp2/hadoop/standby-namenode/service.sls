@@ -75,7 +75,7 @@ init_standby_namenode:
       {% if kms %}
       - cmd: chown-keystore
       {% endif %}
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
 

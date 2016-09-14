@@ -13,7 +13,7 @@
     - require:
       - pkg: hue
 
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+{% if pillar.hdp2.security.enable %}
 hdfs_kinit:
   cmd:
     - run
@@ -43,7 +43,7 @@ hue_dir:
     - unless: 'hdfs dfs -test -d /user/hue'
     - require:
       - pkg: hadoop-client
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - cmd: hdfs_kinit
       {% endif %}
       
@@ -54,7 +54,7 @@ create_hue_key:
     - user: hue
     - name: 'hadoop key create hue'
     - unless: 'hadoop key list | grep hue'
-    {% if salt['pillar.get']('hdp2:security:enable', False) %}
+    {% if pillar.hdp2.security.enable %}
     - require:
       - cmd: hue_kinit
     {% endif %}
@@ -72,7 +72,7 @@ create_hue_zone:
       - service: hue-svc
 {% endif %}
 
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+{% if pillar.hdp2.security.enable %}
 /etc/init.d/hue:
   file:
     - replace
@@ -95,7 +95,7 @@ hue-svc:
       - pkg: hue
       - file: /mnt/tmp/hadoop
       - file: /etc/hue/conf/hue.ini
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+{% if pillar.hdp2.security.enable %}
       - cmd: generate_hue_keytabs 
 {% endif %}
     - watch:

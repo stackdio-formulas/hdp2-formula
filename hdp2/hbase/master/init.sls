@@ -11,7 +11,7 @@ include:
 {% if salt['pillar.get']('hdp2:hbase:start_service', True) %}
   - hdp2.hbase.master.service
 {% endif %}
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+{% if pillar.hdp2.security.enable %}
   - krb5
   - hdp2.security
   - hdp2.hbase.security
@@ -25,7 +25,7 @@ hbase-master:
       - hbase-thrift
     - require:
       - cmd: repo_placeholder
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+{% if pillar.hdp2.security.enable %}
       - file: krb5_conf_file
 {% endif %}
 {% if salt['pillar.get']('hdp2:hbase:manage_zk', True) %}

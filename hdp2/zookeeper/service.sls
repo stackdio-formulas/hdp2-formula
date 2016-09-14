@@ -53,7 +53,7 @@ bigtop_java_home_zoo:
     - require:
       - file: /etc/zookeeper/conf/zoo.cfg
 
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+{% if pillar.hdp2.security.enable %}
 /etc/zookeeper/conf/jaas.conf:
   file:
     - managed
@@ -93,7 +93,7 @@ zk_data_dir:
     - makedirs: true
     - require:
       - pkg: zookeeper-server
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - cmd: generate_zookeeper_keytabs
       {% endif %}
 
@@ -121,7 +121,7 @@ zookeeper-server-svc:
         - file: /etc/zookeeper/conf/zoo.cfg
         - file: bigtop_java_home_zoo
         - cmd: kill-zookeeper
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+{% if pillar.hdp2.security.enable %}
         - cmd: generate_zookeeper_keytabs
 {% endif %}
     - watch:

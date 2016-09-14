@@ -23,7 +23,7 @@
 kill-datanode:
   cmd:
     - run
-    {% if salt['pillar.get']('hdp2:security:enable', False) %}
+    {% if pillar.hdp2.security.enable %}
     - user: root
     {% else %}
     - user: hdfs
@@ -76,7 +76,7 @@ dfs_data_dir:
 hadoop-hdfs-datanode-svc:
   cmd:
     - run
-    {% if salt['pillar.get']('hdp2:security:enable', False) %}
+    {% if pillar.hdp2.security.enable %}
     - user: root
     {% else %}
     - user: hdfs
@@ -93,7 +93,7 @@ hadoop-hdfs-datanode-svc:
       {% if kms %}
       - cmd: chown-keystore
       {% endif %}
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
     - watch:
@@ -121,7 +121,7 @@ hadoop-yarn-nodemanager-svc:
       {% if kms %}
       - cmd: chown-keystore
       {% endif %}
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
     - watch:

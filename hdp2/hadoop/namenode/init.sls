@@ -30,7 +30,7 @@ include:
   {% if kms %}
   - hdp2.hadoop.encryption
   {% endif %}
-  {% if salt['pillar.get']('hdp2:security:enable', False) %}
+  {% if pillar.hdp2.security.enable %}
   - krb5
   - hdp2.security
   - hdp2.security.stackdio_user
@@ -42,13 +42,13 @@ hadoop-hdfs-namenode:
     - installed
     - require:
       - cmd: repo_placeholder
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - file: krb5_conf_file
       {% endif %}
     - require_in:
       - file: /etc/hadoop/conf
       - cmd: hdfs_log_dir
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
 
@@ -59,12 +59,12 @@ hadoop-hdfs-zkfc:
     - installed
     - require:
       - cmd: repo_placeholder
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - file: krb5_conf_file
       {% endif %}
     - require_in:
       - file: /etc/hadoop/conf
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
 {% endif %}
@@ -79,13 +79,13 @@ hadoop-yarn-resourcemanager:
     - installed
     - require:
       - cmd: repo_placeholder
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - file: krb5_conf_file
       {% endif %}
     - require_in:
       - file: /etc/hadoop/conf
       - cmd: hdfs_log_dir
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
 
@@ -99,12 +99,12 @@ hadoop-mapreduce-historyserver:
     - installed
     - require:
       - cmd: repo_placeholder
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - file: krb5_conf_file
       {% endif %}
     - require_in:
       - file: /etc/hadoop/conf
       - cmd: hdfs_log_dir
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}

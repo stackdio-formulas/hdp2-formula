@@ -13,7 +13,7 @@ include:
 {% if kms %}
   - hdp2.hadoop.encryption
 {% endif %}
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+{% if pillar.hdp2.security.enable %}
   - krb5
   - hdp2.security
   - hdp2.security.stackdio_user
@@ -31,7 +31,7 @@ hadoop-hdfs-datanode:
     - installed 
     - require:
       - cmd: repo_placeholder
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+{% if pillar.hdp2.security.enable %}
       - file: krb5_conf_file
 {% endif %}
     - require_in:
@@ -40,7 +40,7 @@ hadoop-hdfs-datanode:
       {% if kms %}
       - cmd: create-keystore
       {% endif %}
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
 
@@ -54,13 +54,13 @@ hadoop-yarn-nodemanager:
     - installed 
     - require:
       - cmd: repo_placeholder
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+{% if pillar.hdp2.security.enable %}
       - file: krb5_conf_file
 {% endif %}
     - require_in:
       - file: /etc/hadoop/conf
       - cmd: hdfs_log_dir
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
 
@@ -74,13 +74,13 @@ hadoop-mapreduce:
     - installed
     - require:
       - cmd: repo_placeholder
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+{% if pillar.hdp2.security.enable %}
       - file: krb5_conf_file
 {% endif %}
     - require_in:
       - file: /etc/hadoop/conf
       - cmd: hdfs_log_dir
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
 

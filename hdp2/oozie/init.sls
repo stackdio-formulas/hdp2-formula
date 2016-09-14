@@ -21,7 +21,7 @@ include:
 {% if salt['pillar.get']('hdp2:oozie:start_service', True) %}
   - hdp2.oozie.service
 {% endif %}
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+{% if pillar.hdp2.security.enable %}
   - krb5
   - hdp2.security
   - hdp2.oozie.security
@@ -62,7 +62,7 @@ oozie:
     - require:
       - pkg: oozie
 
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+{% if pillar.hdp2.security.enable %}
 /etc/oozie/conf/oozie-site.xml:
   file:
     - managed

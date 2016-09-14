@@ -30,7 +30,7 @@ hbase-regionserver-svc:
       - file: /etc/hbase/conf/hbase-env.sh
       - file: {{ pillar.hdp2.hbase.tmp_dir }}
       - file: {{ pillar.hdp2.hbase.log_dir }}
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+{% if pillar.hdp2.security.enable %}
       - cmd: generate_hbase_keytabs
 {% endif %}
     - watch:

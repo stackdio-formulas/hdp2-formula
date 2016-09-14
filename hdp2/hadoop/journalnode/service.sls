@@ -34,7 +34,7 @@ hdp2_journal_dir:
     - require:
       - pkg: hadoop-hdfs-journalnode
       - file: bigtop_java_home
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
 

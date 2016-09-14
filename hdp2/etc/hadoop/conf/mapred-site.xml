@@ -81,7 +81,7 @@
       <value>1024</value>
   </property>
   {% set am_opts = '-Xmx768m' %}
-  {% if salt['pillar.get']('hdp2:security:enable', False) %}
+  {% if pillar.hdp2.security.enable %}
     {% set am_opts = am_opts ~ ' -Djava.security.krb5.conf=' ~ pillar.krb5.conf_file %}
   {% endif %}
   <property>
@@ -97,7 +97,7 @@
   {% set heap_size = (memory_mb * 0.8) | int %}
   {% set java_opts = salt['pillar.get']('hdp2:mapred:child_java_opts', '-Xmx' ~ heap_size ~ 'm') %}
 
-  {% if salt['pillar.get']('hdp2:security:enable', False) %}
+  {% if pillar.hdp2.security.enable %}
   {% set java_opts = java_opts ~ ' -Djava.security.krb5.conf=' ~ pillar.krb5.conf_file %}
   {% endif %}
 
@@ -140,7 +140,7 @@
   </property>
 
 
-{%- if salt['pillar.get']('hdp2:security:enable', False) %}
+{%- if pillar.hdp2.security.enable %}
 {%- from 'krb5/settings.sls' import krb5 with context %}
   <property>
     <name>mapreduce.jobhistory.keytab</name>

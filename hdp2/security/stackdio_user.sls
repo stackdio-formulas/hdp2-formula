@@ -1,4 +1,4 @@
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+{% if pillar.hdp2.security.enable %}
 include:
   - krb5
   - hdp2.security
