@@ -4,7 +4,6 @@
 {% set mapred_staging_dir = '/user/history' %}
 {% set mapred_log_dir = '/var/log/hadoop-yarn' %}
 {% set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.standby-namenode', 'grains.items', 'compound') %}
-{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.kms', 'grains.items', 'compound') %}
 
 ##
 # Adding high-availability to the mix makes things a bit more complicated.
@@ -27,7 +26,7 @@ include:
   {% if salt['pillar.get']('hdp2:namenode:start_service', True) %}
   - hdp2.hadoop.namenode.service
   {% endif %}
-  {% if kms %}
+  {% if pillar.hdp2.encryption.enable %}
   - hdp2.hadoop.encryption
   {% endif %}
   {% if pillar.hdp2.security.enable %}

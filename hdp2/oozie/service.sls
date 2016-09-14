@@ -1,5 +1,4 @@
 {% set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] %}
-{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.kms', 'grains.items', 'compound') %}
 {% set oozie_data_dir = '/var/lib/oozie' %}
 
 # The scripts for starting services are in different places depending on the hdp version, so set them here
@@ -48,7 +47,7 @@ kill-oozie:
 prepare_server:
   cmd:
     - run
-    - name: '{{ oozie_home }}/bin/oozie-setup.sh prepare-war{% if kms %} -secure{% endif %}'
+    - name: '{{ oozie_home }}/bin/oozie-setup.sh prepare-war{% if pillar.hdp2.encryption.enable %} -secure{% endif %}'
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/oozie/oozie.pid'
     - user: root
     - require:
@@ -58,10 +57,10 @@ prepare_server:
       - file: /var/lib/oozie
       - file: /var/log/oozie
       - cmd: kill-oozie
-{% if pillar.hdp2.security.enable %}
+      {% if pillar.hdp2.security.enable %}
       - file: /etc/oozie/conf/oozie-site.xml
       - cmd: generate_oozie_keytabs
-{% endif %}
+      {% endif %}
 
 {% if pillar.hdp2.security.enable %}
 hdfs_kinit:

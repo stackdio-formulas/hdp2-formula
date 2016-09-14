@@ -1,7 +1,6 @@
 {% set yarn_local_dir = salt['pillar.get']('hdp2:yarn:local_dirs', '/mnt/hadoop/yarn/local') %}
 {% set yarn_log_dir = salt['pillar.get']('hdp2:yarn:log_dirs', '/mnt/hadoop/yarn/logs') %}
 {% set dfs_data_dir = salt['pillar.get']('hdp2:dfs:data_dir', '/mnt/hadoop/hdfs/dn') %}
-{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.kms', 'grains.items', 'compound') %}
 
 # The scripts for starting services are in different places depending on the hdp version, so set them here
 {% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
@@ -90,7 +89,7 @@ hadoop-hdfs-datanode-svc:
       - cmd: kill-datanode
       - cmd: dfs_data_dir
       - file: bigtop_java_home
-      {% if kms %}
+      {% if pillar.hdp2.encryption.enable %}
       - cmd: chown-keystore
       {% endif %}
       {% if pillar.hdp2.security.enable %}
@@ -118,7 +117,7 @@ hadoop-yarn-nodemanager-svc:
       - cmd: datanode_yarn_log_dirs
       - file: bigtop_java_home
       - cmd: kill-nodemanager
-      {% if kms %}
+      {% if pillar.hdp2.encryption.enable %}
       - cmd: chown-keystore
       {% endif %}
       {% if pillar.hdp2.security.enable %}

@@ -146,7 +146,7 @@ hadoop-hdfs-namenode-svc:
       - cmd: init_hdfs
       - file: bigtop_java_home
       - cmd: kill-namenode
-      {% if kms %}
+      {% if pillar.hdp2.encryption.enable %}
       - cmd: chown-keystore
       {% endif %}
     - watch:

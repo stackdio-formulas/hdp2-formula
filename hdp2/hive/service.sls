@@ -212,9 +212,9 @@ hive-server2:
     - require: 
       - cmd: hive-metastore
       - cmd: kill-server2
-{% if pillar.hdp2.security.enable %}
+      {% if pillar.hdp2.security.enable %}
       - cmd: generate_hive_keytabs 
-{% endif %}
+      {% endif %}
     - watch:
       - file: /etc/hive/conf/hive-site.xml
 

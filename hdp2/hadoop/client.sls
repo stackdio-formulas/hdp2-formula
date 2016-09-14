@@ -1,10 +1,9 @@
-{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.kms', 'grains.items', 'compound') %}
 
 include:
   - hdp2.repo
   - hdp2.hadoop.conf
   - hdp2.landing_page
-  {% if kms %}
+  {% if pillar.hdp2.encryption.enable %}
   - hdp2.hadoop.encryption
   {% endif %}
   {% if pillar.hdp2.security.enable %}

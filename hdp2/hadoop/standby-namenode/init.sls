@@ -1,4 +1,3 @@
-{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.kms', 'grains.items', 'compound') %}
 
 ##
 # Standby NameNode
@@ -11,7 +10,7 @@ include:
   {% if salt['pillar.get']('hdp2:namenode:start_service', True) %}
   - hdp2.hadoop.standby-namenode.service
   {% endif %}
-  {% if kms %}
+  {% if pillar.hdp2.encryption.enable %}
   - hdp2.hadoop.encryption
   {% endif %}
   {% if pillar.hdp2.security.enable %}
@@ -26,7 +25,7 @@ hadoop-hdfs-namenode:
     - installed
     - require:
       - cmd: repo_placeholder
-      {% if kms %}
+      {% if pillar.hdp2.encryption.enable %}
       - cmd: create-keystore
       {% endif %}
       {% if pillar.hdp2.security.enable %}

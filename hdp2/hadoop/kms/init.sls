@@ -1,15 +1,15 @@
 include:
   - hdp2.repo
   - hdp2.landing_page
-{% if salt['pillar.get']('hdp2:kms:start_service', True) %}
+  {% if salt['pillar.get']('hdp2:kms:start_service', True) %}
   - hdp2.hadoop.kms.service
-{% endif %}
-{% if pillar.hdp2.security.enable %}
+  {% endif %}
+  {% if pillar.hdp2.security.enable %}
   - krb5
   - hdp2.security
   - hdp2.security.stackdio_user
   - hdp2.hadoop.kms.security
-{% endif %}
+  {% endif %}
 
 
 ranger-kms:

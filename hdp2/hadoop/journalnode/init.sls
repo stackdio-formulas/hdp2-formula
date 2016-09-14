@@ -1,4 +1,3 @@
-{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.kms', 'grains.items', 'compound') %}
 
 # From cloudera, hdp2 requires JDK7, so include it along with the
 # hdp2 repository to install their packages.
@@ -10,7 +9,7 @@ include:
   {% if salt['pillar.get']('hdp2:journalnode:start_service', True) %}
   - hdp2.hadoop.journalnode.service
   {% endif %}
-  {% if kms %}
+  {% if pillar.hdp2.encryption.enable %}
   - hdp2.hadoop.encryption
   {% endif %}
   {% if pillar.hdp2.security.enable %}
@@ -36,7 +35,7 @@ hadoop-hdfs-journalnode:
     - require_in:
       - file: /etc/hadoop/conf
       - cmd: hdfs_log_dir
-      {% if kms %}
+      {% if pillar.hdp2.encryption.enable %}
       - cmd: create-keystore
       {% endif %}
       {% if pillar.hdp2.security.enable %}

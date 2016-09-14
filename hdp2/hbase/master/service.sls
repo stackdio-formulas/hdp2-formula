@@ -109,9 +109,9 @@ hbase-master-svc:
       - file: /etc/hbase/conf/hbase-env.sh
       - file: {{ pillar.hdp2.hbase.tmp_dir }}
       - file: {{ pillar.hdp2.hbase.log_dir }}
-{% if pillar.hdp2.security.enable %}
+      {% if pillar.hdp2.security.enable %}
       - cmd: generate_hbase_keytabs
-{% endif %}
+      {% endif %}
     - watch:
       - file: /etc/hbase/conf/hbase-site.xml
       - file: /etc/hbase/conf/hbase-env.sh
