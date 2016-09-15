@@ -1,5 +1,4 @@
 {% set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] %}
-{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.kms', 'grains.items', 'compound') %}
 {% set oozie_data_dir = '/var/lib/oozie' %}
 
 # The scripts for starting services are in different places depending on the hdp version, so set them here
@@ -48,7 +47,7 @@ kill-oozie:
 prepare_server:
   cmd:
     - run
-    - name: '{{ oozie_home }}/bin/oozie-setup.sh prepare-war{% if kms %} -secure{% endif %}'
+    - name: '{{ oozie_home }}/bin/oozie-setup.sh prepare-war{% if pillar.hdp2.encryption.enable %} -secure{% endif %}'
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/oozie/oozie.pid'
     - user: root
     - require:
@@ -58,12 +57,12 @@ prepare_server:
       - file: /var/lib/oozie
       - file: /var/log/oozie
       - cmd: kill-oozie
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - file: /etc/oozie/conf/oozie-site.xml
       - cmd: generate_oozie_keytabs
-{% endif %}
+      {% endif %}
 
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+{% if pillar.hdp2.security.enable %}
 hdfs_kinit:
   cmd:
     - run
@@ -105,7 +104,7 @@ create-oozie-sharelibs:
       - cmd: prepare_server
       - cmd: wait-for-safemode
 
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+{% if pillar.hdp2.security.enable %}
 create_sharelib_script:
   file:
     - managed
@@ -122,7 +121,7 @@ create_sharelib_script:
 populate-oozie-sharelibs:
   cmd:
     - run
-    {% if salt['pillar.get']('hdp2:security:enable', False) %}
+    {% if pillar.hdp2.security.enable %}
     - name: '{{ oozie_home }}/bin/oozie-sharelib-kerberos.sh create -fs hdfs://{{nn_host}}:8020 -locallib {{ oozie_home }}/oozie-sharelib.tar.gz'
     {% else %}
     - name: '{{ oozie_home }}/bin/oozie-setup.sh sharelib create -fs hdfs://{{nn_host}}:8020 -locallib {{ oozie_home }}/oozie-sharelib.tar.gz'
@@ -138,7 +137,7 @@ oozie-svc:
     - user: oozie
     - name: {{ oozie_home }}/bin/oozied.sh start
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/oozie/oozie.pid'
-    {% if salt['pillar.get']('hdp2:security:enable', False) %}
+    {% if pillar.hdp2.security.enable %}
     - env:
       - JAVA_PROPERTIES: '-Djava.security.krb5.conf={{ pillar.krb5.conf_file }}'
     {% endif %}

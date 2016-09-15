@@ -34,7 +34,7 @@ kill-thrift:
 # through the hadoop client may authorize successfully.
 # NOTE this means that any 'hdfs dfs' commands will need
 # to require this state to be sure we have a krb ticket
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+{% if pillar.hdp2.security.enable %}
 hdfs_kinit:
   cmd:
     - run
@@ -66,7 +66,7 @@ hbase-init:
     - unless: 'hdfs dfs -test -d /hbase'
     - require:
       - pkg: hadoop-client
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - cmd: hdfs_kinit
       {% endif %}
 
@@ -77,7 +77,7 @@ create_hbase_key:
     - user: hbase
     - name: 'hadoop key create hbase'
     - unless: 'hadoop key list | grep hbase'
-    {% if salt['pillar.get']('hdp2:security:enable', False) %}
+    {% if pillar.hdp2.security.enable %}
     - require:
       - cmd: hbase_kinit
     {% endif %}
@@ -109,9 +109,9 @@ hbase-master-svc:
       - file: /etc/hbase/conf/hbase-env.sh
       - file: {{ pillar.hdp2.hbase.tmp_dir }}
       - file: {{ pillar.hdp2.hbase.log_dir }}
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - cmd: generate_hbase_keytabs
-{% endif %}
+      {% endif %}
     - watch:
       - file: /etc/hbase/conf/hbase-site.xml
       - file: /etc/hbase/conf/hbase-env.sh

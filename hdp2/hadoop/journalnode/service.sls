@@ -1,5 +1,4 @@
 {% set journal_dir = salt['pillar.get']('hdp2:dfs:journal_dir', '/mnt/hadoop/hdfs/jn') %}
-{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.kms', 'grains.items', 'compound') %}
 
 # The scripts for starting services are in different places depending on the hdp version, so set them here
 {% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
@@ -34,7 +33,7 @@ hdp2_journal_dir:
     - require:
       - pkg: hadoop-hdfs-journalnode
       - file: bigtop_java_home
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
 
@@ -50,7 +49,7 @@ hadoop-hdfs-journalnode-svc:
       - pkg: hadoop-hdfs-journalnode
       - file: bigtop_java_home
       - cmd: hdp2_journal_dir
-      {% if kms %}
+      {% if pillar.hdp2.encryption.enable %}
       - cmd: chown-keystore
       {% endif %}
       - file: /etc/hadoop/conf

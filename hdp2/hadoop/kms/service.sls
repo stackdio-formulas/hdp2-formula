@@ -30,7 +30,7 @@ configure-ranger:
       - cmd: setup_mysql
       - file: /usr/hdp/current/ranger-admin/install.properties
       - file: /usr/hdp/current/ranger-kms/install.properties
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - cmd: generate_http_keytab
       - cmd: generate_hadoop_kms_keytabs
       {% endif %}
@@ -66,7 +66,7 @@ ranger-admin-svc:
       - cmd: configure-ranger
       - cmd: reload-systemd-admin
       - file: /etc/ranger/admin/conf
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - cmd: generate_http_keytab
       - cmd: generate_hadoop_kms_keytabs
       {% endif %}
@@ -85,7 +85,7 @@ configure-ranger-kms:
       - cmd: setup_mysql
       - file: /usr/hdp/current/ranger-kms/install.properties
       - cmd: configure-ranger
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - cmd: generate_http_keytab
       - cmd: generate_hadoop_kms_keytabs
       {% endif %}
@@ -122,7 +122,7 @@ ranger-kms-svc:
       - cmd: configure-ranger-kms
       - cmd: reload-systemd-kms
       - file: /etc/ranger/kms/conf
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - cmd: generate_http_keytab
       - cmd: generate_hadoop_kms_keytabs
       {% endif %}

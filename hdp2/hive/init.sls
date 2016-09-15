@@ -15,7 +15,7 @@ include:
 {% if salt['pillar.get']('hdp2:hive:start_service', True) %}
   - hdp2.hive.service
 {% endif %}
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+{% if pillar.hdp2.security.enable %}
   - krb5
   - hdp2.security
   - hdp2.hive.security

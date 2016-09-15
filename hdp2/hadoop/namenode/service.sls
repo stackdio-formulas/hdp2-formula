@@ -83,7 +83,7 @@ hdp2_dfs_dirs:
     - require:
       - pkg: hadoop-hdfs-namenode
       - file: bigtop_java_home
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+{% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
 {% endif %}
 
@@ -146,7 +146,7 @@ hadoop-hdfs-namenode-svc:
       - cmd: init_hdfs
       - file: bigtop_java_home
       - cmd: kill-namenode
-      {% if kms %}
+      {% if pillar.hdp2.encryption.enable %}
       - cmd: chown-keystore
       {% endif %}
     - watch:
@@ -157,7 +157,7 @@ hadoop-hdfs-namenode-svc:
 # through the hadoop client may authorize successfully.
 # NOTE this means that any 'hdfs dfs' commands will need
 # to require this state to be sure we have a krb ticket
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+{% if pillar.hdp2.security.enable %}
 hdfs_kinit:
   cmd:
     - run
@@ -228,7 +228,7 @@ create_mapred_key:
     - unless: 'hadoop key list | grep mapred'
     - require:
       - file: /etc/hadoop/conf
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - cmd: mapred_kinit
       {% endif %}
 
@@ -257,7 +257,7 @@ hdfs_user_{{ user }}:
     - name: 'hdfs dfs -mkdir -p /user/{{ user }} && hdfs dfs -chown {{ user }}:{{ user }} /user/{{ user }}'
     - require:
       - service: hadoop-hdfs-namenode-svc
-      {% if salt['pillar.get']('hdp2:security:enable', False) %}
+      {% if pillar.hdp2.security.enable %}
       - cmd: hdfs_kinit
       {% endif %}
 {% endfor %}

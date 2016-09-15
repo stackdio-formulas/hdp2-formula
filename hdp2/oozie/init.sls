@@ -1,5 +1,4 @@
 {% set oozie_data_dir = '/var/lib/oozie' %}
-{% set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.kms', 'grains.items', 'compound') %}
 
 # The scripts for starting services are in different places depending on the hdp version, so set them here
 {% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
@@ -18,14 +17,14 @@ include:
   - hdp2.repo
   - hdp2.landing_page
   - hdp2.hadoop.conf
-{% if salt['pillar.get']('hdp2:oozie:start_service', True) %}
+  {% if salt['pillar.get']('hdp2:oozie:start_service', True) %}
   - hdp2.oozie.service
-{% endif %}
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+  {% endif %}
+  {% if pillar.hdp2.security.enable %}
   - krb5
   - hdp2.security
   - hdp2.oozie.security
-{% endif %}
+  {% endif %}
 
 
 
@@ -62,7 +61,7 @@ oozie:
     - require:
       - pkg: oozie
 
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+{% if pillar.hdp2.security.enable %}
 /etc/oozie/conf/oozie-site.xml:
   file:
     - managed
@@ -103,7 +102,7 @@ hadoop-lzo:
     - require:
       - pkg: oozie
 
-{% if kms %}
+{% if pillar.hdp2.encryption.enable %}
 copy-keystore:
   cmd:
     - run

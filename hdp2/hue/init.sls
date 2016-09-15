@@ -9,7 +9,7 @@ include:
 {% if salt['pillar.get']('hdp2:hue:start_service', True) %}
   - hdp2.hue.service
 {% endif %}
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+{% if pillar.hdp2.security.enable %}
   - krb5
   - hdp2.security
   - hdp2.hue.security

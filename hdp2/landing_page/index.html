@@ -5,7 +5,7 @@
 {%- set oozie = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.oozie', 'grains.items', 'compound').values() -%}
 {%- set spark = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.spark.historyserver', 'grains.items', 'compound').values() -%}
 {%- set hbase_master = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hbase.master', 'grains.items', 'compound').values() -%}
-{%- set https = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.kms', 'grains.items', 'compound') -%}
+{%- set https = pillar.hdp2.encryption.enable -%}
 <!DOCTYPE html>
 <html lang="en">
 <head>

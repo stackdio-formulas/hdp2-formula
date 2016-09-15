@@ -48,7 +48,7 @@ export JAVA_HOME="/usr/java/latest"
 # Extra Java runtime options.  Empty by default.
 #export HADOOP_OPTS="$HADOOP_OPTS -Djava.net.preferIPv4Stack=true"
 
-{% if salt['pillar.get']('hdp2:security:enable', False) %}
+{% if pillar.hdp2.security.enable %}
 export HADOOP_OPTS="$HADOOP_OPTS -Djava.security.krb5.conf={{ pillar.krb5.conf_file }}"
 export HADOOP_CLIENT_OPTS="$HADOOP_CLIENT_OPTS -Djava.security.krb5.conf={{ pillar.krb5.conf_file }}"
 {% endif %}
@@ -121,7 +121,7 @@ export HADOOP_YARN_HOME=$prefix/hadoop-yarn
 export HADOOP_MAPRED_HOME=$prefix/hadoop-mapreduce
 {% endif %}
 
-{%- if salt['pillar.get']('hdp2:security:enable', False) %}
+{%- if pillar.hdp2.security.enable %}
 {%- from 'krb5/settings.sls' import krb5 with context %}
 export HADOOP_SECURE_DN_USER=hdfs
 export HADOOP_SECURE_DN_LOG_DIR=/var/log/hadoop/hdfs
