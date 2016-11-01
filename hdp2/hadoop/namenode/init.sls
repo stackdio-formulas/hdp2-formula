@@ -47,6 +47,9 @@ hadoop-hdfs-namenode:
     - require_in:
       - file: /etc/hadoop/conf
       - cmd: hdfs_log_dir
+      {% if pillar.hdp2.encryption.enable %}
+      - file: /etc/hadoop/conf/ca
+      {% endif %}
       {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}

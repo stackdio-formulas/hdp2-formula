@@ -25,14 +25,14 @@ hadoop-hdfs-namenode:
     - installed
     - require:
       - cmd: repo_placeholder
-      {% if pillar.hdp2.encryption.enable %}
-      - cmd: create-keystore
-      {% endif %}
       {% if pillar.hdp2.security.enable %}
       - file: krb5_conf_file
       {% endif %}
     - require_in:
       - file: /etc/hadoop/conf
+      {% if pillar.hdp2.encryption.enable %}
+      - file: /etc/hadoop/conf/ca
+      {% endif %}
       {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}

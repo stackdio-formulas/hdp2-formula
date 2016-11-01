@@ -116,6 +116,33 @@ create_sharelib_script:
     - template: jinja
     - require_in:
       - cmd: populate-oozie-sharelibs
+
+oozie_kinit:
+  cmd:
+    - run
+    - name: 'kinit -kt /etc/oozie/conf/oozie.keytab oozie/{{ grains.fqdn }}'
+    - user: oozie
+    - group: oozie
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
+    - require:
+      - pkg: oozie
+    - require_in:
+      - cmd: populate-oozie-sharelibs
+
+oozie_kdestroy:
+  cmd:
+    - run
+    - name: kdestroy
+    - user: oozie
+    - group: oozie
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
+    - require:
+      - pkg: oozie
+      - cmd: oozie_kinit
+    - require_in:
+      - cmd: oozie-svc
 {% endif %}
 
 populate-oozie-sharelibs:
