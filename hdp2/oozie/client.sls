@@ -10,6 +10,9 @@ include:
   - krb5
   - hdp2.security
   {% endif %}
+  {% if pillar.hdp2.encryption.enable %}
+  - hdp2.oozie.encryption
+  {% endif %}
 
 oozie-client:
   pkg:
@@ -35,5 +38,5 @@ oozie-client:
       - export OOZIE_CLIENT_OPTS="-Djava.security.krb5.conf={{ pillar.krb5.conf_file }}"
       {% endif %}
       {% if pillar.hdp2.encryption.enable %}
-      - export OOZIE_CLIENT_OPTS="${OOZIE_CLIENT_OPTS} -Djavax.net.ssl.trustStore=/etc/hadoop/conf/hadoop.keystore -Djavax.net.ssl.trustStorePassword=hadoop"
+      - export OOZIE_CLIENT_OPTS="${OOZIE_CLIENT_OPTS} -Djavax.net.ssl.trustStore=/etc/oozie/conf/oozie.truststore -Djavax.net.ssl.trustStorePassword=oozie123"
       {% endif %}

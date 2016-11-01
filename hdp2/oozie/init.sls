@@ -20,6 +20,9 @@ include:
   {% if salt['pillar.get']('hdp2:oozie:start_service', True) %}
   - hdp2.oozie.service
   {% endif %}
+  {% if pillar.hdp2.encryption.enable %}
+  - hdp2.oozie.encryption
+  {% endif %}
   {% if pillar.hdp2.security.enable %}
   - krb5
   - hdp2.security
@@ -41,6 +44,10 @@ oozie:
       - unzip
     - require:
       - cmd: repo_placeholder
+    {% if pillar.hdp2.encryption.enable %}
+    - require_in:
+      - file: /etc/oozie/conf/ca
+    {% endif %}
 
 /etc/oozie/conf/hadoop-conf:
   file:
@@ -101,24 +108,6 @@ hadoop-lzo:
     - user: root
     - require:
       - pkg: oozie
-
-{% if pillar.hdp2.encryption.enable %}
-copy-keystore:
-  cmd:
-    - run
-    - user: root
-    - name: 'cp /etc/hadoop/conf/hadoop.keystore /etc/oozie/conf/oozie.keystore'
-    - require:
-      - pkg: oozie
-
-chown-keystore:
-  cmd:
-    - run
-    - user: root
-    - name: 'chown oozie:oozie /etc/oozie/conf/oozie.keystore && chmod 440 /etc/oozie/conf/oozie.keystore'
-    - require:
-      - cmd: copy-keystore
-{% endif %}
 
 /var/log/oozie:
   file:
