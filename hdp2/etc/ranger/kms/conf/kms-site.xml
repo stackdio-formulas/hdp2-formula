@@ -37,7 +37,7 @@
   </property>
 
   <!-- KMS Security -->
-  {%- if salt['pillar.get']('cdh5:security:enable', False) %}
+  {%- if salt['pillar.get']('hdp2:security:enable', False) %}
   {%- from 'krb5/settings.sls' import krb5 with context %}
   <property>
     <name>hadoop.kms.authentication.type</name>

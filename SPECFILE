@@ -5,29 +5,41 @@ components:
   - title: Hadoop Client Node
     description: Hadoop Client Node
     sls_path: hdp2.hadoop.client
-  - title: NameNode
-    description: Hadoop NameNode component of HDP2
-    sls_path: hdp2.hadoop.namenode
-  - title: Standby NameNode
-    description: Standby NameNode for high-availability
-    sls_path: hdp2.hadoop.standby-namenode
-  - title: JournalNode
-    description: Hadoop JournalNode for high-availability
-    sls_path: hdp2.hadoop.journalnode
-  - title: DataNode
-    description: Hadoop DataNode component of HDP2
-    sls_path: hdp2.hadoop.datanode
+  - title: HDFS JournalNode
+    description: Hadoop HDFS JournalNode
+    sls_path: hdp2.hadoop.hdfs.journalnode
+  - title: HDFS NameNode
+    description: Hadoop HDFS NameNode
+    sls_path: hdp2.hadoop.hdfs.namenode
+  - title: HDFS Standby NameNode
+    description: Hadoop HDFS NameNode
+    sls_path: hdp2.hadoop.hdfs.standby-namenode
+  - title: HDFS DataNode
+    description: Hadoop HDFS DataNode
+    sls_path: hdp2.hadoop.hdfs.datanode
+  - title: YARN ResourceManager
+    description: YARN ResourceManager
+    sls_path: hdp2.hadoop.yarn.resourcemanager
+  - title: YARN Standby ResourceManager
+    description: YARN Standby ResourceManager
+    sls_path: hdp2.hadoop.yarn.standby-resourcemanager
+  - title: YARN NodeManager
+    description: YARN NodeManager
+    sls_path: hdp2.hadoop.yarn.nodemanager
+  - title: MapReduce History Server
+    description: MapReduce History Server
+    sls_path: hdp2.hadoop.mapreduce.historyserver
   - title: Key Management Server
     description: Key Management Server for HDFS encryption-at-rest
     sls_path: hdp2.hadoop.kms
   - title: ZooKeeper
-    description: ZooKeeper component of HDP2
+    description: ZooKeeper
     sls_path: hdp2.zookeeper
   - title: HBase Master
-    description: HBase Master component of HDP2
+    description: HBase Master
     sls_path: hdp2.hbase.master
   - title: HBase RegionServer
-    description: HBase RegionServer component of HDP2
+    description: HBase RegionServer
     sls_path: hdp2.hbase.regionserver
   - title: HBase Secure Permissions
     description: Separate state because it needs to run on the master AFTER the regionservers are started.  Used only when security is enabled.
