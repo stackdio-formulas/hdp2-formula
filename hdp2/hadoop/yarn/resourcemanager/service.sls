@@ -58,6 +58,9 @@ hadoop-yarn-resourcemanager-svc:
       - pkg: hadoop-yarn-resourcemanager
       - cmd: kill-resourcemanager
       - file: bigtop_java_home
+      {% if pillar.hdp2.encryption.enable %}
+      - cmd: chown-keystore
+      {% endif %}
       {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
@@ -77,6 +80,9 @@ hadoop-yarn-proxyserver-svc:
       - pkg: hadoop-yarn-proxyserver
       - cmd: kill-proxyserver
       - file: bigtop_java_home
+      {% if pillar.hdp2.encryption.enable %}
+      - cmd: chown-keystore
+      {% endif %}
       {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
