@@ -62,7 +62,7 @@ hadoop-yarn-resourcemanager-svc:
       - file: /etc/hadoop/conf
 
 {% if standby %}
-hadoop-yarn-resourcemanager-svc:
+hadoop-yarn-proxyserver-svc:
   cmd:
     - run
     - user: yarn
