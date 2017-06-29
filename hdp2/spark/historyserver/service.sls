@@ -95,7 +95,6 @@ spark-history-server-svc:
       - pkg: spark
       - cmd: kill-historyserver
       - cmd: history-dir
-      - file: bigtop_java_home
       {% if pillar.hdp2.security.enable %}
       - cmd: generate_spark_keytabs
       {% endif %}
