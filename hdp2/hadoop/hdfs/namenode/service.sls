@@ -95,9 +95,6 @@ hadoop-hdfs-zkfc-svc:
       - cmd: init_zkfc
       - file: bigtop_java_home
       - cmd: kill-zkfc
-    - require_in:
-      - cmd: hadoop-yarn-resourcemanager-svc
-      - cmd: hadoop-mapreduce-historyserver-svc
     - watch:
       - file: /etc/hadoop/conf
 {% endif %}
