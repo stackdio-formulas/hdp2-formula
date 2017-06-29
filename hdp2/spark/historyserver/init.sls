@@ -13,8 +13,8 @@ include:
   {% endif %}
 
 
-spark-history-server:
+spark:
   pkg:
     - installed
     - require:
-      - module: hdp2_refresh_db
+      - cmd: repo_placeholder
