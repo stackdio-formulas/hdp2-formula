@@ -12,8 +12,6 @@
     {% else %}
     - exclude_pat: ssl-*.xml
     {% endif %}
-    - require:
-      - cmd: hdfs_log_dir
 
 /etc/hadoop/conf/container-executor.cfg:
   file:
