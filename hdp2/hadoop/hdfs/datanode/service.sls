@@ -26,7 +26,7 @@ kill-datanode:
     - user: hdfs
     {% endif %}
     - name: {{ hadoop_script_dir }}/hadoop-daemon.sh stop datanode
-    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-datanode.pid'
+    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-hdfs/hadoop-hdfs-datanode.pid'
     - env:
       - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require:
@@ -50,7 +50,7 @@ hadoop-hdfs-datanode-svc:
     - user: hdfs
     {% endif %}
     - name: {{ hadoop_script_dir }}/hadoop-daemon.sh start datanode
-    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-datanode.pid'
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-hdfs/hadoop-hdfs-datanode.pid'
     - env:
       - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require: 

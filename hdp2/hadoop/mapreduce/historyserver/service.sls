@@ -18,10 +18,10 @@ kill-historyserver:
     - run
     - user: mapred
     - name: {{ mapred_script_dir }}/mr-jobhistory-daemon.sh stop historyserver
-    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/mapreduce/mapred-mapred-historyserver.pid'
+    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-mapreduce/mapred-mapred-historyserver.pid'
     - env:
       - HADOOP_MAPRED_HOME: '{{ mapred_script_dir }}/..'
-      - HADOOP_MAPRED_LOG_DIR: '/var/log/hadoop/mapreduce'
+      - HADOOP_MAPRED_LOG_DIR: '/var/log/hadoop-mapreduce'
       - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require:
       - pkg: hadoop-mapreduce-historyserver
@@ -135,25 +135,8 @@ create_mapred_zone:
       - cmd: create_mapred_key
       - cmd: hdfs_mapreduce_var_dir
     - require_in:
-      - cmd: hadoop-yarn-resourcemanager-svc
       - cmd: hadoop-mapreduce-historyserver-svc
 {% endif %}
-
-# create a user directory owned by the stack user
-{% for user_obj in pillar.__stackdio__.users %}
-{% set user = user_obj.username %}
-hdfs_user_{{ user }}:
-  cmd:
-    - run
-    - user: hdfs
-    - group: hdfs
-    - name: 'hdfs dfs -mkdir -p /user/{{ user }} && hdfs dfs -chown {{ user }}:{{ user }} /user/{{ user }}'
-    - require:
-      - service: hadoop-hdfs-namenode-svc
-      {% if pillar.hdp2.security.enable %}
-      - cmd: hdfs_kinit
-      {% endif %}
-{% endfor %}
 
 ##
 # Installs the mapreduce historyserver service and starts it.
@@ -165,10 +148,10 @@ hadoop-mapreduce-historyserver-svc:
     - run
     - user: mapred
     - name: {{ mapred_script_dir }}/mr-jobhistory-daemon.sh start historyserver
-    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/mapreduce/mapred-mapred-historyserver.pid'
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-mapreduce/mapred-mapred-historyserver.pid'
     - env:
       - HADOOP_MAPRED_HOME: '{{ mapred_script_dir }}/..'
-      - HADOOP_MAPRED_LOG_DIR: '/var/log/hadoop/mapreduce'
+      - HADOOP_MAPRED_LOG_DIR: '/var/log/hadoop-mapreduce'
       - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require:
       - pkg: hadoop-mapreduce-historyserver

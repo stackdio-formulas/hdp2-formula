@@ -15,7 +15,7 @@ kill-nodemanager:
     - run
     - user: yarn
     - name: {{ yarn_script_dir }}/yarn-daemon.sh stop nodemanager
-    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/yarn/yarn-yarn-nodemanager.pid'
+    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-yarn/yarn-yarn-nodemanager.pid'
     - env:
       - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require:
@@ -49,7 +49,7 @@ hadoop-yarn-nodemanager-svc:
     - run
     - user: yarn
     - name: {{ yarn_script_dir }}/yarn-daemon.sh start nodemanager
-    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/yarn/yarn-yarn-nodemanager.pid'
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-yarn/yarn-yarn-nodemanager.pid'
     - env:
       - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require: 

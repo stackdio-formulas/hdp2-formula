@@ -63,7 +63,7 @@
     </property>
     <property>
         <name>dfs.domain.socket.path</name>
-        <value>/var/run/hadoop/hdfs/dn._PORT</value>
+        <value>/var/run/hadoop-hdfs/dn._PORT</value>
     </property>
     <property>
         <name>dfs.client.file-block-storage-locations.timeout.millis</name>

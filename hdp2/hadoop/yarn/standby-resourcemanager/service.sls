@@ -19,7 +19,7 @@ kill-resourcemanager:
     - run
     - user: yarn
     - name: {{ yarn_script_dir }}/yarn-daemon.sh stop resourcemanager
-    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/yarn/yarn-yarn-resourcemanager.pid'
+    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-yarn/yarn-yarn-resourcemanager.pid'
     - env:
       - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require:
@@ -30,7 +30,7 @@ hadoop-yarn-resourcemanager-svc:
     - run
     - user: yarn
     - name: {{ yarn_script_dir }}/yarn-daemon.sh start resourcemanager
-    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/yarn/yarn-yarn-resourcemanager.pid'
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-yarn/yarn-yarn-resourcemanager.pid'
     - env:
       - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require:

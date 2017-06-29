@@ -24,7 +24,7 @@ kill-zkfc:
     - run
     - user: hdfs
     - name: {{ hadoop_script_dir }}/hadoop-daemon.sh stop zkfc
-    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-zkfc.pid'
+    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-hdfs/hadoop-hdfs-zkfc.pid'
     - env:
       - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require:
@@ -36,7 +36,7 @@ kill-namenode:
     - run
     - user: hdfs
     - name: {{ hadoop_script_dir }}/hadoop-daemon.sh stop namenode
-    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-namenode.pid'
+    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-hdfs/hadoop-hdfs-namenode.pid'
     - env:
       - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require:
@@ -87,7 +87,7 @@ hadoop-hdfs-zkfc-svc:
     - run
     - user: hdfs
     - name: {{ hadoop_script_dir }}/hadoop-daemon.sh start zkfc
-    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-zkfc.pid'
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-hdfs/hadoop-hdfs-zkfc.pid'
     - env:
       - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require:
@@ -104,7 +104,7 @@ hadoop-hdfs-namenode-svc:
     - run
     - user: hdfs
     - name: {{ hadoop_script_dir }}/hadoop-daemon.sh start namenode
-    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-namenode.pid'
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-hdfs/hadoop-hdfs-namenode.pid'
     - env:
       - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require: 

@@ -1,30 +1,4 @@
 
-hdfs_log_dir:
-  cmd:
-    - run
-    - name: 'mkdir -p /var/{log,run}/hadoop/hdfs && chown hdfs:hadoop /var/{log,run}/hadoop/hdfs && chmod 755 /var/run/hadoop/hdfs'
-    - onlyif: id -u hdfs
-
-mapred_log_dir:
-  cmd:
-    - run
-    - name: 'mkdir -p /var/{log,run}/hadoop/mapreduce && chown mapred:hadoop /var/{log,run}/hadoop/mapreduce && chmod 755 /var/run/hadoop/mapreduce'
-    - onlyif: id -u mapred
-    - require:
-      - cmd: hdfs_log_dir
-    - require_in:
-      - /etc/hadoop/conf
-
-yarn_log_dir:
-  cmd:
-    - run
-    - name: 'mkdir -p /var/{log,run}/hadoop/yarn && chown yarn:hadoop /var/{log,run}/hadoop/yarn && chmod 755 /var/run/hadoop/yarn'
-    - onlyif: id -u yarn
-    - require:
-      - cmd: mapred_log_dir
-    - require_in:
-      - /etc/hadoop/conf
-
 /etc/hadoop/conf:
   file:
     - recurse
@@ -62,7 +36,7 @@ yarn_log_dir:
 /etc/hadoop/conf/mapred-env.sh:
   file:
     - append
-    - text: 'export HADOOP_MAPRED_LOG_DIR=/var/log/hadoop/mapreduce; export HADOOP_MAPRED_PID_DIR=/var/run/hadoop/mapreduce'
+    - text: 'export HADOOP_MAPRED_LOG_DIR=/var/log/hadoop-mapreduce; export HADOOP_MAPRED_PID_DIR=/var/run/hadoop-mapreduce'
     - require:
       - file: /etc/hadoop/conf
 
