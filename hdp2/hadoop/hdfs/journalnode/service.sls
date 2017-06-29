@@ -52,6 +52,9 @@ hadoop-hdfs-journalnode-svc:
       {% if pillar.hdp2.encryption.enable %}
       - cmd: chown-keystore
       {% endif %}
+      {% if pillar.hdp2.security.enable %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
       - file: /etc/hadoop/conf
       - cmd: kill-journalnode
     - watch:

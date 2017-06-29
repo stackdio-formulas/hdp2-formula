@@ -95,6 +95,9 @@ hadoop-hdfs-zkfc-svc:
       - cmd: init_zkfc
       - file: bigtop_java_home
       - cmd: kill-zkfc
+      {% if pillar.hdp2.security.enable %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
     - watch:
       - file: /etc/hadoop/conf
 {% endif %}
@@ -116,6 +119,9 @@ hadoop-hdfs-namenode-svc:
       - cmd: kill-namenode
       {% if pillar.hdp2.encryption.enable %}
       - cmd: chown-keystore
+      {% endif %}
+      {% if pillar.hdp2.security.enable %}
+      - cmd: generate_hadoop_keytabs
       {% endif %}
     - watch:
       - file: /etc/hadoop/conf

@@ -80,6 +80,9 @@ hadoop-hdfs-zkfc-svc:
       - pkg: hadoop-hdfs-zkfc
       - file: bigtop_java_home
       - cmd: kill-zkfc
+      {% if pillar.hdp2.security.enable %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
     - watch:
       - file: /etc/hadoop/conf
 
@@ -96,5 +99,8 @@ hadoop-hdfs-namenode-svc:
       - cmd: init_standby_namenode
       - file: bigtop_java_home
       - cmd: kill-namenode
+      {% if pillar.hdp2.security.enable %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
     - watch:
       - file: /etc/hadoop/conf
