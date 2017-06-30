@@ -14,10 +14,7 @@ include:
   - hdp2.hadoop.encryption
   {% endif %}
   {% if pillar.hdp2.security.enable %}
-  - krb5
-  - hdp2.security
-  - hdp2.security.stackdio_user
-  - hdp2.hadoop.security
+  - hdp2.hadoop.hdfs.security
   {% endif %}
 
 hadoop-hdfs-namenode:
