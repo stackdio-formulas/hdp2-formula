@@ -69,8 +69,6 @@ hdfs_mapreduce_log_dir:
     - group: hdfs
     - name: 'hdfs dfs -mkdir -p {{ mapred_log_dir }} && hdfs dfs -chown yarn:hadoop {{ mapred_log_dir }}'
     - unless: 'hdfs dfs -test -d {{ mapred_log_dir }}'
-    - require:
-      - cmd: hadoop-hdfs-namenode-svc
 
 # HDFS MapReduce var directories
 hdfs_mapreduce_var_dir:
@@ -80,8 +78,6 @@ hdfs_mapreduce_var_dir:
     - group: hdfs
     - name: 'hdfs dfs -mkdir -p {{ mapred_staging_dir }} && hdfs dfs -chmod -R 1777 {{ mapred_staging_dir }} && hdfs dfs -chown mapred:hadoop {{ mapred_staging_dir }}'
     - unless: 'hdfs dfs -test -d {{ mapred_staging_dir }}'
-    - require:
-      - cmd: hadoop-hdfs-namenode-svc
 
 {% if kms %}
 
