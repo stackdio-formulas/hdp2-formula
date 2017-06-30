@@ -152,14 +152,18 @@
     {% endif %}
 
     {% if pillar.hdp2.encryption.enable %}
-        <property>
-            <name>mapreduce.shuffle.ssl.enabled</name>
-            <value>true</value>
-            <final>true</final>
-        </property>
-        <property>
-            <name>mapreduce.jobhistory.http.policy</name>
-            <value>HTTPS_ONLY</value>
-        </property>
+    <property>
+        <name>mapreduce.jobhistory.webapp.https.address</name>
+        <value>{{ historyserver_fqdn }}:19890</value>
+    </property>
+    <property>
+        <name>mapreduce.shuffle.ssl.enabled</name>
+        <value>true</value>
+        <final>true</final>
+    </property>
+    <property>
+        <name>mapreduce.jobhistory.http.policy</name>
+        <value>HTTPS_ONLY</value>
+    </property>
     {% endif %}
 </configuration>
