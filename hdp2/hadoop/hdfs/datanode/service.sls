@@ -2,7 +2,7 @@
 
 # The scripts for starting services are in different places depending on the hdp version, so set them here
 {% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
-{% set hadoop_script_dir = ' ' %}
+{% set hadoop_script_dir = '/usr/hdp/current/hadoop-hdfs-datanode/../hadoop/sbin' %}
 {% set yarn_script_dir = '/usr/hdp/current/hadoop-yarn-nodemanager/sbin' %}
 {% else %}
 {% set hadoop_script_dir = '/usr/lib/hadoop/sbin' %}
