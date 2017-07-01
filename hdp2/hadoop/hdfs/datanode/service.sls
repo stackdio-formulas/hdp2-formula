@@ -2,7 +2,7 @@
 
 # The scripts for starting services are in different places depending on the hdp version, so set them here
 {% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
-{% set hadoop_script_dir = '/usr/hdp/current/hadoop-hdfs-datanode/../hadoop/sbin' %}
+{% set hadoop_script_dir = ' ' %}
 {% set yarn_script_dir = '/usr/hdp/current/hadoop-yarn-nodemanager/sbin' %}
 {% else %}
 {% set hadoop_script_dir = '/usr/lib/hadoop/sbin' %}
@@ -16,6 +16,15 @@
 # Depends on: JDK7
 #
 ##
+
+/var/run/hadoop-hdfs:
+  file:
+    - directory
+    - user: hdfs
+    - group: hadoop
+    - mode: 755
+    - require:
+      - pkg: hadoop-hdfs-datanode
 
 kill-datanode:
   cmd:
@@ -58,6 +67,7 @@ hadoop-hdfs-datanode-svc:
       - cmd: kill-datanode
       - cmd: dfs_data_dir
       - file: bigtop_java_home
+      - file: /var/run/hadoop-hdfs
       {% if pillar.hdp2.encryption.enable %}
       - cmd: chown-keystore
       {% endif %}
