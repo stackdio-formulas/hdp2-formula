@@ -5,7 +5,6 @@ include:
   - hdp2.repo
   - hdp2.hadoop.conf
   - hdp2.landing_page
-  - hdp2.hadoop.client
   {% if salt['pillar.get']('hdp2:nodemanager:start_service', True) %}
   - hdp2.hadoop.yarn.nodemanager.service
   {% endif %}
@@ -34,24 +33,3 @@ hadoop-yarn-nodemanager:
       {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
-
-##
-# Installs the mapreduce service
-#
-# Depends on: JDK7
-##
-hadoop-mapreduce:
-  pkg:
-    - installed
-    - require:
-      - cmd: repo_placeholder
-      {% if pillar.hdp2.security.enable %}
-      - file: krb5_conf_file
-      {% endif %}
-    - require_in:
-      - file: /etc/hadoop/conf
-      {% if pillar.hdp2.security.enable %}
-      - cmd: generate_hadoop_keytabs
-      {% endif %}
-
-

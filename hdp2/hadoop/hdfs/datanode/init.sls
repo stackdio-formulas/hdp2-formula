@@ -5,7 +5,6 @@ include:
   - hdp2.repo
   - hdp2.hadoop.conf
   - hdp2.landing_page
-  - hdp2.hadoop.client
   {% if salt['pillar.get']('hdp2:datanode:start_service', True) %}
   - hdp2.hadoop.hdfs.datanode.service
   {% endif %}
