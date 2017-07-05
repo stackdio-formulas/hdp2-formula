@@ -1,4 +1,8 @@
-{% if pillar.hdp2.security.enable %}
+
+include:
+  - krb5
+  - hdp2.security
+
 generate_zookeeper_keytabs:
   cmd:
     - script 
@@ -7,6 +11,6 @@ generate_zookeeper_keytabs:
     - user: root
     - group: root
     - cwd: /etc/zookeeper/conf
+    - unless: test -f /etc/zookeeper/conf/zookeeper.keytab
     - require:
       - module: load_admin_keytab
-{% endif %}
