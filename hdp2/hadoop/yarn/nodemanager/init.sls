@@ -33,3 +33,26 @@ hadoop-yarn-nodemanager:
       {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
+
+
+##
+# Installs the mapreduce package to make the nodemanager work
+#
+# Depends on: JDK7
+##
+hadoop-mapreduce:
+  pkg:
+    - installed
+    - require:
+      - cmd: repo_placeholder
+      {% if pillar.hdp2.security.enable %}
+      - file: krb5_conf_file
+      {% endif %}
+    - require_in:
+      - file: /etc/hadoop/conf
+      - cmd: hdfs_log_dir
+      {% if pillar.hdp2.security.enable %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
+
+
