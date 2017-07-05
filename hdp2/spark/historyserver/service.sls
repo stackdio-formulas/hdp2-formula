@@ -76,9 +76,10 @@ history-dir:
     - text:
       - export SPARK_LOG_DIR=/var/log/spark
       - export SPARK_PID_DIR=/var/run/spark
+      - 'export SPARK_HISTORY_OPTS="$SPARK_HISTORY_OPTS -Dspark.history.fs.logDirectory=hdfs:///user/spark/applicationHistory"'
       {% if pillar.hdp2.security.enable %}
       {% from 'krb5/settings.sls' import krb5 with context %}
-      - 'SPARK_HISTORY_OPTS="$SPARK_HISTORY_OPTS -Dspark.history.kerberos.enabled=true -Dspark.history.kerberos.principal=spark/{{ grains.fqdn }}@{{ krb5.realm }} -Dspark.history.kerberos.keytab=/etc/spark/conf/spark.keytab -Djava.security.krb5.conf={{ pillar.krb5.conf_file }}"'
+      - 'export SPARK_HISTORY_OPTS="$SPARK_HISTORY_OPTS -Dspark.history.kerberos.enabled=true -Dspark.history.kerberos.principal=spark/{{ grains.fqdn }}@{{ krb5.realm }} -Dspark.history.kerberos.keytab=/etc/spark/conf/spark.keytab -Djava.security.krb5.conf={{ pillar.krb5.conf_file }}"'
       {% endif %}
     - require:
       - pkg: spark
