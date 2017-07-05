@@ -14,3 +14,4 @@ generate_zookeeper_keytabs:
     - unless: test -f /etc/zookeeper/conf/zookeeper.keytab
     - require:
       - module: load_admin_keytab
+      - pkg: zookeeper-server
