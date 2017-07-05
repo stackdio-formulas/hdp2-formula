@@ -77,7 +77,7 @@ init_zkfc:
     - name: hdfs zkfc -formatZK
     - user: hdfs
     - group: hdfs
-    - unless: 'zookeeper-client stat /hadoop-ha 2>&1 | grep "cZxid"'
+    - unless: 'zookeeper-client stat /hadoop-ha/{{ grains.namespace }} 2>&1 | grep "cZxid"'
     - require:
       - cmd: hdp2_dfs_dirs
 
@@ -101,6 +101,8 @@ hadoop-hdfs-zkfc-svc:
       {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
+    - require_in:
+      - cmd: hdfs_tmp_dir
     - watch:
       - file: /etc/hadoop/conf
 {% endif %}

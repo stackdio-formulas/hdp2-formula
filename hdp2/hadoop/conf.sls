@@ -38,6 +38,12 @@
     - require:
       - file: /etc/hadoop/conf
 
+bigtop-jsvc:
+  pkg:
+    - installed
+    - require:
+      - cmd: repo_placeholder
+
 bigtop_java_home:
   file:
     - managed
@@ -46,5 +52,6 @@ bigtop_java_home:
     - user: root
     - group: root
     - require:
+      - pkg: bigtop-jsvc
       - file: /etc/hadoop/conf/container-executor.cfg
       - file: /etc/hadoop/conf/log4j.properties
