@@ -54,6 +54,7 @@ hadoop-yarn-nodemanager-svc:
       - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require: 
       - pkg: hadoop-yarn-nodemanager
+      - pkg: hadoop-mapreduce
       - cmd: yarn_local_dirs
       - cmd: yarn_log_dirs
       - file: bigtop_java_home
