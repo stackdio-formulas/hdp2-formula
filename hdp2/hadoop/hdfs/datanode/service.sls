@@ -1,4 +1,3 @@
-{% set dfs_data_dir = salt['pillar.get']('hdp2:dfs:data_dir', '/mnt/hadoop/hdfs/dn') %}
 
 # The scripts for starting services are in different places depending on the hdp version, so set them here
 {% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
@@ -42,13 +41,22 @@ kill-datanode:
       - pkg: hadoop-hdfs-datanode
 
 # make the hdfs data directories
-dfs_data_dir:
-  cmd:
-    - run
-    - name: 'for dd in `echo {{ dfs_data_dir }} | sed "s/,/\n/g"`; do mkdir -p $dd && chmod -R 755 $dd && chown -R hdfs:hdfs $dd; done'
-    - unless: "test -d `echo {{ dfs_data_dir }} | awk -F, '{print $1}'` && [ $(stat -c '%U' $(echo {{ dfs_data_dir }} | awk -F, '{print $1}')) == 'hdfs' ]"
+{% for data_dir in pillar.hdp2.dfs.data_dirs %}
+
+dfs-data-dir-{{ data_dir }}:
+  file:
+    - directory
+    - name: {{ data_dir }}
+    - user: hdfs
+    - group: hdfs
+    - mode: 755
+    - makedirs: true
     - require:
       - pkg: hadoop-hdfs-datanode
+    - require_in:
+      - cmd: hadoop-hdfs-datanode-svc
+
+{% endfor %}
 
 hadoop-hdfs-datanode-svc:
   cmd:
@@ -65,7 +73,6 @@ hadoop-hdfs-datanode-svc:
     - require: 
       - pkg: hadoop-hdfs-datanode
       - cmd: kill-datanode
-      - cmd: dfs_data_dir
       - file: bigtop_java_home
       - file: /var/run/hadoop-hdfs
       {% if pillar.hdp2.encryption.enable %}

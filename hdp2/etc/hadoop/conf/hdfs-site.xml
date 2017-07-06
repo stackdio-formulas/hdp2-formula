@@ -22,7 +22,7 @@
     </property>
     <property>
         <name>dfs.datanode.data.dir</name>
-        <value>{{ pillar.hdp2.dfs.data_dir }}</value>
+        <value>{{ pillar.hdp2.dfs.data_dirs | join(',') }}</value>
     </property>
     <!-- Leave a certain number of bytes of the disk space open -->
     <property>

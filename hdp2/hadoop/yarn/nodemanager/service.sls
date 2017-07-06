@@ -1,5 +1,3 @@
-{% set yarn_local_dir = salt['pillar.get']('hdp2:yarn:local_dirs', '/mnt/hadoop/yarn/local') %}
-{% set yarn_log_dir = salt['pillar.get']('hdp2:yarn:log_dirs', '/mnt/hadoop/yarn/logs') %}
 
 # The scripts for starting services are in different places depending on the hdp version, so set them here
 {% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
@@ -22,22 +20,40 @@ kill-nodemanager:
       - pkg: hadoop-yarn-nodemanager
 
 # make the local storage directories
-yarn_local_dirs:
-  cmd:
-    - run
-    - name: 'for dd in `echo {{ yarn_local_dir}} | sed "s/,/\n/g"`; do mkdir -p $dd && chmod -R 755 $dd && chown -R yarn:yarn `dirname $dd`; done'
-    - unless: "test -d `echo {{ yarn_local_dir }} | awk -F, '{print $1}'` && [ $(stat -c '%U' $(echo {{ yarn_local_dir }} | awk -F, '{print $1}')) == 'yarn' ]"
+{% for local_dir in pillar.hdp2.yarn.local_dirs %}
+
+yarn-local-dir-{{ local_dir }}:
+  file:
+    - directory
+    - name: {{ local_dir }}
+    - user: yarn
+    - group: yarn
+    - mode: 755
+    - makedirs: true
     - require:
       - pkg: hadoop-yarn-nodemanager
+    - require_in:
+      - cmd: hadoop-yarn-nodemanager-svc
+
+{% endfor %}
 
 # make the log storage directories
-yarn_log_dirs:
-  cmd:
-    - run
-    - name: 'for dd in `echo {{ yarn_log_dir}} | sed "s/,/\n/g"`; do mkdir -p $dd && chmod -R 755 $dd && chown -R yarn:yarn `dirname $dd`; done'
-    - unless: "test -d `echo {{ yarn_log_dir }} | awk -F, '{print $1}'` && [ $(stat -c '%U' $(echo {{ yarn_log_dir }} | awk -F, '{print $1}')) == 'yarn' ]"
+{% for log_dir in pillar.hdp2.yarn.log_dirs %}
+
+yarn-log-dir-{{ log_dir }}:
+  file:
+    - directory
+    - name: {{ log_dir }}
+    - user: yarn
+    - group: yarn
+    - mode: 755
+    - makedirs: true
     - require:
       - pkg: hadoop-yarn-nodemanager
+    - require_in:
+      - cmd: hadoop-yarn-nodemanager-svc
+
+{% endfor %}
 
 ##
 # Starts the yarn nodemanager service
@@ -55,8 +71,7 @@ hadoop-yarn-nodemanager-svc:
     - require: 
       - pkg: hadoop-yarn-nodemanager
       - pkg: hadoop-mapreduce
-      - cmd: yarn_local_dirs
-      - cmd: yarn_log_dirs
+      - file: /etc/hadoop/conf
       - file: bigtop_java_home
       - cmd: kill-nodemanager
       {% if pillar.hdp2.encryption.enable %}
@@ -65,6 +80,3 @@ hadoop-yarn-nodemanager-svc:
       {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
-    - watch:
-      - file: /etc/hadoop/conf
-

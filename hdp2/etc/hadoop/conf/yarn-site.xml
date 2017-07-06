@@ -34,13 +34,13 @@
     <property>
         <description>List of directories to store localized files in.</description>
         <name>yarn.nodemanager.local-dirs</name>
-        <value>{{ pillar.hdp2.yarn.local_dirs }}</value>
+        <value>{{ pillar.hdp2.yarn.local_dirs | join(',') }}</value>
     </property>
 
     <property>
         <description>Where to store container logs.</description>
         <name>yarn.nodemanager.log-dirs</name>
-        <value>{{ pillar.hdp2.yarn.log_dirs }}</value>
+        <value>{{ pillar.hdp2.yarn.log_dirs | join(',') }}</value>
     </property>
 
     <property>

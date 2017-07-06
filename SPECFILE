@@ -90,8 +90,10 @@ pillar_defaults:
     yarn:
       max_container_size_mb: 11264
       num_cpus: 8
-      local_dirs: /mnt/hadoop/yarn/local
-      log_dirs: /mnt/hadoop/yarn/logs
+      local_dirs:
+        - /mnt/hadoop/yarn/local
+      log_dirs:
+        - /mnt/hadoop/yarn/logs
       max_completed_applications: 5000
     io:
       sort_factor: 64
@@ -99,8 +101,9 @@ pillar_defaults:
     dfs:
       name_dir: /mnt/hadoop/hdfs/nn
       checkpoint_dir: /mnt/hadoop/hdfs/snn
-      data_dir: /mnt/hadoop/hdfs/dn
       journal_dir: /mnt/hadoop/hdfs/jn
+      data_dirs:
+        - /mnt/hadoop/hdfs/dn
       du_reserved: 5368709120  # 5GB
       permissions: true
       block_size: 268435456
