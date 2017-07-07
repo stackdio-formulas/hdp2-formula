@@ -13,9 +13,12 @@ kill-nodemanager:
     - run
     - user: yarn
     - name: {{ yarn_script_dir }}/yarn-daemon.sh stop nodemanager
+    - env:
+      - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-yarn/yarn-yarn-nodemanager.pid'
     - require:
       - pkg: hadoop-yarn-nodemanager
+      - pkg: hadoop-hdfs
 
 # make the local storage directories
 {% for local_dir in pillar.hdp2.yarn.local_dirs %}
@@ -63,10 +66,13 @@ hadoop-yarn-nodemanager-svc:
     - run
     - user: yarn
     - name: {{ yarn_script_dir }}/yarn-daemon.sh start nodemanager
+    - env:
+      - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-yarn/yarn-yarn-nodemanager.pid'
     - require: 
       - pkg: hadoop-yarn-nodemanager
       - pkg: hadoop-mapreduce
+      - pkg: hadoop-hdfs
       - file: /etc/hadoop/conf
       - file: bigtop_java_home
       - cmd: kill-nodemanager
