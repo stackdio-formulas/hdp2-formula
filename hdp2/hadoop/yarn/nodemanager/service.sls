@@ -1,7 +1,7 @@
 
 # The scripts for starting services are in different places depending on the hdp version, so set them here
 {% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
-{% set hadoop_script_dir = '/usr/hdp/current/hadoop-hdfs-datanode/../hadoop/sbin' %}
+{% set hadoop_script_dir = '/usr/hdp/current/hadoop-yarn-nodemanager/../hadoop/sbin' %}
 {% set yarn_script_dir = '/usr/hdp/current/hadoop-yarn-nodemanager/sbin' %}
 {% else %}
 {% set hadoop_script_dir = '/usr/lib/hadoop/sbin' %}
@@ -18,7 +18,6 @@ kill-nodemanager:
     - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-yarn/yarn-yarn-nodemanager.pid'
     - require:
       - pkg: hadoop-yarn-nodemanager
-      - pkg: hadoop-hdfs
 
 # make the local storage directories
 {% for local_dir in pillar.hdp2.yarn.local_dirs %}
@@ -72,7 +71,6 @@ hadoop-yarn-nodemanager-svc:
     - require: 
       - pkg: hadoop-yarn-nodemanager
       - pkg: hadoop-mapreduce
-      - pkg: hadoop-hdfs
       - file: /etc/hadoop/conf
       - file: bigtop_java_home
       - cmd: kill-nodemanager

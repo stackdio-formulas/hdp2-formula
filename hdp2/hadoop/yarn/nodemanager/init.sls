@@ -34,21 +34,6 @@ hadoop-yarn-nodemanager:
       - cmd: generate_hadoop_keytabs
       {% endif %}
 
-
-hadoop-hdfs:
-  pkg:
-    - installed
-    - require:
-      - cmd: repo_placeholder
-      {% if pillar.hdp2.security.enable %}
-      - file: krb5_conf_file
-      {% endif %}
-    - require_in:
-      - file: /etc/hadoop/conf
-      {% if pillar.hdp2.security.enable %}
-      - cmd: generate_hadoop_keytabs
-      {% endif %}
-
 ##
 # Installs the mapreduce package to make the nodemanager work
 #
