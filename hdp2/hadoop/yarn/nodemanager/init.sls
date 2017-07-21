@@ -30,6 +30,9 @@ hadoop-yarn-nodemanager:
       {% endif %}
     - require_in:
       - file: /etc/hadoop/conf
+      {% if pillar.hdp2.encryption.enable %}
+      - file: /etc/hadoop/conf/hadoop.key
+      {% endif %}
       {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
@@ -49,6 +52,9 @@ hadoop-mapreduce:
       {% endif %}
     - require_in:
       - file: /etc/hadoop/conf
+      {% if pillar.hdp2.encryption.enable %}
+      - file: /etc/hadoop/conf/hadoop.key
+      {% endif %}
       {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}

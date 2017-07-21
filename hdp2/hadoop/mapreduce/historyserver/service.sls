@@ -153,5 +153,8 @@ hadoop-mapreduce-historyserver-svc:
       - cmd: hdfs_mapreduce_log_dir
       - file: bigtop_java_home
       - cmd: kill-historyserver
+      {% if pillar.hdp2.security.enable %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
     - watch:
       - file: /etc/hadoop/conf

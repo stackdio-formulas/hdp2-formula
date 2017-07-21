@@ -1,116 +1,83 @@
-/etc/oozie/conf/ca:
-  file:
-    - recurse
-    - source: salt://hdp2/ca
-    - template: jinja
-    - user: root
-    - group: root
-    - file_mode: 644
-    - context:
-      conf_dir: /etc/oozie/conf
-
-/etc/oozie/conf/ca/private/cakey.pem:
+/etc/oozie/conf/oozie.key:
   file:
     - managed
     - user: root
     - group: root
     - mode: 400
     - makedirs: true
-    - contents_pillar: hdp2:encryption:ca_key
-    - require:
-      - file: /etc/oozie/conf/ca
+    - contents_pillar: ssl:private_key
 
-/etc/oozie/conf/ca/certs/cacert.pem:
+/etc/oozie/conf/oozie.crt:
   file:
     - managed
     - user: root
     - group: root
-    - mode: 400
-    - makedirs: true
-    - contents_pillar: hdp2:encryption:ca_cert
+    - mode: 444
+    - contents_pillar: ssl:certificate
     - require:
-      - file: /etc/oozie/conf/ca
+      - file: /etc/oozie/conf/oozie.key
 
-# Delete before re-creating to ensure idempotency
-delete-truststore:
+/etc/oozie/conf/ca.crt:
+  file:
+    - managed
+    - user: root
+    - group: root
+    - mode: 444
+    - contents_pillar: ssl:ca_certificate
+    - require:
+      - file: /etc/oozie/conf/oozie.key
+
+/etc/oozie/conf/chained.crt:
+  file:
+    - managed
+    - user: root
+    - group: root
+    - mode: 444
+    - contents_pillar: ssl:chained_certificate
+    - require:
+      - file: /etc/oozie/conf/oozie.key
+
+create-pkcs12:
   cmd:
     - run
     - user: root
-    - name: rm -f /etc/oozie/conf/oozie.truststore
+    - name: openssl pkcs12 -export -in /etc/oozie/conf/oozie.crt -certfile /etc/oozie/conf/chained.crt -inkey /etc/oozie/conf/oozie.key -out /etc/oozie/conf/oozie.pkcs12 -name {{ grains.id }} -password pass:oozie123
+    - require:
+      - file: /etc/oozie/conf/chained.crt
+      - file: /etc/oozie/conf/oozie.crt
+      - file: /etc/oozie/conf/oozie.key
 
 create-truststore:
   cmd:
     - run
     - user: root
-    - name: /usr/java/latest/bin/keytool -importcert -keystore /etc/oozie/conf/oozie.truststore -storepass oozie123 -file /etc/oozie/conf/ca/certs/cacert.pem -alias oozie-ca -noprompt
+    - name: /usr/java/latest/bin/keytool -importcert -keystore /etc/oozie/conf/oozie.truststore -storepass oozie123 -file /etc/oozie/conf/ca.crt -alias root-ca -noprompt
+    - unless: /usr/java/latest/bin/keytool -list -keystore /etc/oozie/conf/oozie.truststore -storepass oozie123 | grep root-ca
     - require:
-      - cmd: delete-truststore
-      - file: /etc/oozie/conf/ca
-      - file: /etc/oozie/conf/ca/private/cakey.pem
-      - file: /etc/oozie/conf/ca/certs/cacert.pem
-
-{% if 'hdp2.oozie.client' not in grains.roles %}
+      - file: /etc/oozie/conf/ca.crt
 
 create-keystore:
-  file:
-    - copy
-    - name: /etc/oozie/conf/oozie.keystore
-    - source: /etc/oozie/conf/oozie.truststore
-    - user: root
-    - group: root
-    - force: true
-    - mode: 600
-    - require:
-      - cmd: create-truststore
-
-create-key:
   cmd:
     - run
     - user: root
-    - name: 'printf "HDP2 {{ grains.id }}\n\nHDP2\nUS\nUS\nUS\nyes\n" | /usr/java/latest/bin/keytool -genkey -alias {{ grains.id }} -keystore /etc/oozie/conf/oozie.keystore -storepass oozie123 -keyalg RSA -keysize 2048 -validity 8000 -ext san=dns:{{ grains.fqdn }}'
+    - name: /usr/java/latest/bin/keytool -importkeystore -srckeystore /etc/oozie/conf/oozie.pkcs12 -srcstorepass oozie123 -srcstoretype pkcs12 -destkeystore /etc/oozie/conf/oozie.keystore -deststorepass oozie123
+    - unless: /usr/java/latest/bin/keytool -list -keystore /etc/oozie/conf/oozie.keystore -storepass oozie123 | grep {{ grains.id }}
     - require:
-      - file: create-keystore
+      - cmd: create-pkcs12
 
-create-csr:
+chmod-keystore:
   cmd:
     - run
     - user: root
-    - name: '/usr/java/latest/bin/keytool -certreq -alias {{ grains.id }} -keystore /etc/oozie/conf/oozie.keystore -storepass oozie123 -file /etc/oozie/conf/oozie.csr -keyalg rsa -ext san=dns:{{ grains.fqdn }}'
+    - name: chmod 400 /etc/oozie/conf/oozie.keystore
     - require:
-      - cmd: create-key
-
-sign-csr:
-  cmd:
-    - run
-    - user: root
-    - name: 'printf "{{ pillar.hdp2.encryption.ca_key_pass }}\ny\ny\n" | openssl ca -in /etc/oozie/conf/oozie.csr -notext -out /etc/oozie/conf/oozie-signed.crt -config /etc/oozie/conf/ca/conf/caconfig.cnf -extensions v3_req'
-    - require:
-      - cmd: create-csr
-
-import-signed-crt:
-  cmd:
-    - run
-    - user: root
-    - name: '/usr/java/latest/bin/keytool -importcert -keystore /etc/oozie/conf/oozie.keystore -storepass oozie123 -file /etc/oozie/conf/oozie-signed.crt -alias {{ grains.id }}'
-    - require:
-      - cmd: sign-csr
-    - require_in:
-      - cmd: remove-ca
+      - cmd: create-keystore
 
 chown-keystore:
   cmd:
     - run
     - user: root
-    - name: chown oozie:hadoop /etc/oozie/conf/oozie.keystore
+    - name: chown oozie:oozie /etc/oozie/conf/oozie.keystore
     - require:
-      - cmd: import-signed-crt
-
-{% endif %}
-
-# Don't leave the CA lying around.  Must be a cmd instead of file.absent, as it causes a name collision otherwise.
-remove-ca:
-  cmd:
-    - run
-    - name: rm -rf /etc/oozie/conf/ca
-    - require:
-      - cmd: create-truststore
+      - cmd: create-keystore
+      - cmd: chmod-keystore

@@ -33,7 +33,7 @@ hadoop-hdfs-journalnode:
     - require_in:
       - file: /etc/hadoop/conf
       {% if pillar.hdp2.encryption.enable %}
-      - file: /etc/hadoop/conf/ca
+      - file: /etc/hadoop/conf/hadoop.key
       {% endif %}
       {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
