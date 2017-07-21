@@ -46,7 +46,7 @@ oozie:
       - cmd: repo_placeholder
     {% if pillar.hdp2.encryption.enable %}
     - require_in:
-      - file: /etc/oozie/conf/oozie.key
+      - file: /etc/oozie/conf/ca.crt
     {% endif %}
 
 /etc/oozie/conf/hadoop-conf:
