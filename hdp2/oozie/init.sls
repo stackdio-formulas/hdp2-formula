@@ -41,7 +41,7 @@ oozie:
       - {{ lzo_pkg }}
       - hadoop-hdfs
       - hadoop-yarn
-      - hadoop-mappreduce
+      - hadoop-mapreduce
       # oozie scripts depend on zip AND unzip, but don't list them as deps :/
       - zip
       - unzip
