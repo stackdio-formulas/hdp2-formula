@@ -91,6 +91,7 @@ hadoop-hdfs-datanode-svc:
       - file: bigtop_java_home
       {% if pillar.hdp2.encryption.enable %}
       - cmd: chown-keystore
+      - cmd: create-truststore
       {% endif %}
       {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
@@ -119,6 +120,7 @@ hadoop-yarn-nodemanager-svc:
       - cmd: kill-nodemanager
       {% if pillar.hdp2.encryption.enable %}
       - cmd: chown-keystore
+      - cmd: create-truststore
       {% endif %}
       {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs

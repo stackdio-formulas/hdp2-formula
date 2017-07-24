@@ -91,6 +91,13 @@ hadoop-hdfs-zkfc-svc:
       - pkg: hadoop-hdfs-zkfc
       - file: bigtop_java_home
       - cmd: kill-zkfc
+      {% if pillar.hdp2.encryption.enable %}
+      - cmd: chown-keystore
+      - cmd: create-truststore
+      {% endif %}
+      {% if pillar.hdp2.security.enable %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
     - watch:
       - file: /etc/hadoop/conf
 
@@ -107,6 +114,13 @@ hadoop-hdfs-namenode-svc:
       - cmd: init_standby_namenode
       - file: bigtop_java_home
       - cmd: kill-namenode
+      {% if pillar.hdp2.encryption.enable %}
+      - cmd: chown-keystore
+      - cmd: create-truststore
+      {% endif %}
+      {% if pillar.hdp2.security.enable %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
     - watch:
       - file: /etc/hadoop/conf
 
@@ -124,5 +138,12 @@ hadoop-yarn-resourcemanager-svc:
       - cmd: hadoop-hdfs-namenode-svc
       - cmd: kill-resourcemanager
       - file: bigtop_java_home
+      {% if pillar.hdp2.encryption.enable %}
+      - cmd: chown-keystore
+      - cmd: create-truststore
+      {% endif %}
+      {% if pillar.hdp2.security.enable %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
     - watch:
       - file: /etc/hadoop/conf

@@ -124,6 +124,13 @@ hadoop-hdfs-zkfc-svc:
       - cmd: init_zkfc
       - file: bigtop_java_home
       - cmd: kill-zkfc
+      {% if pillar.hdp2.encryption.enable %}
+      - cmd: chown-keystore
+      - cmd: create-truststore
+      {% endif %}
+      {% if pillar.hdp2.security.enable %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
     - require_in:
       - cmd: hadoop-yarn-resourcemanager-svc
       - cmd: hadoop-mapreduce-historyserver-svc
@@ -148,6 +155,10 @@ hadoop-hdfs-namenode-svc:
       - cmd: kill-namenode
       {% if pillar.hdp2.encryption.enable %}
       - cmd: chown-keystore
+      - cmd: create-truststore
+      {% endif %}
+      {% if pillar.hdp2.security.enable %}
+      - cmd: generate_hadoop_keytabs
       {% endif %}
     - watch:
       - file: /etc/hadoop/conf
@@ -283,6 +294,13 @@ hadoop-yarn-resourcemanager-svc:
       - cmd: hdfs_tmp_dir
       - cmd: kill-resourcemanager
       - file: bigtop_java_home
+      {% if pillar.hdp2.encryption.enable %}
+      - cmd: chown-keystore
+      - cmd: create-truststore
+      {% endif %}
+      {% if pillar.hdp2.security.enable %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
     - watch:
       - file: /etc/hadoop/conf
 
@@ -309,5 +327,12 @@ hadoop-mapreduce-historyserver-svc:
       - cmd: hdfs_tmp_dir
       - file: bigtop_java_home
       - cmd: kill-historyserver
+      {% if pillar.hdp2.encryption.enable %}
+      - cmd: chown-keystore
+      - cmd: create-truststore
+      {% endif %}
+      {% if pillar.hdp2.security.enable %}
+      - cmd: generate_hadoop_keytabs
+      {% endif %}
     - watch:
       - file: /etc/hadoop/conf
