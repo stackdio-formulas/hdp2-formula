@@ -21,6 +21,15 @@ include:
 hadoop-mapreduce-historyserver:
   pkg:
     - installed
+    - pkgs:
+      - hadoop-mapreduce-historyserver
+      - hadoop
+      - hadoop-hdfs
+      - hadoop-libhdfs
+      - hadoop-yarn
+      - hadoop-mapreduce
+      - hadoop-client
+      - openssl
     - require:
       - cmd: repo_placeholder
       {% if pillar.hdp2.security.enable %}

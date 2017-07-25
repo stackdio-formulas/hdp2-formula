@@ -23,7 +23,14 @@ include:
 ##
 hadoop-hdfs-datanode:
   pkg:
-    - installed 
+    - installed
+    - pkgs:
+      - hadoop-hdfs-datanode
+      - hadoop
+      - hadoop-hdfs
+      - hadoop-libhdfs
+      - hadoop-client
+      - openssl
     - require:
       - cmd: repo_placeholder
       {% if pillar.hdp2.security.enable %}

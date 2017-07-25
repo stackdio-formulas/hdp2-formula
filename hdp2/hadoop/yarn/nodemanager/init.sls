@@ -22,29 +22,16 @@ include:
 ##
 hadoop-yarn-nodemanager:
   pkg:
-    - installed 
-    - require:
-      - cmd: repo_placeholder
-      {% if pillar.hdp2.security.enable %}
-      - file: krb5_conf_file
-      {% endif %}
-    - require_in:
-      - file: /etc/hadoop/conf
-      {% if pillar.hdp2.encryption.enable %}
-      - file: /etc/hadoop/conf/hadoop.key
-      {% endif %}
-      {% if pillar.hdp2.security.enable %}
-      - cmd: generate_hadoop_keytabs
-      {% endif %}
-
-##
-# Installs the mapreduce package to make the nodemanager work
-#
-# Depends on: JDK7
-##
-hadoop-mapreduce:
-  pkg:
     - installed
+    - pkgs:
+      - hadoop-yarn-nodemanager
+      - hadoop
+      - hadoop-hdfs
+      - hadoop-libhdfs
+      - hadoop-yarn
+      - hadoop-mapreduce
+      - hadoop-client
+      - openssl
     - require:
       - cmd: repo_placeholder
       {% if pillar.hdp2.security.enable %}
@@ -58,5 +45,3 @@ hadoop-mapreduce:
       {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
-
-

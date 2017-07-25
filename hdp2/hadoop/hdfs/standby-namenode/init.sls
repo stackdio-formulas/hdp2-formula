@@ -20,6 +20,13 @@ include:
 hadoop-hdfs-namenode:
   pkg:
     - installed
+    - pkgs:
+      - hadoop-hdfs-namenode
+      - hadoop
+      - hadoop-hdfs
+      - hadoop-libhdfs
+      - hadoop-client
+      - openssl
     - require:
       - cmd: repo_placeholder
       {% if pillar.hdp2.security.enable %}
@@ -37,6 +44,13 @@ hadoop-hdfs-namenode:
 hadoop-hdfs-zkfc:
   pkg:
     - installed
+    - pkgs:
+      - hadoop-hdfs-namenode
+      - hadoop
+      - hadoop-hdfs
+      - hadoop-libhdfs
+      - hadoop-client
+      - openssl
     - require:
       - cmd: repo_placeholder
       {% if pillar.hdp2.security.enable %}

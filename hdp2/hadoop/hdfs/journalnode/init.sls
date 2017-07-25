@@ -25,6 +25,13 @@ include:
 hadoop-hdfs-journalnode:
   pkg:
     - installed
+    - pkgs:
+      - hadoop-hdfs-journalnode
+      - hadoop
+      - hadoop-hdfs
+      - hadoop-libhdfs
+      - hadoop-client
+      - openssl
     - require:
       - cmd: repo_placeholder
       {% if pillar.hdp2.security.enable %}

@@ -70,7 +70,6 @@ hadoop-yarn-nodemanager-svc:
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-yarn/yarn-yarn-nodemanager.pid'
     - require: 
       - pkg: hadoop-yarn-nodemanager
-      - pkg: hadoop-mapreduce
       - file: /etc/hadoop/conf
       - file: bigtop_java_home
       - cmd: kill-nodemanager

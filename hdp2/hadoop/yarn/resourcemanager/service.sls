@@ -54,7 +54,6 @@ hadoop-yarn-resourcemanager-svc:
       - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require: 
       - pkg: hadoop-yarn-resourcemanager
-      - pkg: hadoop-mapreduce
       - cmd: kill-resourcemanager
       - file: bigtop_java_home
       {% if pillar.hdp2.encryption.enable %}
@@ -77,7 +76,6 @@ hadoop-yarn-proxyserver-svc:
       - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require:
       - pkg: hadoop-yarn-proxyserver
-      - pkg: hadoop-mapreduce
       - cmd: kill-proxyserver
       - file: bigtop_java_home
       {% if pillar.hdp2.encryption.enable %}
