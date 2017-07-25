@@ -162,7 +162,7 @@ oozie-svc:
       - cmd: prepare_server
       - cmd: populate-oozie-sharelibs
       - file: /var/log/oozie
-      {% if pillar.cdh5.encryption.enable %}
+      {% if pillar.hdp2.encryption.enable %}
       - cmd: chown-keystore
       - cmd: create-truststore
       {% endif %}
