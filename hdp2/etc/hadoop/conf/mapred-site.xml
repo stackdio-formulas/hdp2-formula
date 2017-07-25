@@ -35,6 +35,21 @@
         <value>{{ metainfo_split }}</value>
     </property>
 
+    <property>
+         <name>mapreduce.admin.user.env</name>
+         <value>LD_LIBRARY_PATH=/usr/hdp/${hdp.version}/hadoop/lib/native:/usr/hdp/${hdp.version}/hadoop/lib/native/Linux-amd64-64</value>
+    </property>
+
+    <property>
+         <name>mapreduce.application.framework.path</name>
+         <value>/hdp/apps/mapreduce/mapreduce.tar.gz#mr-framework</value>
+    </property>
+
+    <property>
+        <name>mapreduce.application.classpath</name>
+        <value>$PWD/mr-framework/hadoop/share/hadoop/mapreduce/*:$PWD/mr-framework/hadoop/share/hadoop/mapreduce/lib/*:$PWD/mr-framework/hadoop/share/hadoop/common/*:$PWD/mr-framework/hadoop/share/hadoop/common/lib/*:$PWD/mr-framework/hadoop/share/hadoop/yarn/*:$PWD/mr-framework/hadoop/share/hadoop/yarn/lib/*:$PWD/mr-framework/hadoop/share/hadoop/hdfs/*:$PWD/mr-framework/hadoop/share/hadoop/hdfs/lib/*:/usr/hdp/${hdp.version}/hadoop/lib/hadoop-lzo-0.6.0.${hdp.version}.jar:/etc/hadoop/conf/secure</value>
+    </property>
+
     <!-- Compression -->
     <property>
         <name>mapreduce.output.fileoutputformat.compress</name>
@@ -72,6 +87,12 @@
     <property>
         <name>mapreduce.reduce.shuffle.input.buffer.percent</name>
         <value>0.4</value>
+    </property>
+
+    <property>
+         <name>mapreduce.admin.map.child.java.opts</name>
+         <value>-server -Djava.net.preferIPv4Stack=true -Dhdp.version=${hdp.version}</value>
+         <final>true</final>
     </property>
 
     <!-- Resources for App Masters -->

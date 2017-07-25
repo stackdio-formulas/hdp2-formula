@@ -44,6 +44,7 @@ hdfs_kinit_for_mapred:
     - require_in:
       - cmd: hdfs_mapreduce_log_dir
       - cmd: hdfs_mapreduce_var_dir
+      - cmd: hdfs_mr_framework_dir
 
 hdfs_kdestroy_for_mapred:
   cmd:
@@ -57,7 +58,22 @@ hdfs_kdestroy_for_mapred:
       - cmd: hdfs_kinit_for_mapred
       - cmd: hdfs_mapreduce_log_dir
       - cmd: hdfs_mapreduce_var_dir
+      - cmd: hdfs_mr_framework_upload
 {% endif %}
+
+hdfs_mr_framework_dir:
+  cmd:
+    - run
+    - user: hdfs
+    - name: 'hdfs dfs -mkdir -p /hdp/apps/mapreduce'
+
+hdfs_mr_framework_upload:
+  cmd:
+    - run
+    - user: hdfs
+    - name: 'hdfs dfs -put /usr/hdp/current/hadoop-client/mapreduce.tar.gz /hdp/apps/mapreduce'
+    - require:
+      - cmd: hdfs_mr_framework_dir
 
 # HDFS MapReduce log directories
 hdfs_mapreduce_log_dir:
@@ -66,7 +82,6 @@ hdfs_mapreduce_log_dir:
     - user: hdfs
     - group: hdfs
     - name: 'hdfs dfs -mkdir -p {{ mapred_log_dir }} && hdfs dfs -chown yarn:hadoop {{ mapred_log_dir }}'
-    - unless: 'hdfs dfs -test -d {{ mapred_log_dir }}'
 
 # HDFS MapReduce var directories
 hdfs_mapreduce_var_dir:
@@ -75,7 +90,6 @@ hdfs_mapreduce_var_dir:
     - user: hdfs
     - group: hdfs
     - name: 'hdfs dfs -mkdir -p {{ mapred_staging_dir }} && hdfs dfs -chmod -R 1777 {{ mapred_staging_dir }} && hdfs dfs -chown mapred:hadoop {{ mapred_staging_dir }}'
-    - unless: 'hdfs dfs -test -d {{ mapred_staging_dir }}'
 
 {% if kms %}
 
