@@ -25,7 +25,7 @@ hadoop-yarn-dirs:
     - user: root
     - group: root
     - file_mode: 644
-    {% if not pillar.hdp2.encryption.enable %}}
+    {% if not pillar.hdp2.encryption.enable %}
     - exclude_pat: ssl-*.xml
     {% endif %}
     - require:
