@@ -44,6 +44,7 @@ hadoop-yarn-resourcemanager:
       - hadoop-yarn
       - hadoop-mapreduce
       - hadoop-client
+      - spark
       - openssl
     - require:
       - cmd: repo_placeholder

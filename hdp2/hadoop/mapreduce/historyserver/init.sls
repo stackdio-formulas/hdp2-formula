@@ -29,6 +29,7 @@ hadoop-mapreduce-historyserver:
       - hadoop-yarn
       - hadoop-mapreduce
       - hadoop-client
+      - spark
       - openssl
     - require:
       - cmd: repo_placeholder

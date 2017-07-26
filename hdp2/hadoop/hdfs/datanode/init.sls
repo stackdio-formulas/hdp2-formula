@@ -30,6 +30,7 @@ hadoop-hdfs-datanode:
       - hadoop-hdfs
       - hadoop-libhdfs
       - hadoop-client
+      - spark
       - openssl
     - require:
       - cmd: repo_placeholder

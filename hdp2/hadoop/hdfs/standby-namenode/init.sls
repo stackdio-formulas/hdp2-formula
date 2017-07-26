@@ -26,6 +26,7 @@ hadoop-hdfs-namenode:
       - hadoop-hdfs
       - hadoop-libhdfs
       - hadoop-client
+      - spark
       - openssl
     - require:
       - cmd: repo_placeholder
@@ -50,6 +51,7 @@ hadoop-hdfs-zkfc:
       - hadoop-hdfs
       - hadoop-libhdfs
       - hadoop-client
+      - spark
       - openssl
     - require:
       - cmd: repo_placeholder
