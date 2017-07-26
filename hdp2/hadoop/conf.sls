@@ -11,6 +11,17 @@
     - exclude_pat: ssl-*.xml
     {% endif %}
 
+/etc/hadoop/conf/secure/ssl-client.xml:
+  file:
+    - managed
+    - source: salt://hdp2/etc/hadoop/conf/ssl-client.xml
+    - user: root
+    - group: root
+    - mode: 644
+    - makedirs: true
+    - require:
+      - file: /etc/hadoop/conf
+
 hadoop-hdfs-dirs:
   cmd:
     - run
