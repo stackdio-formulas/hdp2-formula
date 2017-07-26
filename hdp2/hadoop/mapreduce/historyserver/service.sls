@@ -71,7 +71,7 @@ hdfs_mr_framework_upload:
   cmd:
     - run
     - user: hdfs
-    - name: 'hdfs dfs -put /usr/hdp/current/hadoop-client/mapreduce.tar.gz /hdp/apps/mapreduce'
+    - name: 'hdfs dfs -put -f /usr/hdp/current/hadoop-client/mapreduce.tar.gz /hdp/apps/mapreduce'
     - require:
       - cmd: hdfs_mr_framework_dir
 
