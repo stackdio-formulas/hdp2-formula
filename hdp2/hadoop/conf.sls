@@ -1,22 +1,4 @@
 
-hadoop-hdfs-dirs:
-  cmd:
-    - run
-    - user: root
-    - name: 'mkdir -p /var/{log,run}/hadoop-hdfs; chmod 775 /var/{log,run}/hadoop-hdfs; id -u hdfs &> /dev/null; if [ "$?" == "0" ]; then chown hdfs:hadoop /var/{log,run}/hadoop-hdfs; fi'
-
-hadoop-mapreduce-dirs:
-  cmd:
-    - run
-    - user: root
-    - name: 'mkdir -p /var/{log,run}/hadoop-mapreduce; chmod 775 /var/{log,run}/hadoop-mapreduce; id -u mapred &> /dev/null; if [ "$?" == "0" ]; then chown mapred:hadoop /var/{log,run}/hadoop-mapreduce; fi'
-
-hadoop-yarn-dirs:
-  cmd:
-    - run
-    - user: root
-    - name: 'mkdir -p /var/{log,run}/hadoop-yarn; chmod 775 /var/{log,run}/hadoop-yarn; id -u yarn &> /dev/null; if [ "$?" == "0" ]; then chown yarn:hadoop /var/{log,run}/hadoop-yarn; fi'
-
 /etc/hadoop/conf:
   file:
     - recurse
@@ -28,10 +10,30 @@ hadoop-yarn-dirs:
     {% if not pillar.hdp2.encryption.enable %}
     - exclude_pat: ssl-*.xml
     {% endif %}
+
+hadoop-hdfs-dirs:
+  cmd:
+    - run
+    - user: root
+    - name: 'mkdir -p /var/{log,run}/hadoop-hdfs; chmod 775 /var/{log,run}/hadoop-hdfs; id -u hdfs &> /dev/null; if [ "$?" == "0" ]; then chown hdfs:hadoop /var/{log,run}/hadoop-hdfs; fi'
     - require:
-      - cmd: hadoop-hdfs-dirs
-      - cmd: hadoop-mapreduce-dirs
-      - cmd: hadoop-yarn-dirs
+      - file: /etc/hadoop/conf
+
+hadoop-mapreduce-dirs:
+  cmd:
+    - run
+    - user: root
+    - name: 'mkdir -p /var/{log,run}/hadoop-mapreduce; chmod 775 /var/{log,run}/hadoop-mapreduce; id -u mapred &> /dev/null; if [ "$?" == "0" ]; then chown mapred:hadoop /var/{log,run}/hadoop-mapreduce; fi'
+    - require:
+      - file: /etc/hadoop/conf
+
+hadoop-yarn-dirs:
+  cmd:
+    - run
+    - user: root
+    - name: 'mkdir -p /var/{log,run}/hadoop-yarn; chmod 775 /var/{log,run}/hadoop-yarn; id -u yarn &> /dev/null; if [ "$?" == "0" ]; then chown yarn:hadoop /var/{log,run}/hadoop-yarn; fi'
+    - require:
+      - file: /etc/hadoop/conf
 
 /etc/hadoop/conf/container-executor.cfg:
   file:
