@@ -64,7 +64,9 @@
             /usr/hdp/current/hadoop-hdfs-client/*,
             /usr/hdp/current/hadoop-hdfs-client/lib/*,
             /usr/hdp/current/hadoop-yarn-client/*,
-            /usr/hdp/current/hadoop-yarn-client/lib/*
+            /usr/hdp/current/hadoop-yarn-client/lib/*,
+            /usr/hdp/current/hadoop-mapreduce-client/*,
+            /usr/hdp/current/hadoop-mapreduce-client/lib/*
         </value>
     </property>
     <property>
@@ -130,20 +132,6 @@
     <property>
         <name>spark.yarn.historyServer.address</name>
         <value>http://{{ spark_historyserver[0]['fqdn'] }}:18080</value>
-    </property>
-    <property>
-        <name>spark.driver.extraClassPath</name>
-        <value>
-            /usr/hdp/current/hadoop-mapreduce-client/*,
-            /usr/hdp/current/hadoop-mapreduce-client/lib/*
-        </value>
-    </property>
-    <property>
-        <name>spark.executor.extraClassPath</name>
-        <value>
-            /usr/hdp/current/hadoop-mapreduce-client/*,
-            /usr/hdp/current/hadoop-mapreduce-client/lib/*
-        </value>
     </property>
     {% endif %}
 
