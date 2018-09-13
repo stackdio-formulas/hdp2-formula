@@ -74,7 +74,7 @@ export HADOOP_CLIENT_OPTS="$HADOOP_CLIENT_OPTS -Djava.security.krb5.conf={{ pill
 #export HADOOP_SECURE_DN_USER=${HADOOP_SECURE_DN_USER}
 
 # Where log files are stored.  $HADOOP_HOME/logs by default.
-export HADOOP_LOG_DIR=/var/log/hadoop/$USER
+export HADOOP_LOG_DIR=/var/log/hadoop-$USER
 
 # Where log files are stored in the secure data environment.
 #export HADOOP_SECURE_DN_LOG_DIR=${HADOOP_LOG_DIR}/${HADOOP_HDFS_USER}
@@ -96,7 +96,7 @@ export HADOOP_LOG_DIR=/var/log/hadoop/$USER
 # NOTE: this should be set to a directory that can only be written to by
 #       the user that will run the hadoop daemons.  Otherwise there is the
 #       potential for a symlink attack.
-export HADOOP_PID_DIR=/var/run/hadoop/$USER
+export HADOOP_PID_DIR=/var/run/hadoop-$USER
 
 # A string representing this instance of hadoop. $USER by default.
 #export HADOOP_IDENT_STRING=$USER
@@ -110,8 +110,8 @@ export HADOOP_IDENT_STRING=hdfs
 # ensure this happens. Once port registration completes, privileges are dropped back from root
 # to HADOOP_PRIVILEGED_NFS_USER.
 export HADOOP_PRIVILEGED_NFS_USER=hdfs
-export HADOOP_PRIVILEGED_NFS_PID_DIR=/var/run/hadoop/hdfs
-export HADOOP_PRIVILEGED_NFS_LOG_DIR=/var/log/hadoop/hdfs
+export HADOOP_PRIVILEGED_NFS_PID_DIR=/var/run/hadoop-hdfs
+export HADOOP_PRIVILEGED_NFS_LOG_DIR=/var/log/hadoop-hdfs
 
 {% if pillar.hdp2.version.split('.')[1] | int >= 2 %}
 prefix=`find /usr/hdp -name {{ pillar.hdp2.version }}-*`
@@ -124,8 +124,8 @@ export HADOOP_MAPRED_HOME=$prefix/hadoop-mapreduce
 {%- if pillar.hdp2.security.enable %}
 {%- from 'krb5/settings.sls' import krb5 with context %}
 export HADOOP_SECURE_DN_USER=hdfs
-export HADOOP_SECURE_DN_LOG_DIR=/var/log/hadoop/hdfs
-export HADOOP_SECURE_DN_PID_DIR=/var/run/hadoop/hdfs
+export HADOOP_SECURE_DN_LOG_DIR=/var/log/hadoop-hdfs
+export HADOOP_SECURE_DN_PID_DIR=/var/run/hadoop-hdfs
 export JSVC_HOME=/usr/lib/bigtop-utils/
 {%- endif %}
 

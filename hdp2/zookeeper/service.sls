@@ -86,21 +86,18 @@ bigtop_java_home_zoo:
 zk_data_dir:
   file:
     - directory
-    - name: {{pillar.hdp2.zookeeper.data_dir}}
+    - name: {{ pillar.hdp2.zookeeper.data_dir }}
     - user: zookeeper
     - group: zookeeper
     - dir_mode: 755
     - makedirs: true
     - require:
       - pkg: zookeeper-server
-      {% if pillar.hdp2.security.enable %}
-      - cmd: generate_zookeeper_keytabs
-      {% endif %}
 
 myid:
   file:
     - managed
-    - name: '{{pillar.hdp2.zookeeper.data_dir}}/myid'
+    - name: '{{ pillar.hdp2.zookeeper.data_dir }}/myid'
     - template: jinja
     - user: zookeeper
     - group: zookeeper
@@ -114,17 +111,15 @@ zookeeper-server-svc:
     - run
     - user: zookeeper
     - name: export ZOOCFGDIR=/etc/zookeeper/conf; source /etc/zookeeper/conf/zookeeper-env.sh; {{ zk_script_dir }}/zkServer.sh start
-    - unless: '. /etc/init.d/functions && pidofproc -p {{pillar.hdp2.zookeeper.data_dir}}/zookeeper_server.pid'
+    - unless: '. /etc/init.d/functions && pidofproc -p {{ pillar.hdp2.zookeeper.data_dir }}/zookeeper_server.pid'
     - require:
         - file: /etc/zookeeper/conf/zookeeper-env.sh
         - file: /etc/zookeeper/conf/log4j.properties
         - file: /etc/zookeeper/conf/zoo.cfg
         - file: bigtop_java_home_zoo
         - cmd: kill-zookeeper
-{% if pillar.hdp2.security.enable %}
+        - file: zk_data_dir
+        - file: myid
+        {% if pillar.hdp2.security.enable %}
         - cmd: generate_zookeeper_keytabs
-{% endif %}
-    - watch:
-        - file: /etc/zookeeper/conf/zookeeper-env.sh
-        - file: /etc/zookeeper/conf/log4j.properties
-        - file: /etc/zookeeper/conf/zoo.cfg
+        {% endif %}

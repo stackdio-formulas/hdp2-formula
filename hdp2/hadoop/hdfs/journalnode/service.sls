@@ -18,7 +18,7 @@ kill-journalnode:
     - run
     - user: hdfs
     - name: {{ hadoop_script_dir }}/hadoop-daemon.sh stop journalnode
-    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-journalnode.pid'
+    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-hdfs/hadoop-hdfs-journalnode.pid'
     - env:
       - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require:
@@ -42,7 +42,7 @@ hadoop-hdfs-journalnode-svc:
     - run
     - user: hdfs
     - name: {{ hadoop_script_dir }}/hadoop-daemon.sh start journalnode
-    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop/hdfs/hadoop-hdfs-journalnode.pid'
+    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-hdfs/hadoop-hdfs-journalnode.pid'
     - env:
       - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require:
@@ -52,6 +52,9 @@ hadoop-hdfs-journalnode-svc:
       {% if pillar.hdp2.encryption.enable %}
       - cmd: chown-keystore
       - cmd: create-truststore
+      {% endif %}
+      {% if pillar.hdp2.security.enable %}
+      - cmd: generate_hadoop_keytabs
       {% endif %}
       {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
