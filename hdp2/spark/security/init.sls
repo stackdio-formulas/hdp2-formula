@@ -1,4 +1,9 @@
 
+include:
+  - krb5
+  - hdp2.security
+  - hdp2.security.stackdio_user
+
 generate_spark_keytabs:
   cmd:
     - script 
