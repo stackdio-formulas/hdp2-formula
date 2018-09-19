@@ -1,10 +1,10 @@
-{%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.standby-namenode', 'grains.items', 'compound') -%}
+{%- set standby_namenode = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.hdfs.standby-namenode', 'grains.items', 'compound') -%}
 {%- set kms = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.kms', 'grains.items', 'compound') -%}
-{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
-{%- if standby -%}
-    {%- set standby_items = standby.values()[0] -%}
+{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.hdfs.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
+{%- if standby_namenode -%}
+    {%- set standby_items = standby_namenode.values()[0] -%}
     {%- set standby_fqdn = standby_items['fqdn'] -%}
-    {%- set journal_nodes = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.journalnode', 'grains.items', 'compound').values() -%}
+    {%- set journal_nodes = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.hdfs.journalnode', 'grains.items', 'compound').values() -%}
 {%- endif -%}
 {%- if kms -%}
     {%- set kms_items = kms.values()[0] -%}
@@ -22,7 +22,7 @@
     </property>
     <property>
         <name>dfs.datanode.data.dir</name>
-        <value>{{ pillar.hdp2.dfs.data_dir }}</value>
+        <value>{{ pillar.hdp2.dfs.data_dirs | join(',') }}</value>
     </property>
     <!-- Leave a certain number of bytes of the disk space open -->
     <property>
@@ -63,7 +63,7 @@
     </property>
     <property>
         <name>dfs.domain.socket.path</name>
-        <value>/var/run/hadoop/hdfs/dn._PORT</value>
+        <value>/var/run/hadoop-hdfs/dn._PORT</value>
     </property>
     <property>
         <name>dfs.client.file-block-storage-locations.timeout.millis</name>
@@ -98,45 +98,45 @@
         <value>true</value>
     </property>
 
-    {% if standby %}
+    {% if standby_namenode %}
     <property>
         <name>dfs.nameservices</name>
-        <value>default</value>
+        <value>{{ grains.namespace }}</value>
     </property>
     <property>
         <name>dfs.ha.automatic-failover.enabled</name>
         <value>true</value>
     </property>
     <property>
-        <name>dfs.ha.namenodes.default</name>
+        <name>dfs.ha.namenodes.{{ grains.namespace }}</name>
         <value>nn1,nn2</value>
     </property>
     <property>
-        <name>dfs.namenode.rpc-address.default.nn1</name>
+        <name>dfs.namenode.rpc-address.{{ grains.namespace }}.nn1</name>
         <value>{{ namenode_fqdn }}:8020</value>
     </property>
     <property>
-        <name>dfs.namenode.rpc-address.default.nn2</name>
+        <name>dfs.namenode.rpc-address.{{ grains.namespace }}.nn2</name>
         <value>{{ standby_fqdn }}:8020</value>
     </property>
     <property>
-        <name>dfs.namenode.http-address.default.nn1</name>
+        <name>dfs.namenode.http-address.{{ grains.namespace }}.nn1</name>
         <value>{{ namenode_fqdn }}:50070</value>
     </property>
     <property>
-        <name>dfs.namenode.http-address.default.nn2</name>
+        <name>dfs.namenode.http-address.{{ grains.namespace }}.nn2</name>
         <value>{{ standby_fqdn }}:50070</value>
     </property>
     <property>
         <name>dfs.namenode.shared.edits.dir</name>
-        <value>qjournal://{% for j in journal_nodes %}{{ j['fqdn'] }}:8485{% if not loop.last %};{% endif %}{% endfor %}/default</value>
+        <value>qjournal://{% for j in journal_nodes %}{{ j['fqdn'] }}:8485{% if not loop.last %};{% endif %}{% endfor %}/{{ grains.namespace }}</value>
     </property>
     <property>
         <name>dfs.journalnode.edits.dir</name>
         <value>{{ pillar.hdp2.dfs.journal_dir }}</value>
     </property>
     <property>
-        <name>dfs.client.failover.proxy.provider.default</name>
+        <name>dfs.client.failover.proxy.provider.{{ grains.namespace }}</name>
         <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider</value>
     </property>
     <property>

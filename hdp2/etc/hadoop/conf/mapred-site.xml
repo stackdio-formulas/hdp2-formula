@@ -1,4 +1,4 @@
-{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
+{%- set historyserver_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.mapreduce.historyserver', 'grains.items', 'compound').values()[0]['fqdn'] -%}
 <?xml version="1.0"?>
 <configuration>
     <property>
@@ -6,16 +6,12 @@
         <value>yarn</value>
     </property>
     <property>
-        <name>mapreduce.cluster.temp.dir</name>
-        <value>/tmp/mapred/temp</value>
-    </property>
-    <property>
         <name>mapreduce.jobhistory.webapp.address</name>
-        <value>{{ namenode_fqdn }}:19888</value>
+        <value>{{ historyserver_fqdn }}:19888</value>
     </property>
     <property>
         <name>mapreduce.jobhistory.address</name>
-        <value>{{ namenode_fqdn }}:10020</value>
+        <value>{{ historyserver_fqdn }}:10020</value>
     </property>
     <property>
         <name>yarn.app.mapreduce.am.staging-dir</name>
@@ -33,6 +29,21 @@
     <property>
         <name>mapreduce.job.split.metainfo.maxsize</name>
         <value>{{ metainfo_split }}</value>
+    </property>
+
+    <property>
+         <name>mapreduce.admin.user.env</name>
+         <value>LD_LIBRARY_PATH=/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64</value>
+    </property>
+
+    <property>
+         <name>mapreduce.application.framework.path</name>
+         <value>/hdp/apps/mapreduce/mapreduce.tar.gz#mr-framework</value>
+    </property>
+
+    <property>
+        <name>mapreduce.application.classpath</name>
+        <value>$PWD/mr-framework/hadoop/share/hadoop/mapreduce/*:$PWD/mr-framework/hadoop/share/hadoop/mapreduce/lib/*:$PWD/mr-framework/hadoop/share/hadoop/common/*:$PWD/mr-framework/hadoop/share/hadoop/common/lib/*:$PWD/mr-framework/hadoop/share/hadoop/yarn/*:$PWD/mr-framework/hadoop/share/hadoop/yarn/lib/*:$PWD/mr-framework/hadoop/share/hadoop/hdfs/*:$PWD/mr-framework/hadoop/share/hadoop/hdfs/lib/*:/usr/hdp/current/hadoop-client/lib/hadoop-lzo-0.6.0.*.jar:/etc/hadoop/conf/secure:/usr/hdp/current/hadoop-mapreduce-client/*:/usr/hdp/current/hadoop-mapreduce-client/lib/*</value>
     </property>
 
     <!-- Compression -->
@@ -152,14 +163,18 @@
     {% endif %}
 
     {% if pillar.hdp2.encryption.enable %}
-        <property>
-            <name>mapreduce.shuffle.ssl.enabled</name>
-            <value>true</value>
-            <final>true</final>
-        </property>
-        <property>
-            <name>mapreduce.jobhistory.http.policy</name>
-            <value>HTTPS_ONLY</value>
-        </property>
+    <property>
+        <name>mapreduce.jobhistory.webapp.https.address</name>
+        <value>{{ historyserver_fqdn }}:19890</value>
+    </property>
+    <property>
+        <name>mapreduce.shuffle.ssl.enabled</name>
+        <value>true</value>
+        <final>true</final>
+    </property>
+    <property>
+        <name>mapreduce.jobhistory.http.policy</name>
+        <value>HTTPS_ONLY</value>
+    </property>
     {% endif %}
 </configuration>

@@ -1,10 +1,14 @@
-{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
-{%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.standby-namenode', 'grains.items', 'compound') -%}
+{%- set namenode_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.hdfs.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
+{%- set resourcemanager_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.yarn.resourcemanager', 'grains.items', 'compound').values()[0]['fqdn'] -%}
+{%- set historyserver_fqdn = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.mapreduce.historyserver', 'grains.items', 'compound').values()[0]['fqdn'] -%}
+{%- set standby_namenode = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.hdfs.standby-namenode', 'grains.items', 'compound') -%}
+{%- set standby_resourcemanager = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.yarn.standby-resourcemanager', 'grains.items', 'compound') -%}
 {%- set zookeepers = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.zookeeper', 'grains.items', 'compound').values() -%}
-{%- if standby -%}
-    {%- set standby_items = standby.values()[0] -%}
-    {%- set standby_fqdn = standby_items['fqdn'] -%}
+{%- if standby_resourcemanager -%}
+    {%- set standby_rm_items = standby_resourcemanager.values()[0] -%}
+    {%- set standby_rm_fqdn = standby_rm_items['fqdn'] -%}
 {%- endif -%}
+{%- set spark_historyserver = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.spark.historyserver', 'grains.items', 'compound').values() -%}
 <?xml version="1.0"?>
 <configuration>
     <property>
@@ -23,15 +27,20 @@
     </property>
 
     <property>
+        <name>yarn.log.server.url</name>
+        <value>http{% if pillar.hdp2.encryption.enable %}s{% endif %}://{{ historyserver_fqdn }}:{% if pillar.hdp2.encryption.enable %}19890{% else %}19888{% endif %}/jobhistory/logs</value>
+    </property>
+
+    <property>
         <description>List of directories to store localized files in.</description>
         <name>yarn.nodemanager.local-dirs</name>
-        <value>{{ pillar.hdp2.yarn.local_dirs }}</value>
+        <value>{{ pillar.hdp2.yarn.local_dirs | join(',') }}</value>
     </property>
 
     <property>
         <description>Where to store container logs.</description>
         <name>yarn.nodemanager.log-dirs</name>
-        <value>{{ pillar.hdp2.yarn.log_dirs }}</value>
+        <value>{{ pillar.hdp2.yarn.log_dirs | join(',') }}</value>
     </property>
 
     <property>
@@ -42,7 +51,7 @@
     <property>
         <description>Where to aggregate logs to.</description>
         <name>yarn.nodemanager.remote-app-log-dir</name>
-        <value>/var/log/hadoop/yarn/apps</value>
+        <value>/var/log/hadoop-yarn/apps</value>
     </property>
 
     <property>
@@ -50,10 +59,12 @@
         <name>yarn.application.classpath</name>
         <value>
             $HADOOP_CONF_DIR,
-            $HADOOP_COMMON_HOME/*,$HADOOP_COMMON_HOME/lib/*,
-            $HADOOP_HDFS_HOME/*,$HADOOP_HDFS_HOME/lib/*,
-            $HADOOP_MAPRED_HOME/*,$HADOOP_MAPRED_HOME/lib/*,
-            $HADOOP_YARN_HOME/*,$HADOOP_YARN_HOME/lib/*
+            /usr/hdp/current/hadoop-client/*,
+            /usr/hdp/current/hadoop-client/lib/*,
+            /usr/hdp/current/hadoop-hdfs-client/*,
+            /usr/hdp/current/hadoop-hdfs-client/lib/*,
+            /usr/hdp/current/hadoop-yarn-client/*,
+            /usr/hdp/current/hadoop-yarn-client/lib/*
         </value>
     </property>
     <property>
@@ -101,7 +112,28 @@
         <value>{{ pillar.hdp2.yarn.num_cpus }}</value>
     </property>
 
-    {% if standby %}
+    {% if spark_historyserver %}
+    {% if standby_namenode %}
+        {% set hdfs_host = grains.namespace %}
+    {% else %}
+        {% set hdfs_host = namenode_fqdn ~ ':8020' %}
+    {% endif %}
+    <!-- Add these spark properties here so they get picked up by synthesys jobs -->
+    <property>
+        <name>spark.eventLog.enabled</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>spark.eventLog.dir</name>
+        <value>hdfs://{{ hdfs_host }}/user/spark/applicationHistory</value>
+    </property>
+    <property>
+        <name>spark.yarn.historyServer.address</name>
+        <value>http://{{ spark_historyserver[0]['fqdn'] }}:18080</value>
+    </property>
+    {% endif %}
+
+    {% if standby_resourcemanager %}
     <property>
         <name>yarn.resourcemanager.ha.enabled</name>
         <value>true</value>
@@ -110,12 +142,12 @@
         <name>yarn.resourcemanager.ha.rm-ids</name>
         <value>rm1,rm2</value>
     </property>
-    {% if 'hdp2.hadoop.namenode' in grains.roles %}
+    {% if 'hdp2.hadoop.yarn.resourcemanager' in grains.roles %}
     <property>
         <name>yarn.resourcemanager.ha.id</name>
         <value>rm1</value>
     </property>
-    {% elif 'hdp2.hadoop.standby-namenode' in grains.roles %}
+    {% elif 'hdp2.hadoop.yarn.standby-resourcemanager' in grains.roles %}
     <property>
         <name>yarn.resourcemanager.ha.id</name>
         <value>rm2</value>
@@ -123,11 +155,15 @@
     {% endif %}
     <property>
         <name>yarn.resourcemanager.hostname.rm1</name>
-        <value>{{ namenode_fqdn }}</value>
+        <value>{{ resourcemanager_fqdn }}</value>
     </property>
     <property>
         <name>yarn.resourcemanager.hostname.rm2</name>
-        <value>{{ standby_fqdn }}</value>
+        <value>{{ standby_rm_fqdn }}</value>
+    </property>
+    <property>
+        <name>yarn.web-proxy.address</name>
+        <value>{{ resourcemanager_fqdn }}:8089</value>
     </property>
     <property>
         <name>yarn.resourcemanager.ha.automatic-failover.enabled</name>
@@ -139,7 +175,7 @@
     </property>
     <property>
         <name>yarn.resourcemanager.cluster-id</name>
-        <value>default</value>
+        <value>{{ grains.namespace }}</value>
     </property>
     <property>
         <name>yarn.resourcemanager.recovery.enabled</name>
@@ -168,7 +204,7 @@
     {% else %}
     <property>
         <name>yarn.resourcemanager.hostname</name>
-        <value>{{ namenode_fqdn }}</value>
+        <value>{{ resourcemanager_fqdn }}</value>
     </property>
     {% endif %}
 

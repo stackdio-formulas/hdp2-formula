@@ -3,14 +3,12 @@
 #
 include:
   - hdp2.repo
-{% if salt['pillar.get']('hdp2:zookeeper:start_service', True) %}
+  {% if salt['pillar.get']('hdp2:zookeeper:start_service', True) %}
   - hdp2.zookeeper.service
-{% endif %}
-{% if pillar.hdp2.security.enable %}
-  - krb5
-  - hdp2.security
+  {% endif %}
+  {% if pillar.hdp2.security.enable %}
   - hdp2.zookeeper.security
-{% endif %}
+  {% endif %}
 
 zookeeper:
   pkg:
