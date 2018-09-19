@@ -12,16 +12,17 @@ include:
   {% if pillar.hdp2.security.enable %}
   - hdp2.hbase.security
   {% endif %}
- hbase:
-  pkg:
-    - installed
-    - require:
-      - module: hdp2_refresh_db
-      {% if pillar.hdp2.security.enable %}
-      - file: krb5_conf_file
-      {% endif %}
-    - require_in:
-      - file: {{ pillar.hdp2.hbase.log_dir }}
-      - file: {{ pillar.hdp2.hbase.tmp_dir }}
-      - file: /etc/hbase/conf/hbase-env.sh
-      - file: /etc/hbase/conf/hbase-site.xml
+
+hbase:
+pkg:
+  - installed
+  - require:
+    - module: hdp2_refresh_db
+    {% if pillar.hdp2.security.enable %}
+    - file: krb5_conf_file
+    {% endif %}
+  - require_in:
+    - file: {{ pillar.hdp2.hbase.log_dir }}
+    - file: {{ pillar.hdp2.hbase.tmp_dir }}
+    - file: /etc/hbase/conf/hbase-env.sh
+    - file: /etc/hbase/conf/hbase-site.xml
