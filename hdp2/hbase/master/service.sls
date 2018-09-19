@@ -35,7 +35,7 @@ kill-thrift:
 # NOTE this means that any 'hdfs dfs' commands will need
 # to require this state to be sure we have a krb ticket
 {% if pillar.hdp2.security.enable %}
-hdfs_kinit:
+hdfs-kinit:
   cmd:
     - run
     - name: 'kinit -kt /etc/hadoop/conf/hdfs.keytab hdfs/{{ grains.fqdn }}'
@@ -44,9 +44,23 @@ hdfs_kinit:
     - env:
       - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
     - require:
-      - cmd: generate_hbase_keytabs
-      
-hbase_kinit:
+      - cmd: hbase-kinit
+
+hdfs-kdestroy:
+  cmd:
+    - run
+    - name: 'kdestroy'
+    - user: hdfs
+    - group: hdfs
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
+    - require:
+      - cmd: hdfs-kinit
+      - cmd: hbase-init
+    - require_in:
+      - service: hbase-master-svc
+
+hbase-kinit:
   cmd:
     - run
     - name: 'kinit -kt /etc/hbase/conf/hbase.keytab hbase/{{ grains.fqdn }}'
@@ -55,6 +69,18 @@ hbase_kinit:
       - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
     - require:
       - cmd: generate_hbase_keytabs
+
+hbase-kdestroy:
+  cmd:
+    - run
+    - name: 'kdestroy'
+    - user: hbase
+    - env:
+      - KRB5_CONFIG: '{{ pillar.krb5.conf_file }}'
+    - require:
+      - cmd: hbase-kinit
+    - require_in:
+      - service: hbase-master-svc
 {% endif %}
 
 hbase-init:
@@ -66,9 +92,7 @@ hbase-init:
     - unless: 'hdfs dfs -test -d /hbase'
     - require:
       - pkg: hadoop-client
-      {% if pillar.hdp2.security.enable %}
-      - cmd: hdfs_kinit
-      {% endif %}
+      - pkg: hbase-master
 
 {% if kms %}
 create_hbase_key:
@@ -79,7 +103,9 @@ create_hbase_key:
     - unless: 'hadoop key list | grep hbase'
     {% if pillar.hdp2.security.enable %}
     - require:
-      - cmd: hbase_kinit
+      - cmd: hbase-kinit
+    - require_in:
+      - cmd: hbase-kdestroy
     {% endif %}
 
 create_hbase_zone:
@@ -101,14 +127,18 @@ hbase-master-svc:
     - user: hbase
     - name: {{ hbase_script_dir }}/hbase-daemon.sh start master && sleep 25
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hbase/hbase-hbase-master.pid'
-    - require: 
+    - require:
       - pkg: hbase-master
       - cmd: hbase-init
       - cmd: kill-master
-      - file: /etc/hbase/conf/hbase-site.xml
-      - file: /etc/hbase/conf/hbase-env.sh
       - file: {{ pillar.hdp2.hbase.tmp_dir }}
       - file: {{ pillar.hdp2.hbase.log_dir }}
+      {% if pillar.hdp2.encryption.enable %}
+      - cmd: chown-keystore
+      - cmd: create-truststore
+      - cmd: chown-hbase-keystore
+      - cmd: create-hbase-truststore
+      {% endif %}
       {% if pillar.hdp2.security.enable %}
       - cmd: generate_hbase_keytabs
       {% endif %}
@@ -125,7 +155,12 @@ hbase-thrift-svc:
     - require:
       - cmd: hbase-master-svc
       - cmd: kill-thrift
+      {% if pillar.hdp2.encryption.enable %}
+      - cmd: chown-keystore
+      - cmd: create-truststore
+      - cmd: chown-hbase-keystore
+      - cmd: create-hbase-truststore
+      {% endif %}
     - watch:
       - file: /etc/hbase/conf/hbase-site.xml
       - file: /etc/hbase/conf/hbase-env.sh
-

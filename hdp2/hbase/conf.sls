@@ -20,7 +20,7 @@
   file.directory:
     - user: hbase
     - group: hbase
-    - dir_mode: 755
+    - dir_mode: 1777
     - makedirs: True
 
 {{ pillar.hdp2.hbase.log_dir }}:
