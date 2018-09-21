@@ -16,7 +16,6 @@ include:
 hbase:
   pkg.installed:
     - require:
-      - module: hdp2_refresh_db
       {% if pillar.hdp2.security.enable %}
       - file: krb5_conf_file
       {% endif %}
