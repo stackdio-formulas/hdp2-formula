@@ -18,8 +18,7 @@ include:
 {% endif %}
 
 hbase-regionserver:
-  pkg:
-    - installed
+  pkg.installed:
     - require:
       - cmd: repo_placeholder
 {% if pillar.hdp2.security.enable %}

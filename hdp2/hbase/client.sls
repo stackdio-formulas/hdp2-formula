@@ -14,8 +14,7 @@ include:
   {% endif %}
 
 hbase:
-pkg:
-  - installed
+pkg.installed:
   - require:
     - module: hdp2_refresh_db
     {% if pillar.hdp2.security.enable %}

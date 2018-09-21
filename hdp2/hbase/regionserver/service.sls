@@ -9,8 +9,7 @@
 #
 
 kill-regionserver:
-  cmd:
-    - run
+  cmd.run:
     - user: hbase
     - name: {{ hbase_script_dir }}/hbase-daemon.sh stop regionserver
     - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hbase/hbase-hbase-regionserver.pid'
@@ -18,8 +17,7 @@ kill-regionserver:
       - pkg: hbase-regionserver
 
 hbase-regionserver-svc:
-  cmd:
-    - run
+  cmd.run:
     - user: hbase
     - name: {{ hbase_script_dir }}/hbase-daemon.sh start regionserver
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hbase/hbase-hbase-regionserver.pid'

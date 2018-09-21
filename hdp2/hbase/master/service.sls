@@ -12,8 +12,7 @@
 #
 
 kill-master:
-  cmd:
-    - run
+  cmd.run:
     - user: hbase
     - name: {{ hbase_script_dir }}/hbase-daemon.sh stop master
     - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hbase/hbase-hbase-master.pid'
@@ -21,8 +20,7 @@ kill-master:
       - pkg: hbase-master
 
 kill-thrift:
-  cmd:
-    - run
+  cmd.run:
     - user: hbase
     - name: {{ hbase_script_dir }}/hbase-daemon.sh stop thrift
     - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hbase/hbase-hbase-thrift.pid'
@@ -36,8 +34,7 @@ kill-thrift:
 # to require this state to be sure we have a krb ticket
 {% if pillar.hdp2.security.enable %}
 hdfs-kinit:
-  cmd:
-    - run
+  cmd.run:
     - name: 'kinit -kt /etc/hadoop/conf/hdfs.keytab hdfs/{{ grains.fqdn }}'
     - user: hdfs
     - group: hdfs
@@ -47,8 +44,7 @@ hdfs-kinit:
       - cmd: hbase-kinit
 
 hdfs-kdestroy:
-  cmd:
-    - run
+  cmd.run:
     - name: 'kdestroy'
     - user: hdfs
     - group: hdfs
@@ -61,8 +57,7 @@ hdfs-kdestroy:
       - service: hbase-master-svc
 
 hbase-kinit:
-  cmd:
-    - run
+  cmd.run:
     - name: 'kinit -kt /etc/hbase/conf/hbase.keytab hbase/{{ grains.fqdn }}'
     - user: hbase
     - env:
@@ -71,8 +66,7 @@ hbase-kinit:
       - cmd: generate_hbase_keytabs
 
 hbase-kdestroy:
-  cmd:
-    - run
+  cmd.run:
     - name: 'kdestroy'
     - user: hbase
     - env:
@@ -84,8 +78,7 @@ hbase-kdestroy:
 {% endif %}
 
 hbase-init:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - group: hdfs
     - name: 'hdfs dfs -mkdir /hbase && hdfs dfs -chown hbase:hbase /hbase'
@@ -96,8 +89,7 @@ hbase-init:
 
 {% if kms %}
 create_hbase_key:
-  cmd:
-    - run
+  cmd.run:
     - user: hbase
     - name: 'hadoop key create hbase'
     - unless: 'hadoop key list | grep hbase'
@@ -109,8 +101,7 @@ create_hbase_key:
     {% endif %}
 
 create_hbase_zone:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - name: 'hdfs crypto -createZone -keyName hbase -path /hbase'
     - unless: 'hdfs crypto -listZones | grep /hbase'
@@ -122,8 +113,7 @@ create_hbase_zone:
 {% endif %}
 
 hbase-master-svc:
-  cmd:
-    - run
+  cmd.run:
     - user: hbase
     - name: {{ hbase_script_dir }}/hbase-daemon.sh start master && sleep 25
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hbase/hbase-hbase-master.pid'
@@ -147,8 +137,7 @@ hbase-master-svc:
       - file: /etc/hbase/conf/hbase-env.sh
 
 hbase-thrift-svc:
-  cmd:
-    - run
+  cmd.run:
     - user: hbase
     - name: {{ hbase_script_dir }}/hbase-daemon.sh start thrift
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hbase/hbase-hbase-thrift.pid'
