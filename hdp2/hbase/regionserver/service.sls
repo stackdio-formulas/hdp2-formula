@@ -30,8 +30,8 @@ hbase-regionserver-svc:
       - cmd: generate_hbase_keytabs
 {% endif %}
 {% if pillar.hdp2.encryption.enable %}
-- cmd: chown-hbase-keystore
-- cmd: create-hbase-truststore
+      - cmd: chown-hbase-keystore
+      - cmd: create-hbase-truststore
 {% endif %}
     - watch:
       - file: /etc/hbase/conf/hbase-site.xml
