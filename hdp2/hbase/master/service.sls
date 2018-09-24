@@ -81,8 +81,7 @@ hbase-init:
   cmd.run:
     - user: hdfs
     - group: hdfs
-    - name: 'hdfs dfs -mkdir /hbase && hdfs dfs -chown hbase:hbase /hbase'
-    - unless: 'hdfs dfs -test -d /hbase'
+    - name: 'hdfs dfs -mkdir -p /hbase && hdfs dfs -chown hbase:hbase /hbase'
     - require:
       - pkg: hadoop-client
       - pkg: hbase-master
