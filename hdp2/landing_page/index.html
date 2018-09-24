@@ -7,7 +7,7 @@
 {%- set hue = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hue', 'grains.items', 'compound').values() -%}
 {%- set oozie = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.oozie', 'grains.items', 'compound').values() -%}
 {%- set spark = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.spark.historyserver', 'grains.items', 'compound').values() -%}
-{%- set hbase_master = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hbase.master', 'grains.items', 'compound').values() -%}
+{%- set hbase_masters = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hbase.master', 'grains.items', 'compound').values() -%}
 {%- set https = pillar.hdp2.encryption.enable -%}
 <!DOCTYPE html>
 <html lang="en">
@@ -38,12 +38,12 @@ a:hover {
   /* Negative indent footer by its height */
   margin: 0 auto -60px;
   /* Pad bottom by footer height */
-  padding: 0 0 60px; 
+  padding: 0 0 60px;
   -webkit-box-shadow: inset 0 0 100px rgba(95,163,62,.95);
           box-shadow: inset 0 0 100px rgba(95,163,62,.95);
 }
 
-/* Set the fixed height of the footer here */ 
+/* Set the fixed height of the footer here */
 #footer {
   height: 60px;
   background-color: #5fa33e;
@@ -53,10 +53,10 @@ a:hover {
 .container {
   width: auto;
   max-width: 680px;
-  padding: 0 15px; 
+  padding: 0 15px;
 }
 .container .credit {
-  margin: 20px 0; 
+  margin: 20px 0;
 }
 </style>
 </head>
@@ -112,12 +112,15 @@ a:hover {
             </div> <!-- col-md-6 -->
 
             <div class="col-md-6">
-                {% if hbase_master %}
+                {% if hbase_masters %}
+                <h4>HBase</h4>
                 <h4>HBase</h4>
                 <ul>
-                    <li><a href='http://{{ hbase_master[0]["fqdn"] }}:60010/'>HBase Master</a></li>
+                    {% for hbase_master in hbase_masters %}
+                    <li><a href='http{% if https %}s{% endif %}://{{ hbase_master["fqdn"] }}:60010/'>HBase Master</a></li>
+                    {% endfor %}
                     {% if 'hdp2.hbase.regionserver' in grains['roles'] %}
-                    <li><a href='http://{{ fqdn }}:60030/'>HBase RegionServer</a></li>
+                    <li><a href='http{% if https %}s{% endif %}://{{ fqdn }}:60030/'>HBase RegionServer</a></li>
                     {% endif %}
                 </ul>
                 {% endif %}
@@ -129,9 +132,9 @@ a:hover {
 <div id="footer">
     <div class="container">
         <p class="credit"><small>
-            This stack provisioned with 
-            <a href="http://stackd.io">stackd.io</a> from 
-            <a href="http://www.digitalreasoning.com">Digital Reasoning</a> // 
+            This stack provisioned with
+            <a href="http://stackd.io">stackd.io</a> from
+            <a href="http://www.digitalreasoning.com">Digital Reasoning</a> //
             <a href="http://www.digitalreasoning.com">www.digitalreasoning.com</a>
         </small></p>
     </div>

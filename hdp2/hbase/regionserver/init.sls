@@ -1,4 +1,4 @@
-# 
+#
 # Install the HBase regionserver package
 #
 include:
@@ -13,10 +13,12 @@ include:
   - hdp2.security
   - hdp2.hbase.security
 {% endif %}
+{% if pillar.hdp2.encryption.enable %}
+  - hdp2.hbase.encryption
+{% endif %}
 
 hbase-regionserver:
-  pkg:
-    - installed 
+  pkg.installed:
     - require:
       - cmd: repo_placeholder
 {% if pillar.hdp2.security.enable %}

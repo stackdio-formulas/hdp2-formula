@@ -1,11 +1,10 @@
 <?xml version="1.0"?>
-{%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.hdfs.standby-namenode', 'grains.items', 'compound') -%}
-{% set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.hdfs.namenode', 'grains.items', 'compound').values()[0]['fqdn'] %}
-{% set master_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hbase.master', 'grains.items', 'compound').values()[0]['fqdn'] %}
+{%- set standby = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.standby-namenode', 'grains.items', 'compound') -%}
+{%- set nn_host = salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.hadoop.hdfs.namenode', 'grains.items', 'compound').values()[0]['fqdn'] -%}
 <configuration>
     <property>
         <name>hbase.zookeeper.quorum</name>
-        <value>{% if pillar.hdp2.hbase.manage_zk %}{{ master_host }}{% else %}{% for host, items in salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.zookeeper', 'grains.items', 'compound').items() %}{{ items['fqdn'] }}{% if not loop.last %},{% endif %}{% endfor %}{% endif %}</value>
+        <value>{% for host, items in salt['mine.get']('G@stack_id:' ~ grains.stack_id ~ ' and G@roles:hdp2.zookeeper', 'grains.items', 'compound').items() %}{{ items['fqdn'] }}{% if not loop.last %},{% endif %}{% endfor %}</value>
     </property>
     <property>
         <name>hbase.rootdir</name>
@@ -41,14 +40,9 @@
         <value>300</value>
     </property>
     <property>
-      <!-- set to 100G to discourage splitting -->
-        <name>hbase.hregion.max.filesize</name>
-        <value>107374182400</value>
+        <name>hbase.client.keyvalue.maxsize</name>
+        <value>11534336</value>
     </property>
-    <!--property>
-        <name>hbase.hstore.compaction.max</name>
-        <value>5</value>
-    </property-->
     <property>
       <!-- tell the master to perform fresh assignments on startup, this avoids problems with ephemeral IP addresses in EC2 -->
         <name>hbase.master.startup.retainassign</name>
@@ -63,31 +57,43 @@
         <name>hbase.bulkload.staging.dir</name>
         <value>/hbase/staging</value>
     </property>
-{%- if pillar.hdp2.security.enable %}
-{%- from 'krb5/settings.sls' import krb5 with context %}
+    <property>
+      <name>hfile.format.version</name>
+      <value>3</value>
+    </property>
+    {% if pillar.hdp2.security.enable %}
+    {% from 'krb5/settings.sls' import krb5 with context %}
     <property>
         <name>hbase.security.authentication</name>
         <value>kerberos</value>
     </property>
     <property>
+      <name>hbase.security.authorization</name>
+      <value>true</value>
+    </property>
+    <property>
+        <name>hbase.security.exec.permission.checks</name>
+        <value>true</value>
+    </property>
+    <property>
         <name>hbase.rpc.engine</name>
         <value>org.apache.hadoop.hbase.ipc.SecureRpcEngine</value>
     </property>
-    <property> 
-        <name>hbase.regionserver.kerberos.principal</name> 
-        <value>hbase/_HOST@{{ krb5.realm }}</value> 
-    </property> 
-    <property> 
-        <name>hbase.regionserver.keytab.file</name> 
-        <value>/etc/hbase/conf/hbase.keytab</value> 
+    <property>
+        <name>hbase.regionserver.kerberos.principal</name>
+        <value>hbase/_HOST@{{ krb5.realm }}</value>
     </property>
-    <property> 
-        <name>hbase.master.kerberos.principal</name> 
-        <value>hbase/_HOST@{{ krb5.realm }}</value> 
-    </property> 
-    <property> 
-        <name>hbase.master.keytab.file</name> 
-        <value>/etc/hbase/conf/hbase.keytab</value> 
+    <property>
+        <name>hbase.regionserver.keytab.file</name>
+        <value>/etc/hbase/conf/hbase.keytab</value>
+    </property>
+    <property>
+        <name>hbase.master.kerberos.principal</name>
+        <value>hbase/_HOST@{{ krb5.realm }}</value>
+    </property>
+    <property>
+        <name>hbase.master.keytab.file</name>
+        <value>/etc/hbase/conf/hbase.keytab</value>
     </property>
     <property>
         <name>hbase.security.authorization</name>
@@ -109,5 +115,48 @@
         <name>hbase.thrift.kerberos.principal</name>
         <value>hbase/_HOST@{{ krb5.realm }}</value>
     </property>
-{%- endif %}
+    <property>
+      <name>hbase.rpc.protection</name>
+      <value>privacy</value>
+    </property>
+    <property>
+        <name>hbase.rpc.protection</name>
+        <value>privacy</value>
+    </property>
+    <property>
+        <name>hbase.thrift.security.qop</name>
+        <value>auth</value>
+    </property>
+    <property>
+        <name>hbase.rest.authentication.kerberos.principal</name>
+        <value>HTTP/_HOST@{{ krb5.realm }}</value>
+    </property>
+    <property>
+        <name>hbase.rest.authentication.kerberos.keytab</name>
+        <value>/etc/hbase/conf/hbase.keytab</value>
+    </property>
+
+{% endif %}
+{% if pillar.hdp2.encryption.enable %}
+    <property>
+        <name>hbase.ssl.enabled</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>hbase.thrift.ssl.enabled</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>hbase.thrift.ssl.keystore.store</name>
+        <value>/etc/hbase/conf/hbase.keystore</value>
+    </property>
+    <property>
+        <name>hbase.thrift.ssl.keystore.password</name>
+        <value>hbase123</value>
+    </property>
+    <property>
+        <name>hbase.thrift.ssl.keystore.keypassword</name>
+        <value>hbase123</value>
+    </property>
+{% endif %}
 </configuration>

@@ -1,28 +1,20 @@
 #
-# Install the HBase master package
+# Install the HBase client package
 #
 include:
   - hdp2.repo
-  - hdp2.landing_page
   - hdp2.hadoop.client
   - hdp2.hbase.conf
-  {% if salt['pillar.get']('hdp2:hbase:start_service', True) %}
-  - hdp2.hbase.master.service
-  {% endif %}
-  {% if pillar.hdp2.security.enable %}
-  - krb5
-  - hdp2.security
-  - hdp2.hbase.security
-  {% endif %}
+  - hdp2.landing_page
   {% if pillar.hdp2.encryption.enable %}
   - hdp2.hbase.encryption
   {% endif %}
+  {% if pillar.hdp2.security.enable %}
+  - hdp2.hbase.security
+  {% endif %}
 
-hbase-master:
+hbase:
   pkg.installed:
-    - pkgs:
-      - hbase-master
-      - hbase-thrift
     - require:
       - cmd: repo_placeholder
       {% if pillar.hdp2.security.enable %}

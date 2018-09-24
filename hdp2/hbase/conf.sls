@@ -1,6 +1,5 @@
 /etc/hbase/conf/hbase-site.xml:
-  file:
-    - managed
+  file.managed:
     - source: salt://hdp2/etc/hbase/conf/hbase-site.xml
     - user: root
     - group: root
@@ -8,8 +7,7 @@
     - template: jinja
 
 /etc/hbase/conf/hbase-env.sh:
-  file:
-    - managed
+  file.managed:
     - source: salt://hdp2/etc/hbase/conf/hbase-env.sh
     - user: root
     - group: root
@@ -20,7 +18,7 @@
   file.directory:
     - user: hbase
     - group: hbase
-    - dir_mode: 755
+    - dir_mode: 1777
     - makedirs: True
 
 {{ pillar.hdp2.hbase.log_dir }}:
@@ -31,8 +29,7 @@
     - makedirs: True
 
 /etc/hbase/conf/log4j.properties:
-  file:
-    - replace
+  file.replace:
     - pattern: 'maxbackupindex=20'
     - repl: 'maxbackupindex={{ pillar.hdp2.max_log_index }}'
     - require:
@@ -43,8 +40,7 @@
 
 {% if pillar.hdp2.security.enable %}
 /etc/hbase/conf/zk-jaas.conf:
-  file:
-    - managed
+  file.managed:
     - source: salt://hdp2/etc/hbase/conf/zk-jaas.conf
     - user: root
     - group: root

@@ -9,8 +9,7 @@
 #
 
 kill-regionserver:
-  cmd:
-    - run
+  cmd.run:
     - user: hbase
     - name: {{ hbase_script_dir }}/hbase-daemon.sh stop regionserver
     - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hbase/hbase-hbase-regionserver.pid'
@@ -18,20 +17,21 @@ kill-regionserver:
       - pkg: hbase-regionserver
 
 hbase-regionserver-svc:
-  cmd:
-    - run
+  cmd.run:
     - user: hbase
     - name: {{ hbase_script_dir }}/hbase-daemon.sh start regionserver
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hbase/hbase-hbase-regionserver.pid'
-    - require: 
+    - require:
       - pkg: hbase-regionserver
       - cmd: kill-regionserver
-      - file: /etc/hbase/conf/hbase-site.xml
-      - file: /etc/hbase/conf/hbase-env.sh
       - file: {{ pillar.hdp2.hbase.tmp_dir }}
       - file: {{ pillar.hdp2.hbase.log_dir }}
 {% if pillar.hdp2.security.enable %}
       - cmd: generate_hbase_keytabs
+{% endif %}
+{% if pillar.hdp2.encryption.enable %}
+      - cmd: chown-hbase-keystore
+      - cmd: create-hbase-truststore
 {% endif %}
     - watch:
       - file: /etc/hbase/conf/hbase-site.xml
