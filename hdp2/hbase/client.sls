@@ -16,6 +16,7 @@ include:
 hbase:
   pkg.installed:
     - require:
+      - cmd: repo_placeholder
       {% if pillar.hdp2.security.enable %}
       - file: krb5_conf_file
       {% endif %}
