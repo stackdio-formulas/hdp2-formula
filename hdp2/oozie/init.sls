@@ -9,7 +9,7 @@
 {% set lzo_pkg = 'hadoop-lzo' %}
 {% endif %}
 
-# 
+#
 # Install the Oozie package
 #
 
@@ -37,7 +37,6 @@ oozie:
     - pkgs:
       - oozie
       - oozie-client
-      - extjs
       - {{ lzo_pkg }}
       - hadoop-hdfs
       - hadoop-yarn
@@ -95,12 +94,18 @@ oozie:
     - require:
       - pkg: oozie
 
+download_extjs:
+  cmd.run:
+    - name: curl -o /tmp/ext-2.2.zip http://archive.cloudera.com/gplextras/misc/ext-2.2.zip
+    - user: root
+
 extjs:
   cmd:
     - run
-    - name: 'cp /usr/share/HDP-oozie/ext-2.2.zip {{ oozie_home }}/libext/'
+    - name: 'cp /tmp/ext-2.2.zip {{ oozie_home }}/libext/'
     - user: root
     - require:
+      - cmd: download_extjs
       - pkg: oozie
       - cmd: hadoop-lzo
 
