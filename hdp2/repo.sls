@@ -38,6 +38,13 @@ hortonworks_repo_try1:
     - unless: 'yum list | grep HDP'
     - user: root
 
+hdp_gpl:
+  cmd:
+    - run
+    - name: curl -o /etc/yum.repos.d/hdp_gpl.repo http://public-repo-1.hortonworks.com/HDP-GPL/centos{{ releasever }}/2.x/updates/{{ pillar.hdp2.version }}/hdp.gpl.repo
+    - unless: 'yum list | grep HDP-GPL'
+    - user: root
+
 hortonworks_repo:
   cmd:
     - run
@@ -46,6 +53,6 @@ hortonworks_repo:
     - unless: 'yum list | grep HDP'
     - require:
       - cmd: hortonworks_repo_try1
+      - cmd: hdp_gpl
 
 {% endif %}
-
