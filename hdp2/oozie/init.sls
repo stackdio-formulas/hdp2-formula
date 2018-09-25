@@ -37,7 +37,6 @@ oozie:
     - pkgs:
       - oozie
       - oozie-client
-      - extjs
       - {{ lzo_pkg }}
       - hadoop-hdfs
       - hadoop-yarn
