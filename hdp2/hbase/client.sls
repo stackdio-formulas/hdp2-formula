@@ -3,7 +3,6 @@
 #
 include:
   - hdp2.repo
-  - hdp2.hadoop.client
   - hdp2.hbase.conf
   - hdp2.landing_page
   {% if pillar.hdp2.encryption.enable %}

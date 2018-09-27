@@ -14,8 +14,7 @@
 ##
 
 kill-zkfc:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - name: {{ hadoop_script_dir }}/hadoop-daemon.sh stop zkfc
     - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-hdfs/hadoop-hdfs-zkfc.pid'
@@ -25,8 +24,7 @@ kill-zkfc:
       - pkg: hadoop-hdfs-zkfc
 
 kill-namenode:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - name: {{ hadoop_script_dir }}/hadoop-daemon.sh stop namenode
     - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-hdfs/hadoop-hdfs-namenode.pid'
@@ -38,8 +36,7 @@ kill-namenode:
 # Make sure the namenode metadata directory exists
 # and is owned by the hdfs user
 hdp2_dfs_dirs:
-  cmd:
-    - run
+  cmd.run:
     - name: 'mkdir -p {{ dfs_name_dir }} && chown -R hdfs:hdfs `dirname {{ dfs_name_dir }}`'
     - unless: 'test -d {{ dfs_name_dir }}'
     - require:
@@ -50,8 +47,7 @@ hdp2_dfs_dirs:
 # and metadata from the active namenode
 {% set bootstrap = 'hdfs namenode -bootstrapStandby -force -nonInteractive' %}
 init_standby_namenode:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - group: hdfs
     - name: '{{ bootstrap }} || sleep 30 && {{ bootstrap }}'
@@ -67,8 +63,7 @@ init_standby_namenode:
 
 # Start up the ZKFC
 hadoop-hdfs-zkfc-svc:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - name: {{ hadoop_script_dir }}/hadoop-daemon.sh start zkfc
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-hdfs/hadoop-hdfs-zkfc.pid'
@@ -89,8 +84,7 @@ hadoop-hdfs-zkfc-svc:
       - file: /etc/hadoop/conf
 
 hadoop-hdfs-namenode-svc:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - name: {{ hadoop_script_dir }}/hadoop-daemon.sh start namenode
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-hdfs/hadoop-hdfs-namenode.pid'

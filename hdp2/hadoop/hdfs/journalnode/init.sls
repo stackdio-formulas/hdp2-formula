@@ -23,8 +23,7 @@ include:
 # Depends on: JDK7
 ##
 hadoop-hdfs-journalnode:
-  pkg:
-    - installed
+  pkg.installed:
     - pkgs:
       - hadoop-hdfs-journalnode
       - hadoop

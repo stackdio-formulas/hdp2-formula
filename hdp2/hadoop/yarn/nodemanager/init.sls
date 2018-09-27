@@ -21,8 +21,7 @@ include:
 # Depends on: JDK7
 ##
 hadoop-yarn-nodemanager:
-  pkg:
-    - installed
+  pkg.installed:
     - pkgs:
       - hadoop-yarn-nodemanager
       - hadoop

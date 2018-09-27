@@ -16,8 +16,7 @@
 
 {% if standby %}
 kill-zkfc:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - name: {{ hadoop_script_dir }}/hadoop-daemon.sh stop zkfc
     - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-hdfs/hadoop-hdfs-zkfc.pid'
@@ -28,8 +27,7 @@ kill-zkfc:
 {% endif %}
 
 kill-namenode:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - name: {{ hadoop_script_dir }}/hadoop-daemon.sh stop namenode
     - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-hdfs/hadoop-hdfs-namenode.pid'
@@ -43,8 +41,7 @@ kill-namenode:
 # and is owned by the hdfs user
 ##
 hdp2_dfs_dirs:
-  cmd:
-    - run
+  cmd.run:
     - name: 'mkdir -p {{ dfs_name_dir }} && chown -R hdfs:hdfs `dirname {{ dfs_name_dir }}`'
     - unless: 'test -d {{ dfs_name_dir }}'
     - require:
@@ -57,8 +54,7 @@ hdp2_dfs_dirs:
 # Initialize HDFS. This should only run once, immediately
 # following an install of hadoop.
 init_hdfs:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - group: hdfs
     - name: 'hdfs namenode -format -force'
@@ -68,8 +64,7 @@ init_hdfs:
 
 {% if standby %}
 init_zkfc:
-  cmd:
-    - run
+  cmd.run:
     - name: hdfs zkfc -formatZK
     - user: hdfs
     - group: hdfs
@@ -79,8 +74,7 @@ init_zkfc:
 
 # Start up the ZKFC
 hadoop-hdfs-zkfc-svc:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - name: {{ hadoop_script_dir }}/hadoop-daemon.sh start zkfc
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-hdfs/hadoop-hdfs-zkfc.pid'
@@ -104,8 +98,7 @@ hadoop-hdfs-zkfc-svc:
 {% endif %}
 
 hadoop-hdfs-namenode-svc:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - name: {{ hadoop_script_dir }}/hadoop-daemon.sh start namenode
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-hdfs/hadoop-hdfs-namenode.pid'
@@ -134,8 +127,7 @@ hadoop-hdfs-namenode-svc:
 # to require this state to be sure we have a krb ticket
 {% if pillar.hdp2.security.enable %}
 hdfs_kinit:
-  cmd:
-    - run
+  cmd.run:
     - name: 'kinit -kt /etc/hadoop/conf/hdfs.keytab hdfs/{{ grains.fqdn }}'
     - user: hdfs
     - group: hdfs
@@ -147,8 +139,7 @@ hdfs_kinit:
       - cmd: hdfs_tmp_dir
 
 hdfs_kdestroy:
-  cmd:
-    - run
+  cmd.run:
     - name: 'kdestroy'
     - user: hdfs
     - group: hdfs
@@ -161,8 +152,7 @@ hdfs_kdestroy:
 
 # HDFS tmp directory
 hdfs_tmp_dir:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - group: hdfs
     - name: 'hdfs dfs -mkdir /tmp && hdfs dfs -chmod -R 1777 /tmp'
@@ -174,8 +164,7 @@ hdfs_tmp_dir:
 {% for user_obj in pillar.__stackdio__.users %}
 {% set user = user_obj.username %}
 hdfs_user_{{ user }}:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - group: hdfs
     - name: 'hdfs dfs -mkdir -p /user/{{ user }} && hdfs dfs -chown {{ user }}:{{ user }} /user/{{ user }}'

@@ -22,8 +22,7 @@ include:
 #
 ##
 hadoop-hdfs-datanode:
-  pkg:
-    - installed
+  pkg.installed:
     - pkgs:
       - hadoop-hdfs-datanode
       - hadoop

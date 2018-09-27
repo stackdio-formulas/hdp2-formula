@@ -5,25 +5,25 @@ include:
   - hdp2.repo
   - hdp2.landing_page
   - hdp2.hbase.conf
-{% if salt['pillar.get']('hdp2:hbase:start_service', True) %}
+  {% if salt['pillar.get']('hdp2:hbase:start_service', True) %}
   - hdp2.hbase.regionserver.service
-{% endif %}
-{% if pillar.hdp2.security.enable %}
+  {% endif %}
+  {% if pillar.hdp2.security.enable %}
   - krb5
   - hdp2.security
   - hdp2.hbase.security
-{% endif %}
-{% if pillar.hdp2.encryption.enable %}
+  {% endif %}
+  {% if pillar.hdp2.encryption.enable %}
   - hdp2.hbase.encryption
-{% endif %}
+  {% endif %}
 
 hbase-regionserver:
   pkg.installed:
     - require:
       - cmd: repo_placeholder
-{% if pillar.hdp2.security.enable %}
+      {% if pillar.hdp2.security.enable %}
       - file: krb5_conf_file
-{% endif %}
+      {% endif %}
     - require_in:
       - file: {{ pillar.hdp2.hbase.log_dir }}
       - file: {{ pillar.hdp2.hbase.tmp_dir }}

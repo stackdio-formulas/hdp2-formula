@@ -14,8 +14,7 @@
 ##
 
 kill-journalnode:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - name: {{ hadoop_script_dir }}/hadoop-daemon.sh stop journalnode
     - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-hdfs/hadoop-hdfs-journalnode.pid'
@@ -26,8 +25,7 @@ kill-journalnode:
 
 # Make sure the journal data directory exists if necessary
 hdp2_journal_dir:
-  cmd:
-    - run
+  cmd.run:
     - name: 'mkdir -p {{ journal_dir }} && chown -R hdfs:hdfs `dirname {{ journal_dir }}`'
     - unless: 'test -d {{ journal_dir }}'
     - require:
@@ -38,8 +36,7 @@ hdp2_journal_dir:
       {% endif %}
 
 hadoop-hdfs-journalnode-svc:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - name: {{ hadoop_script_dir }}/hadoop-daemon.sh start journalnode
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-hdfs/hadoop-hdfs-journalnode.pid'

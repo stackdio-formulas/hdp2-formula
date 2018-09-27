@@ -12,8 +12,7 @@
 {% endif %}
 
 kill-historyserver:
-  cmd:
-    - run
+  cmd.run:
     - user: mapred
     - name: {{ mapred_script_dir }}/mr-jobhistory-daemon.sh stop historyserver
     - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-mapreduce/mapred-mapred-historyserver.pid'
@@ -32,8 +31,7 @@ kill-historyserver:
 # to require this state to be sure we have a krb ticket
 {% if pillar.hdp2.security.enable %}
 hdfs_kinit_for_mapred:
-  cmd:
-    - run
+  cmd.run:
     - name: 'kinit -kt /etc/hadoop/conf/hdfs.keytab hdfs/{{ grains.fqdn }}'
     - user: hdfs
     - group: hdfs
@@ -47,8 +45,7 @@ hdfs_kinit_for_mapred:
       - cmd: hdfs_mr_framework_dir
 
 hdfs_kdestroy_for_mapred:
-  cmd:
-    - run
+  cmd.run:
     - name: 'kdestroy'
     - user: hdfs
     - group: hdfs
@@ -62,14 +59,12 @@ hdfs_kdestroy_for_mapred:
 {% endif %}
 
 hdfs_mr_framework_dir:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - name: 'hdfs dfs -mkdir -p /hdp/apps/mapreduce'
 
 hdfs_mr_framework_upload:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - name: 'hdfs dfs -put -f /usr/hdp/current/hadoop-client/mapreduce.tar.gz /hdp/apps/mapreduce'
     - require:
@@ -77,16 +72,14 @@ hdfs_mr_framework_upload:
 
 # HDFS MapReduce log directories
 hdfs_mapreduce_log_dir:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - group: hdfs
     - name: 'hdfs dfs -mkdir -p {{ mapred_log_dir }} && hdfs dfs -chown yarn:hadoop {{ mapred_log_dir }}'
 
 # HDFS MapReduce var directories
 hdfs_mapreduce_var_dir:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - group: hdfs
     - name: 'hdfs dfs -mkdir -p {{ mapred_staging_dir }} && hdfs dfs -chmod -R 1777 {{ mapred_staging_dir }} && hdfs dfs -chown mapred:hadoop {{ mapred_staging_dir }}'
@@ -95,8 +88,7 @@ hdfs_mapreduce_var_dir:
 
 {% if pillar.hdp2.security.enable %}
 mapred_kinit:
-  cmd:
-    - run
+  cmd.run:
     - name: 'kinit -kt /etc/hadoop/conf/mapred.keytab mapred/{{ grains.fqdn }}'
     - user: mapred
     - env:
@@ -108,8 +100,7 @@ mapred_kinit:
       - cmd: create_mapred_zone
 
 mapred_kdestroy:
-  cmd:
-    - run
+  cmd.run:
     - name: 'kdestroy'
     - user: mapred
     - env:
@@ -122,8 +113,7 @@ mapred_kdestroy:
 
 
 create_mapred_key:
-  cmd:
-    - run
+  cmd.run:
     - user: mapred
     - name: 'hadoop key create mapred'
     - unless: 'hadoop key list | grep mapred'
@@ -134,8 +124,7 @@ create_mapred_key:
       {% endif %}
 
 create_mapred_zone:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - name: 'hdfs crypto -createZone -keyName mapred -path {{ mapred_staging_dir }}'
     - unless: 'hdfs crypto -listZones | grep {{ mapred_staging_dir }}'
@@ -152,8 +141,7 @@ create_mapred_zone:
 # Depends on: JDK7
 ##
 hadoop-mapreduce-historyserver-svc:
-  cmd:
-    - run
+  cmd.run:
     - user: mapred
     - name: {{ mapred_script_dir }}/mr-jobhistory-daemon.sh start historyserver
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-mapreduce/mapred-mapred-historyserver.pid'

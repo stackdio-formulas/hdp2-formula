@@ -16,8 +16,7 @@
 ##
 
 kill-resourcemanager:
-  cmd:
-    - run
+  cmd.run:
     - user: yarn
     - name: {{ yarn_script_dir }}/yarn-daemon.sh stop resourcemanager
     - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-yarn/yarn-yarn-resourcemanager.pid'
@@ -26,27 +25,13 @@ kill-resourcemanager:
     - require:
       - pkg: hadoop-yarn-resourcemanager
 
-{% if standby %}
-kill-proxyserver:
-  cmd:
-    - run
-    - user: yarn
-    - name: {{ yarn_script_dir }}/yarn-daemon.sh stop proxyserver
-    - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-yarn/yarn-yarn-proxyserver.pid'
-    - env:
-      - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
-    - require:
-      - pkg: hadoop-yarn-proxyserver
-{% endif %}
-
 ##
 # Starts yarn resourcemanager service.
 #
 # Depends on: JDK7
 ##
 hadoop-yarn-resourcemanager-svc:
-  cmd:
-    - run
+  cmd.run:
     - user: yarn
     - name: {{ yarn_script_dir }}/yarn-daemon.sh start resourcemanager
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-yarn/yarn-yarn-resourcemanager.pid'
@@ -64,26 +49,3 @@ hadoop-yarn-resourcemanager-svc:
       {% endif %}
     - watch:
       - file: /etc/hadoop/conf
-
-{% if standby %}
-hadoop-yarn-proxyserver-svc:
-  cmd:
-    - run
-    - user: yarn
-    - name: {{ yarn_script_dir }}/yarn-daemon.sh start proxyserver
-    - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-yarn/yarn-yarn-proxyserver.pid'
-    - env:
-      - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
-    - require:
-      - pkg: hadoop-yarn-proxyserver
-      - cmd: kill-proxyserver
-      - file: bigtop_java_home
-      {% if pillar.hdp2.encryption.enable %}
-      - cmd: chown-keystore
-      {% endif %}
-      {% if pillar.hdp2.security.enable %}
-      - cmd: generate_hadoop_keytabs
-      {% endif %}
-    - watch:
-      - file: /etc/hadoop/conf
-{% endif %}
