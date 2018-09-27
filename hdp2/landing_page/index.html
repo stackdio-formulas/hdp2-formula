@@ -97,7 +97,7 @@ a:hover {
                     <li><a href='{% if https %}https://{{ oozie[0]["fqdn"] }}:11443/{% else %}http://{{ oozie[0]["fqdn"] }}:11000/{% endif %}'>Oozie Dashboard</a></li>
                     {% endif %}
                     {% if spark %}
-                    <li><a href='{% if https %}https://{{ spark[0]["fqdn"] }}:18488/{% else %}http://{{ spark[0]["fqdn"] }}:18088/{% endif %}'>Spark History Server</a></li>
+                    <li><a href='http://{{ spark[0]["fqdn"] }}:18088/'>Spark History Server</a></li>
                     {% endif %}
                 </ul>
                 {% if 'hdp2.hadoop.hdfs.namenode' in grains['roles'] or 'hdp2.hadoop.yarn.resourcemanager' in grains['roles'] or 'hdp2.hadoop.mapreduce.historyserver' in grains['roles']%}
@@ -113,7 +113,6 @@ a:hover {
 
             <div class="col-md-6">
                 {% if hbase_masters %}
-                <h4>HBase</h4>
                 <h4>HBase</h4>
                 <ul>
                     {% for hbase_master in hbase_masters %}

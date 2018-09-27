@@ -5,9 +5,6 @@ include:
   {% if salt['pillar.get']('hdp2:spark:start_service', True) %}
   - hdp2.spark.historyserver.service
   {% endif %}
-  {% if pillar.hdp2.encryption.enable %}
-  - hdp2.spark.encryption
-  {% endif %}
   {% if pillar.hdp2.security.enable %}
   - hdp2.spark.security
   {% endif %}
