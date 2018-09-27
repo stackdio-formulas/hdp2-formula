@@ -21,7 +21,7 @@ kill-zkfc:
     - env:
       - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require:
-      - pkg: hadoop-hdfs-zkfc
+      - pkg: hadoop-hdfs-namenode
 
 kill-namenode:
   cmd.run:
@@ -70,7 +70,7 @@ hadoop-hdfs-zkfc-svc:
     - env:
       - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require:
-      - pkg: hadoop-hdfs-zkfc
+      - pkg: hadoop-hdfs-namenode
       - file: bigtop_java_home
       - cmd: kill-zkfc
       {% if pillar.hdp2.encryption.enable %}

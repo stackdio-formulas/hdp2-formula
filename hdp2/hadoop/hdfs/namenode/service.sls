@@ -23,7 +23,7 @@ kill-zkfc:
     - env:
       - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require:
-      - pkg: hadoop-hdfs-zkfc
+      - pkg: hadoop-hdfs-namenode
 {% endif %}
 
 kill-namenode:
@@ -81,7 +81,7 @@ hadoop-hdfs-zkfc-svc:
     - env:
       - HADOOP_LIBEXEC_DIR: '{{ hadoop_script_dir }}/../libexec'
     - require:
-      - pkg: hadoop-hdfs-zkfc
+      - pkg: hadoop-hdfs-namenode
       - cmd: init_zkfc
       - file: bigtop_java_home
       - cmd: kill-zkfc
