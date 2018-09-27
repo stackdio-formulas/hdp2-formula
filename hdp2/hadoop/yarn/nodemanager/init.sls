@@ -46,3 +46,10 @@ hadoop-yarn-nodemanager:
       {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
+
+spark-shuffle-jar:
+  cmd.run:
+    - user: root
+    - name: ln -sf /usr/hdp/current/spark-client/aux/spark-*-yarn-shuffle.jar /usr/hdp/current/hadoop-yarn-nodemanager/lib/
+    - require:
+      - pkg: hadoop-yarn-nodemanager
