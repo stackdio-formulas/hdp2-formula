@@ -31,6 +31,7 @@ hadoop-yarn-nodemanager:
       - hadoop-mapreduce
       - hadoop-client
       - spark
+      - spark-yarn-shuffle
       - openssl
     - require:
       - cmd: repo_placeholder
