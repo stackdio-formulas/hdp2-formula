@@ -116,10 +116,10 @@ a:hover {
                 <h4>HBase</h4>
                 <ul>
                     {% for hbase_master in hbase_masters %}
-                    <li><a href='http{% if https %}s{% endif %}://{{ hbase_master["fqdn"] }}:60010/'>HBase Master</a></li>
+                    <li><a href='http{% if https %}s{% endif %}://{{ hbase_master["fqdn"] }}:16010/'>HBase Master</a></li>
                     {% endfor %}
                     {% if 'hdp2.hbase.regionserver' in grains['roles'] %}
-                    <li><a href='http{% if https %}s{% endif %}://{{ fqdn }}:60030/'>HBase RegionServer</a></li>
+                    <li><a href='http{% if https %}s{% endif %}://{{ fqdn }}:16030/'>HBase RegionServer</a></li>
                     {% endif %}
                 </ul>
                 {% endif %}
