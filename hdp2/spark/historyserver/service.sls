@@ -9,8 +9,7 @@
 
 
 kill-historyserver:
-  cmd:
-    - run
+  cmd.run:
     - user: spark
     - name: {{ spark_script_dir }}/stop-history-server.sh
     - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/spark/spark-spark-org.apache.spark.deploy.history.HistoryServer-1.pid'
@@ -25,8 +24,7 @@ kill-historyserver:
 # to require this state to be sure we have a krb ticket
 {% if pillar.hdp2.security.enable %}
 hdfs_kinit:
-  cmd:
-    - run
+  cmd.run:
     - name: 'kinit -kt /etc/hadoop/conf/hdfs.keytab hdfs/{{ grains.fqdn }}'
     - user: hdfs
     - group: hdfs
@@ -36,8 +34,7 @@ hdfs_kinit:
       - cmd: history-dir
 
 hdfs_kdestroy:
-  cmd:
-    - run
+  cmd.run:
     - name: 'kdestroy'
     - user: hdfs
     - group: hdfs
@@ -50,8 +47,7 @@ hdfs_kdestroy:
 
 
 history-dir:
-  cmd:
-    - run
+  cmd.run:
     - user: hdfs
     - group: hdfs
     - name: 'hdfs dfs -mkdir -p /user/spark/applicationHistory && hdfs dfs -chown -R spark:spark /user/spark && hdfs dfs -chmod 1777 /user/spark/applicationHistory'
@@ -60,8 +56,7 @@ history-dir:
 
 
 /etc/spark/conf/spark-defaults.conf:
-  file:
-    - managed
+  file.managed:
     - user: root
     - group: root
     - mode: 644
@@ -70,27 +65,49 @@ history-dir:
     - require:
       - pkg: spark
 
+/etc/spark/conf/spark-history-server.conf:
+  file.managed:
+    - user: root
+    - group: root
+    - mode: 644
+    - source: salt://hdp2/etc/spark/spark-history-server.conf
+    - template: jinja
+    - require:
+      - pkg: spark
+
 /etc/spark/conf/spark-env.sh:
-  file:
-    - append
+  file.append:
     - text:
       - export SPARK_LOG_DIR=/var/log/spark
       - export SPARK_PID_DIR=/var/run/spark
-      - 'export SPARK_HISTORY_OPTS="$SPARK_HISTORY_OPTS -Dspark.history.fs.logDirectory=hdfs:///user/spark/applicationHistory"'
       {% if pillar.hdp2.security.enable %}
       {% from 'krb5/settings.sls' import krb5 with context %}
-      - 'export SPARK_HISTORY_OPTS="$SPARK_HISTORY_OPTS -Dspark.history.kerberos.enabled=true -Dspark.history.kerberos.principal=spark/{{ grains.fqdn }}@{{ krb5.realm }} -Dspark.history.kerberos.keytab=/etc/spark/conf/spark.keytab -Djava.security.krb5.conf={{ pillar.krb5.conf_file }}"'
+      - 'export SPARK_HISTORY_OPTS="$SPARK_HISTORY_OPTS -Djava.security.krb5.conf={{ pillar.krb5.conf_file }}"'
       {% endif %}
     - require:
       - pkg: spark
     - watch_in:
       - service: spark-history-server-svc
 
-spark-history-server-svc:
-  cmd:
-    - run
+/mnt/spark:
+  file.directory:
     - user: spark
-    - name: {{ spark_script_dir }}/start-history-server.sh
+    - group: spark
+    - require:
+      - pkg: spark
+
+/mnt/spark/logs:
+  file.directory:
+    - user: spark
+    - group: spark
+    - require:
+      - pkg: spark
+      - file: /mnt/spark
+
+spark-history-server-svc:
+  cmd.run:
+    - user: spark
+    - name: {{ spark_script_dir }}/start-history-server.sh --properties-file /etc/spark/conf/spark-history-server.conf
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/spark/spark-spark-org.apache.spark.deploy.history.HistoryServer-1.pid'
     - require:
       - pkg: spark
@@ -100,5 +117,5 @@ spark-history-server-svc:
       - cmd: generate_spark_keytabs
       {% endif %}
     - watch:
-      - file: /etc/spark/conf/spark-defaults.conf
+      - file: /etc/spark/conf/spark-history-server.conf
       - file: /etc/spark/conf/spark-env.sh

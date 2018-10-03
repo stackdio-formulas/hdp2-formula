@@ -29,10 +29,12 @@ include:
   {% endif %}
 
 hadoop-hdfs-namenode:
-  pkg:
-    - installed
+  pkg.installed:
     - pkgs:
       - hadoop-hdfs-namenode
+      {% if standby %}
+      - hadoop-hdfs-zkfc
+      {% endif %}
       - hadoop
       - hadoop-hdfs
       - hadoop-mapreduce
@@ -53,30 +55,3 @@ hadoop-hdfs-namenode:
       {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
-
-{% if standby %}
-# Only needed for HA
-hadoop-hdfs-zkfc:
-  pkg:
-    - installed
-    - pkgs:
-      - hadoop-hdfs-zkfc
-      - hadoop
-      - hadoop-hdfs
-      - hadoop-libhdfs
-      - hadoop-client
-      - openssl
-    - require:
-      - cmd: repo_placeholder
-      {% if pillar.hdp2.security.enable %}
-      - file: krb5_conf_file
-      {% endif %}
-    - require_in:
-      - file: /etc/hadoop/conf
-      {% if pillar.hdp2.encryption.enable %}
-      - file: /etc/hadoop/conf/hadoop.key
-      {% endif %}
-      {% if pillar.hdp2.security.enable %}
-      - cmd: generate_hadoop_keytabs
-      {% endif %}
-{% endif %}

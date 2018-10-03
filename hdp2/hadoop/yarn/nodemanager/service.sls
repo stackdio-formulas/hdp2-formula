@@ -9,8 +9,7 @@
 {% endif %}
 
 kill-nodemanager:
-  cmd:
-    - run
+  cmd.run:
     - user: yarn
     - name: {{ yarn_script_dir }}/yarn-daemon.sh stop nodemanager
     - env:
@@ -23,8 +22,7 @@ kill-nodemanager:
 {% for local_dir in pillar.hdp2.yarn.local_dirs %}
 
 yarn-local-dir-{{ local_dir }}:
-  file:
-    - directory
+  file.directory:
     - name: {{ local_dir }}
     - user: yarn
     - group: yarn
@@ -41,8 +39,7 @@ yarn-local-dir-{{ local_dir }}:
 {% for log_dir in pillar.hdp2.yarn.log_dirs %}
 
 yarn-log-dir-{{ log_dir }}:
-  file:
-    - directory
+  file.directory:
     - name: {{ log_dir }}
     - user: yarn
     - group: yarn
@@ -61,8 +58,7 @@ yarn-log-dir-{{ log_dir }}:
 # Depends on: JDK7
 ##
 hadoop-yarn-nodemanager-svc:
-  cmd:
-    - run
+  cmd.run:
     - user: yarn
     - name: {{ yarn_script_dir }}/yarn-daemon.sh start nodemanager
     - env:
@@ -70,6 +66,7 @@ hadoop-yarn-nodemanager-svc:
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-yarn/yarn-yarn-nodemanager.pid'
     - require: 
       - pkg: hadoop-yarn-nodemanager
+      - cmd: spark-shuffle-jar
       - file: /etc/hadoop/conf
       - file: bigtop_java_home
       - cmd: kill-nodemanager

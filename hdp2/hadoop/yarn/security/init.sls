@@ -5,8 +5,7 @@ include:
   - hdp2.security.stackdio_user
 
 generate_hadoop_keytabs:
-  cmd:
-    - script 
+  cmd.script:
     - source: salt://hdp2/hadoop/yarn/security/generate_keytabs.sh
     - template: jinja
     - user: root

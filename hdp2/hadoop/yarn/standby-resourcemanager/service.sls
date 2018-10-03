@@ -15,8 +15,7 @@
 ##
 
 kill-resourcemanager:
-  cmd:
-    - run
+  cmd.run:
     - user: yarn
     - name: {{ yarn_script_dir }}/yarn-daemon.sh stop resourcemanager
     - onlyif: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-yarn/yarn-yarn-resourcemanager.pid'
@@ -26,8 +25,7 @@ kill-resourcemanager:
       - pkg: hadoop-yarn-resourcemanager
 
 hadoop-yarn-resourcemanager-svc:
-  cmd:
-    - run
+  cmd.run:
     - user: yarn
     - name: {{ yarn_script_dir }}/yarn-daemon.sh start resourcemanager
     - unless: '. /etc/init.d/functions && pidofproc -p /var/run/hadoop-yarn/yarn-yarn-resourcemanager.pid'

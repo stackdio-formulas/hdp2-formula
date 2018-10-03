@@ -15,8 +15,7 @@
 ##
 
 /var/run/hadoop-hdfs:
-  file:
-    - directory
+  file.directory:
     - user: hdfs
     - group: hadoop
     - mode: 755
@@ -24,8 +23,7 @@
       - pkg: hadoop-hdfs-datanode
 
 kill-datanode:
-  cmd:
-    - run
+  cmd.run:
     {% if pillar.hdp2.security.enable %}
     - user: root
     {% else %}
@@ -42,8 +40,7 @@ kill-datanode:
 {% for data_dir in pillar.hdp2.dfs.data_dirs %}
 
 dfs-data-dir-{{ data_dir }}:
-  file:
-    - directory
+  file.directory:
     - name: {{ data_dir }}
     - user: hdfs
     - group: hdfs
@@ -57,8 +54,7 @@ dfs-data-dir-{{ data_dir }}:
 {% endfor %}
 
 hadoop-hdfs-datanode-svc:
-  cmd:
-    - run
+  cmd.run:
     {% if pillar.hdp2.security.enable %}
     - user: root
     {% else %}

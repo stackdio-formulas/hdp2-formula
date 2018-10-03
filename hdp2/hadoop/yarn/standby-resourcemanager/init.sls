@@ -18,8 +18,7 @@ include:
   {% endif %}
 
 hadoop-yarn-resourcemanager:
-  pkg:
-    - installed
+  pkg.installed:
     - pkgs:
       - hadoop-yarn-resourcemanager
       - hadoop

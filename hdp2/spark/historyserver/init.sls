@@ -11,7 +11,6 @@ include:
 
 
 spark:
-  pkg:
-    - installed
+  pkg.installed:
     - require:
       - cmd: repo_placeholder

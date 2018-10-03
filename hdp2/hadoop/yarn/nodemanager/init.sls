@@ -21,8 +21,7 @@ include:
 # Depends on: JDK7
 ##
 hadoop-yarn-nodemanager:
-  pkg:
-    - installed
+  pkg.installed:
     - pkgs:
       - hadoop-yarn-nodemanager
       - hadoop
@@ -32,6 +31,7 @@ hadoop-yarn-nodemanager:
       - hadoop-mapreduce
       - hadoop-client
       - spark
+      - spark-yarn-shuffle
       - openssl
     - require:
       - cmd: repo_placeholder
@@ -46,3 +46,10 @@ hadoop-yarn-nodemanager:
       {% if pillar.hdp2.security.enable %}
       - cmd: generate_hadoop_keytabs
       {% endif %}
+
+spark-shuffle-jar:
+  cmd.run:
+    - user: root
+    - name: ln -sf /usr/hdp/current/spark-client/aux/spark-*-yarn-shuffle.jar /usr/hdp/current/hadoop-yarn-nodemanager/lib/
+    - require:
+      - pkg: hadoop-yarn-nodemanager
