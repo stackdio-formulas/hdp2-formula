@@ -97,6 +97,7 @@ oozie_kdestroy:
     - require:
       - pkg: oozie
       - cmd: oozie_kinit
+      - cmd: populate-oozie-sharelibs
     - require_in:
       - cmd: oozie-svc
 {% endif %}
