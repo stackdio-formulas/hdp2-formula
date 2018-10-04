@@ -123,7 +123,7 @@ hadoop-lzo:
 {% for hbase_jar in hbase_jar_list %}
 {{ hbase_jar }}-jar:
   file.symlink:
-    - name: /usr/hdp/current/oozie-server/libserver/{{ hbase_jar }}.jar
+    - name: /usr/hdp/current/oozie-server/libext/{{ hbase_jar }}.jar
     - target: /usr/hdp/current/hbase-client/lib/{{ hbase_jar }}.jar
     - user: root
     - group: root
