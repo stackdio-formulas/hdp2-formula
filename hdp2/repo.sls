@@ -36,3 +36,14 @@ hortonworks_repo:
       - cmd: hdp_gpl
 
 {% endif %}
+
+{% if grains['os'] == "RedHat" %}  # And not centos
+
+rhel-optional:
+  pkgrepo.managed:
+    - name: rhui-REGION-rhel-server-optional
+
+libtirpc-devel:
+  pkg.installed
+
+{% endif %}
