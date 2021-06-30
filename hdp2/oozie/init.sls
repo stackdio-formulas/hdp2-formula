@@ -117,6 +117,22 @@ hadoop-lzo:
     - require:
       - pkg: oozie
 
+# add all the hbase jars
+{% set hbase_jar_list = ['hbase-client', 'hbase-common', 'hbase-hadoop2-compat', 'hbase-protocol', 'hbase-server'] %}
+
+{% for hbase_jar in hbase_jar_list %}
+{{ hbase_jar }}-jar:
+  file.symlink:
+    - name: /usr/hdp/current/oozie-server/libext/{{ hbase_jar }}.jar
+    - target: /usr/hdp/current/hbase-client/lib/{{ hbase_jar }}.jar
+    - user: root
+    - group: root
+    - require:
+      - pkg: oozie
+    - require_in:
+      - file: /var/log/oozie
+{% endfor %}
+
 /var/log/oozie:
   file:
     - directory
