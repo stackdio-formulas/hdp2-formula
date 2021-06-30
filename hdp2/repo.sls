@@ -21,19 +21,13 @@ hortonworks_repo:
 
 {% set releasever = grains.osmajorrelease %}
 
-hdp_gpl:
-  cmd:
-    - run
-    - name: curl -o /etc/yum.repos.d/hdp_gpl.repo https://{{pillar.cdh5.manager.cloudera_user}}:{{pillar.cdh5.manager.cloudera_password}}@archive.cloudera.com/p/HDP/2.x/{{ pillar.hdp2.version }}/centos{{ releasever }}/hdp.gpl.repo
-    - user: root
-
 hortonworks_repo:
-  cmd:
-    - run
-    - name: curl -o /etc/yum.repos.d/hdp.repo https://{{pillar.cdh5.manager.cloudera_user}}:{{pillar.cdh5.manager.cloudera_password}}@archive.cloudera.com/p/HDP/2.x/{{ pillar.hdp2.version }}/centos{{ releasever }}/hdp.repo
-    - user: root
-    - require:
-      - cmd: hdp_gpl
+  pkgrepo:
+    - managed
+    - humanname: "Hortonworks' Distribution for Hadoop, Version 2"
+    - baseurl: "https://{{pillar.cdh5.manager.cloudera_user}}:{{pillar.cdh5.manager.cloudera_password}}@archive.cloudera.com/p/HDP/2.x/{{ pillar.hdp2.version }}/centos{{ releasever }}"
+    - gpgkey: https://{{pillar.cdh5.manager.cloudera_user}}:{{pillar.cdh5.manager.cloudera_password}}@archive.cloudera.com/p/HDP/2.x/{{ pillar.hdp2.version }}/centos{{ releasever }}/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins
+    - gpgcheck: 1
 
 {% endif %}
 
